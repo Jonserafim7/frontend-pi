@@ -1,0 +1,8 @@
+{
+  "printWidth": 82,
+  "tabWidth": 2,
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "experimentalTernaries": true,
+  "semi": false,
+  "singleAttributePerLine": true
+}
