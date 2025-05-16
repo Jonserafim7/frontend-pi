@@ -1,23 +1,26 @@
+import React from "react"
 import { Navigate, Outlet } from "react-router"
+import { useAuth } from "../features/auth/contexts/auth-context"
 
-// Exemplo básico: verificar se existe um token de autenticação
-const isAuthenticated = () => {
-  // return !!localStorage.getItem('authToken'); // Exemplo
-  return false // Placeholder: assumir que não está autenticado para rotas públicas por enquanto
-}
+/**
+ * Public routes component
+ * Redirects authenticated users to the dashboard and allows unauthenticated users to access public routes
+ */
+const PublicRoutes = (): React.ReactElement => {
+  const { isAuthenticated } = useAuth()
 
-const PublicRoutes = () => {
-  if (isAuthenticated()) {
-    // Redireciona para a home page se já estiver autenticado e tentar acessar uma rota pública (ex: login)
+  // If user is already authenticated, redirect to dashboard when trying to access public routes like login
+  if (isAuthenticated) {
     return (
       <Navigate
-        to="/"
+        to="/dashboard"
         replace
       />
     )
   }
 
-  return <Outlet /> // Renderiza o conteúdo da rota pública se não autenticado
+  // Render the child route content if user is not authenticated
+  return <Outlet />
 }
 
 export default PublicRoutes

@@ -1,15 +1,20 @@
 import { Navigate, Outlet } from "react-router"
+import { useAuth } from "../features/auth/contexts/auth-context"
 
-// Exemplo básico: verificar se existe um token de autenticação
-// Em uma aplicação real, isso viria de um contexto de autenticação, localStorage, etc.
-const isAuthenticated = () => {
-  // return !!localStorage.getItem('authToken'); // Exemplo
-  return true // Placeholder: assumir que está autenticado por enquanto
-}
-
+/**
+ * Protected routes component
+ * Ensures only authenticated users can access protected routes
+ */
 const ProtectedRoutes = () => {
-  if (!isAuthenticated()) {
-    // Redireciona para a página de login se não estiver autenticado
+  const { isAuthenticated, isLoading } = useAuth()
+
+  // Show nothing while checking authentication status
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  // Redirect to login page if not authenticated
+  if (!isAuthenticated) {
     return (
       <Navigate
         to="/login"
@@ -18,7 +23,8 @@ const ProtectedRoutes = () => {
     )
   }
 
-  return <Outlet /> // Renderiza o conteúdo da rota filha se autenticado
+  // Render the child route content if user is authenticated
+  return <Outlet />
 }
 
 export default ProtectedRoutes

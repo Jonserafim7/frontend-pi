@@ -1,29 +1,44 @@
+import React from "react"
 import { Route, Routes } from "react-router"
-// import AppLayout from '@/components/Layout/AppLayout'; // Será usado quando AppLayout for criado
-// import LoginPage from '@/features/autenticacao/pages/LoginPage'; // Exemplo, será criado depois
-// import HomePage from '@/pages/HomePage'; // Exemplo, será criado depois
+import { LoginPage } from "../features/auth/pages/login-page"
+import ProtectedRoutes from "./ProtectedRoutes"
+import PublicRoutes from "./PublicRoutes"
 
-// import ProtectedRoutes from './ProtectedRoutes';
-// import PublicRoutes from './PublicRoutes';
+// Temporary placeholder component for protected pages
+const DashboardPlaceholder = (): React.ReactElement => <div className="p-8">Dashboard page (coming soon)</div>
 
-export function AppRoutes() {
+/**
+ * Main application routes configuration
+ */
+export function AppRoutes(): React.ReactElement {
   return (
     <Routes>
-      {/* Exemplo de Rota Pública (será encapsulada por PublicRoutes) */}
-      {/* <Route path="/login" element={<LoginPage />} /> */}
+      {/* Public Routes */}
+      <Route element={<PublicRoutes />}>
+        <Route path="/login" element={<LoginPage />} />
+      </Route>
 
-      {/* Exemplo de Rotas Protegidas (serão encapsuladas por ProtectedRoutes e usarão AppLayout) */}
-      {/* <Route element={<ProtectedRoutes />}> */}
-      {/*   <Route element={<AppLayout />}> */}
-      {/*     <Route path="/" element={<HomePage />} /> */}
-      {/*     {/* Outras rotas protegidas aqui... */}
-      {/*   </Route> */}
-      {/* </Route> */}
+      {/* Protected Routes */}
+      <Route element={<ProtectedRoutes />}>
+        {/* Use AppLayout when it's ready */}
+        <Route>
+          <Route path="/" element={<DashboardPlaceholder />} />
+          <Route path="/dashboard" element={<DashboardPlaceholder />} />
+          {/* Add more protected routes here */}
+        </Route>
+      </Route>
 
-      {/* Rota de fallback ou página não encontrada */}
+      {/* 404 Fallback */}
       <Route
         path="*"
-        element={<div>Página não encontrada</div>}
+        element={
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold mb-2">404</h1>
+              <p>Página não encontrada</p>
+            </div>
+          </div>
+        }
       />
     </Routes>
   )

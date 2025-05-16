@@ -1,7 +1,6 @@
 import axios, { type InternalAxiosRequestConfig } from "axios"
 
-const apiBaseURL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api" // Fallback para desenvolvimento
+const apiBaseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000" // Fallback para desenvolvimento
 
 export const apiClient = axios.create({
   baseURL: apiBaseURL,

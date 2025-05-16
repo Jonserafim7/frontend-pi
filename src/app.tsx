@@ -1,12 +1,32 @@
-import { AppRoutes } from "./routes" // Importa a configuração de rotas
+import React from "react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
-function App() {
+import { AppRoutes } from "./routes"
+import { AuthProvider } from "./features/auth/contexts/auth-context"
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  },
+})
+
+/**
+ * Main application component
+ * Wraps the app with required providers
+ */
+function App(): React.ReactElement {
   return (
-    <div className="app-container">
-      {" "}
-      {/* Pode adicionar estilos globais aqui */}
-      <AppRoutes />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <div className="app-container min-h-screen">
+          <AppRoutes />
+        </div>
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }
 
