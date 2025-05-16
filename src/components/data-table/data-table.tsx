@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/table"
 import { Input } from "../ui/input"
 import { DataTablePagination } from "./data-table-pagination"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 
