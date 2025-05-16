@@ -25,7 +25,7 @@ export const authControllerSignInResponse = zod.object({
   "id": zod.string().describe('ID único do usuário'),
   "nome": zod.string().describe('Nome completo do usuário'),
   "email": zod.string().describe('Endereço de e-mail do usuário'),
-  "papel": zod.enum(['DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema'),
+  "papel": zod.enum(['ADMIN', 'DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema'),
   "dataCriacao": zod.string().datetime({}).describe('Data de criação do usuário'),
   "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do usuário')
 }).describe('Dados do usuário autenticado')
@@ -42,6 +42,6 @@ export const authControllerSignUpBody = zod.object({
   "nome": zod.string().describe('Nome completo do usuário'),
   "email": zod.string().describe('Endereço de e-mail do usuário (será usado para login)'),
   "senha": zod.string().min(authControllerSignUpBodySenhaMin).describe('Senha do usuário (mínimo de 8 caracteres)'),
-  "papel": zod.enum(['DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema')
+  "papel": zod.enum(['ADMIN', 'DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema')
 })
 

@@ -13,7 +13,7 @@ const PublicRoutes = (): React.ReactElement => {
   if (isAuthenticated) {
     return (
       <Navigate
-        to="/dashboard"
+        to="/"
         replace
       />
     )

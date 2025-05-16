@@ -9,11 +9,11 @@
 /**
  * Papel do usuário no sistema
  */
-export type UsuarioResponseDtoPapel = typeof UsuarioResponseDtoPapel[keyof typeof UsuarioResponseDtoPapel];
+export type UpdateUsuarioDtoPapel = typeof UpdateUsuarioDtoPapel[keyof typeof UpdateUsuarioDtoPapel];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsuarioResponseDtoPapel = {
+export const UpdateUsuarioDtoPapel = {
   ADMIN: 'ADMIN',
   DIRETOR: 'DIRETOR',
   COORDENADOR: 'COORDENADOR',

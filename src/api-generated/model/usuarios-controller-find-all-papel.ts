@@ -6,14 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 
-/**
- * Papel do usuário no sistema
- */
-export type UsuarioResponseDtoPapel = typeof UsuarioResponseDtoPapel[keyof typeof UsuarioResponseDtoPapel];
+export type UsuariosControllerFindAllPapel = typeof UsuariosControllerFindAllPapel[keyof typeof UsuariosControllerFindAllPapel];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsuarioResponseDtoPapel = {
+export const UsuariosControllerFindAllPapel = {
   ADMIN: 'ADMIN',
   DIRETOR: 'DIRETOR',
   COORDENADOR: 'COORDENADOR',

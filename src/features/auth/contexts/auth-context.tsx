@@ -35,6 +35,14 @@ interface AuthContextType {
   hasAnyRole: (roles: UsuarioResponseDtoPapel[]) => boolean
   /** Retorna o papel do usuário atual ou null se não autenticado */
   userRole: UsuarioResponseDtoPapel | null
+  /** Verifica se o usuário é um administrador */
+  isAdmin: () => boolean
+  /** Verifica se o usuário é um diretor */
+  isDiretor: () => boolean
+  /** Verifica se o usuário é um coordenador */
+  isCoordenador: () => boolean
+  /** Verifica se o usuário é um professor */
+  isProfessor: () => boolean
 }
 
 /**
@@ -45,8 +53,8 @@ interface AuthProviderProps {
 }
 
 // Storage keys for persisting auth state
-const AUTH_TOKEN_KEY = "auth-token"
-const AUTH_USER_KEY = "auth-user"
+export const AUTH_TOKEN_KEY = "auth-token"
+export const AUTH_USER_KEY = "auth-user"
 
 // Create auth context
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -55,7 +63,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
  * Authentication provider component
  * Manages authentication state and provides login/logout functionality
  */
-export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElement => {
+export const AuthProvider = ({
+  children,
+}: AuthProviderProps): React.ReactElement => {
   const [user, setUser] = useState<AuthResponseDto["usuario"] | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -105,12 +115,10 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElemen
         localStorage.setItem(AUTH_TOKEN_KEY, token)
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(usuario))
 
-        // Update state
         setAccessToken(token)
         setUser(usuario)
 
-        // Navigate to dashboard after successful login
-        navigate("/dashboard")
+        navigate("/")
       } catch (error) {
         console.error("Login error:", error)
         setError("Invalid credentials. Please try again.")
@@ -118,7 +126,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElemen
         setIsLoading(false)
       }
     },
-    [signInMutation, navigate]
+    [signInMutation, navigate],
   )
 
   /**
@@ -144,7 +152,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElemen
     (role: UsuarioResponseDtoPapel): boolean => {
       return !!user && user.papel === role
     },
-    [user]
+    [user],
   )
 
   /**
@@ -154,13 +162,41 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElemen
     (roles: UsuarioResponseDtoPapel[]): boolean => {
       return !!user && !!user.papel && roles.includes(user.papel)
     },
-    [user]
+    [user],
   )
 
   /**
    * Retorna o papel do usuário atual ou null se não autenticado
    */
   const userRole = user?.papel || null
+
+  /**
+   * Verifica se o usuário é um administrador
+   */
+  const isAdmin = useCallback((): boolean => {
+    return hasRole(UsuarioResponseDtoPapel.ADMIN)
+  }, [hasRole])
+
+  /**
+   * Verifica se o usuário é um diretor
+   */
+  const isDiretor = useCallback((): boolean => {
+    return hasRole(UsuarioResponseDtoPapel.DIRETOR)
+  }, [hasRole])
+
+  /**
+   * Verifica se o usuário é um coordenador
+   */
+  const isCoordenador = useCallback((): boolean => {
+    return hasRole(UsuarioResponseDtoPapel.COORDENADOR)
+  }, [hasRole])
+
+  /**
+   * Verifica se o usuário é um professor
+   */
+  const isProfessor = useCallback((): boolean => {
+    return hasRole(UsuarioResponseDtoPapel.PROFESSOR)
+  }, [hasRole])
 
   const contextValue: AuthContextType = {
     user,
@@ -173,12 +209,14 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElemen
     hasRole,
     hasAnyRole,
     userRole,
+    isAdmin,
+    isDiretor,
+    isCoordenador,
+    isProfessor,
   }
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   )
 }
 

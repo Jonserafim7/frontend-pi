@@ -9,6 +9,15 @@ const defaultQueryOptions = {
   },
 }
 
-export const queryClient = new QueryClient({
+// Habilitar logs para facilitar o debugging das queries
+const queryClientConfig = {
   defaultOptions: defaultQueryOptions,
-})
+}
+
+// Adicionar console.log para visualizar as keys das queries quando inicializadas
+if (import.meta.env.DEV) {
+  // Apenas em ambiente de desenvolvimento
+  console.log("Inicializando QueryClient com modo de debug ativado")
+}
+
+export const queryClient = new QueryClient(queryClientConfig)

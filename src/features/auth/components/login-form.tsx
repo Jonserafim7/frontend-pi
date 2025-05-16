@@ -17,26 +17,16 @@ import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Loader2, Mail } from "lucide-react"
-
-/**
- * Form schema for login validation
- */
-const loginFormSchema = z.object({
-  email: z
-    .string()
-    .min(1, "O email é obrigatório")
-    .email("Por favor, insira um email válido"),
-  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
-})
+import { authControllerSignInBody } from "@/api-generated/zod-schemas/auth/auth"
 
 /**
  * Type definition for the login form values
  */
-type LoginFormValues = z.infer<typeof loginFormSchema>
+type LoginFormValues = z.infer<typeof authControllerSignInBody>
 
 const DEFAULT_FORM_VALUES: Partial<LoginFormValues> = {
   email: "",
-  password: "",
+  senha: "",
 }
 
 /**
@@ -47,7 +37,7 @@ export function LoginForm(): React.ReactElement {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginFormSchema),
+    resolver: zodResolver(authControllerSignInBody),
     defaultValues: DEFAULT_FORM_VALUES,
     mode: "onChange",
   })
@@ -58,7 +48,7 @@ export function LoginForm(): React.ReactElement {
   const onSubmit = async (values: LoginFormValues): Promise<void> => {
     try {
       setSubmitError(null)
-      await login(values.email, values.password)
+      await login(values.email, values.senha)
     } catch (error) {
       setSubmitError(
         "Ocorreu um erro ao fazer login. Por favor, tente novamente.",
@@ -115,7 +105,7 @@ export function LoginForm(): React.ReactElement {
 
             <FormField
               control={form.control}
-              name="password"
+              name="senha"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">

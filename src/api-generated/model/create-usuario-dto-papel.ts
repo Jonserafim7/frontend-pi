@@ -14,6 +14,7 @@ export type CreateUsuarioDtoPapel = typeof CreateUsuarioDtoPapel[keyof typeof Cr
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateUsuarioDtoPapel = {
+  ADMIN: 'ADMIN',
   DIRETOR: 'DIRETOR',
   COORDENADOR: 'COORDENADOR',
   PROFESSOR: 'PROFESSOR',

@@ -1,18 +1,9 @@
 import React from "react"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { QueryClientProvider } from "@tanstack/react-query"
 
 import { AppRoutes } from "./routes"
 import { AuthProvider } from "./features/auth/contexts/auth-context"
-
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: false,
-    },
-  },
-})
+import { queryClient } from "./lib/react-query"
 
 /**
  * Main application component

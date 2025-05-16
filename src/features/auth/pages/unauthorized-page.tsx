@@ -24,7 +24,7 @@ export function UnauthorizedPage() {
    * Redireciona o usuário para a página inicial adequada para seu papel
    */
   function backToMainArea() {
-    navigate("/dashboard")
+    navigate("/")
   }
 
   return (
