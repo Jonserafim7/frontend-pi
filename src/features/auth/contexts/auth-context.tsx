@@ -8,19 +8,33 @@ import React, {
 } from "react"
 import { useNavigate } from "react-router"
 import type { AuthResponseDto } from "@/api-generated/model"
+import { UsuarioResponseDtoPapel } from "@/api-generated/model/usuario-response-dto-papel"
 import { useAuthControllerSignIn } from "@/api-generated/client/auth/auth"
 
 /**
- * Interface representing authentication context state and methods
+ * Interface representando o estado e métodos do contexto de autenticação
  */
 interface AuthContextType {
+  /** Usuário autenticado atual ou null se não autenticado */
   user: AuthResponseDto["usuario"] | null
+  /** Token de acesso atual ou null se não autenticado */
   accessToken: string | null
+  /** Indica se o usuário está autenticado */
   isAuthenticated: boolean
+  /** Indica se uma operação de autenticação está em andamento */
   isLoading: boolean
+  /** Mensagem de erro, se houver */
   error: string | null
+  /** Função para realizar login */
   login: (email: string, password: string) => Promise<void>
+  /** Função para realizar logout */
   logout: () => void
+  /** Verifica se o usuário tem um determinado papel */
+  hasRole: (role: UsuarioResponseDtoPapel) => boolean
+  /** Verifica se o usuário tem pelo menos um dos papéis especificados */
+  hasAnyRole: (roles: UsuarioResponseDtoPapel[]) => boolean
+  /** Retorna o papel do usuário atual ou null se não autenticado */
+  userRole: UsuarioResponseDtoPapel | null
 }
 
 /**
@@ -123,6 +137,31 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElemen
     navigate("/login")
   }, [navigate])
 
+  /**
+   * Verifica se o usuário tem um determinado papel
+   */
+  const hasRole = useCallback(
+    (role: UsuarioResponseDtoPapel): boolean => {
+      return !!user && user.papel === role
+    },
+    [user]
+  )
+
+  /**
+   * Verifica se o usuário tem pelo menos um dos papéis especificados
+   */
+  const hasAnyRole = useCallback(
+    (roles: UsuarioResponseDtoPapel[]): boolean => {
+      return !!user && !!user.papel && roles.includes(user.papel)
+    },
+    [user]
+  )
+
+  /**
+   * Retorna o papel do usuário atual ou null se não autenticado
+   */
+  const userRole = user?.papel || null
+
   const contextValue: AuthContextType = {
     user,
     accessToken,
@@ -131,6 +170,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElemen
     error,
     login,
     logout,
+    hasRole,
+    hasAnyRole,
+    userRole,
   }
 
   return (
