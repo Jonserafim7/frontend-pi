@@ -15,15 +15,18 @@ import { useToast } from "@/hooks/use-toast"
 import { TriangleAlert } from "lucide-react"
 import { getUsuariosControllerFindAllQueryKey } from "@/api-generated/client/usuarios/usuarios"
 import { useQueryClient } from "@tanstack/react-query"
+import type { UsuarioResponseDto } from "@/api-generated/model"
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
 
 interface DeleteUserAlertDialogProps {
-  userId: string
+  user: UsuarioResponseDto
   isOpen: boolean
   onOpenChange: (open: boolean) => void
 }
 
 export function DeleteUserAlertDialog({
-  userId,
+  user,
   isOpen,
   onOpenChange,
 }: DeleteUserAlertDialogProps) {
@@ -35,7 +38,7 @@ export function DeleteUserAlertDialog({
 
   const handleDeleteUser = () => {
     removeUser(
-      { id: userId },
+      { id: user.id },
       {
         onSuccess: () => {
           setConfirmationText("")
@@ -74,7 +77,7 @@ export function DeleteUserAlertDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <div className="flex items-center gap-2">
-            <TriangleAlert className="text-primary" />
+            <TriangleAlert className="text-destructive" />
             <AlertDialogTitle>
               Tem certeza que deseja remover o usuário?
             </AlertDialogTitle>
@@ -94,6 +97,12 @@ export function DeleteUserAlertDialog({
           <AlertDialogAction
             disabled={!isConfirmed}
             onClick={handleDeleteUser}
+            className={cn(
+              buttonVariants({
+                variant: "destructive",
+              }),
+              !isConfirmed && "cursor-not-allowed opacity-50",
+            )}
           >
             Remover
           </AlertDialogAction>

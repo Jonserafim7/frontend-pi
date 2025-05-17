@@ -7,10 +7,18 @@
  */
 
 export * from './auth-response-dto';
+export * from './coordenador-dto';
+export * from './coordenador-simplificado-dto';
+export * from './create-curso-dto';
 export * from './create-usuario-dto';
 export * from './create-usuario-dto-papel';
+export * from './curso-response-dto';
+export * from './curso-response-dto-coordenador';
+export * from './cursos-controller-find-all-params';
+export * from './cursos-controller-find-one-params';
 export * from './pagination-meta';
 export * from './sign-in-dto';
+export * from './update-curso-dto';
 export * from './update-usuario-dto';
 export * from './update-usuario-dto-papel';
 export * from './usuario-response-dto';

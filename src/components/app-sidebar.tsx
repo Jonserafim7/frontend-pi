@@ -123,9 +123,9 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     tooltip="Cursos"
-                    isActive={isPathActive("/cursos")}
+                    isActive={isPathActive("/diretor/cursos")}
                   >
-                    <Link to="/cursos">
+                    <Link to="/diretor/cursos">
                       <GraduationCapIcon />
                       <span>Cursos</span>
                     </Link>

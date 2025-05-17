@@ -83,7 +83,7 @@ export function DataTable<TData, TValue>({
                     return (
                       <TableHead
                         key={header.id}
-                        className="text-primary h-16 px-8 text-sm font-bold"
+                        className="text-primary h-12 px-8 text-sm font-bold"
                       >
                         {header.isPlaceholder ? null : (
                           flexRender(

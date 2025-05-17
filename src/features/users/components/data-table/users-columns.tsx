@@ -2,7 +2,7 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { type UsuarioResponseDto } from "@/api-generated/model"
 import { format } from "date-fns"
-import { UserActionRowDropdownMenu } from "../user-action-row-dropdown-menu"
+import { UserActionRowDropdownMenu } from "./user-action-row-dropdown-menu"
 
 /**
  * Definições de colunas para a tabela de usuários
@@ -47,7 +47,7 @@ export const usersColumns: ColumnDef<UsuarioResponseDto>[] = [
     cell: ({ row }) => {
       const usuario = row.original
 
-      return <UserActionRowDropdownMenu userId={usuario.id} />
+      return <UserActionRowDropdownMenu user={usuario} />
     },
   },
 ]

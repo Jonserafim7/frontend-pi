@@ -10,6 +10,7 @@ import PublicRoutes from "./public-routes"
 import { RoleBasedRedirect } from "@/features/auth/components/role-based-redirect"
 import { Illustration, NotFoundPage } from "../pages/not-found-page"
 import { AdminDashboard } from "@/features/admin/pages/admin-dashboard"
+import { CoursesListPage } from "@/features/courses/pages/courses-list-page"
 
 // Placeholders genéricos para cada tipo de usuário
 const DiretorDashboard = () => <div>Dashboard do Diretor (em breve)</div>
@@ -46,45 +47,71 @@ export function AppRoutes() {
           />
 
           {/* Rotas específicas por papel de usuário */}
-          <Route
-            path="/diretor"
-            element={
-              <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
-                <DiretorDashboard />
-              </RequireAuth>
-            }
-          />
+          <Route path="/admin">
+            <Route
+              index
+              element={
+                <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.ADMIN]}>
+                  <AdminDashboard />
+                </RequireAuth>
+              }
+            />
+          </Route>
 
-          <Route
-            path="/coordenador"
-            element={
-              <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}>
-                <CoordenadorDashboard />
-              </RequireAuth>
-            }
-          />
+          <Route path="/diretor">
+            <Route
+              index
+              element={
+                <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
+                  <DiretorDashboard />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="cursos"
+              element={
+                <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
+                  <CoursesListPage />
+                </RequireAuth>
+              }
+            />
+          </Route>
 
-          <Route
-            path="/professor"
-            element={
-              <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.PROFESSOR]}>
-                <ProfessorDashboard />
-              </RequireAuth>
-            }
-          />
+          <Route path="/coordenador">
+            <Route
+              index
+              element={
+                <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}>
+                  <CoordenadorDashboard />
+                </RequireAuth>
+              }
+            />
+          </Route>
 
-          <Route
-            path="/admin"
-            element={
-              <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.ADMIN]}>
-                <AdminDashboard />
-              </RequireAuth>
-            }
-          />
+          <Route path="/professor">
+            <Route
+              index
+              element={
+                <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.PROFESSOR]}>
+                  <ProfessorDashboard />
+                </RequireAuth>
+              }
+            />
+          </Route>
 
           <Route
             path="usuarios"
-            element={<UserListPage />}
+            element={
+              <RequireAuth
+                allowedRoles={[
+                  UsuarioResponseDtoPapel.ADMIN,
+                  UsuarioResponseDtoPapel.DIRETOR,
+                  UsuarioResponseDtoPapel.COORDENADOR,
+                ]}
+              >
+                <UserListPage />
+              </RequireAuth>
+            }
           />
         </Route>
       </Route>
