@@ -44,6 +44,7 @@ import { HeaderIconContainer } from "@/components/icon-container"
 import { Loader2, UserPen, UserPlus } from "lucide-react"
 import { PasswordInput } from "@/components/ui/password-input"
 import { useQueryClient } from "@tanstack/react-query"
+import type { UsuarioResponseDto } from "@/api-generated/model/usuario-response-dto"
 
 // Tipos inferidos dos schemas
 type CreateUserFormValues = z.infer<typeof usuariosControllerCreateBody>
@@ -59,7 +60,7 @@ const updateUserSchema = usuariosControllerUpdateBody
 interface CreateEditUserFormDialogProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
-  userId?: string
+  user?: UsuarioResponseDto
 }
 
 /**
@@ -68,7 +69,7 @@ interface CreateEditUserFormDialogProps {
 export function CreateEditUserFormDialog({
   isOpen,
   onOpenChange,
-  userId,
+  user,
 }: CreateEditUserFormDialogProps) {
   // Hooks
   const navigate = useNavigate()
@@ -76,11 +77,11 @@ export function CreateEditUserFormDialog({
   const { isAdmin } = useAuth()
   const { mutateAsync: mutateUpdate } = useUsuariosControllerUpdate()
   const { mutateAsync: mutateCreate } = useUsuariosControllerCreate()
-  const { data: userData } = useUsuariosControllerFindOne(userId ?? "")
+  const { data: userData } = useUsuariosControllerFindOne(user?.id ?? "")
   const queryClient = useQueryClient()
 
   // Estados
-  const [isEditMode] = useState(!!userId)
+  const [isEditMode] = useState(!!user)
 
   // Configuração do formulário
   const form = useForm<UserFormValues>({
@@ -95,7 +96,7 @@ export function CreateEditUserFormDialog({
 
   // Carrega os dados do usuário para edição
   useEffect(() => {
-    if (isEditMode && userId && userData) {
+    if (isEditMode && user && userData) {
       // Atualiza o formulário com os dados do usuário existente
       form.reset({
         nome: userData.nome || "",
@@ -112,34 +113,34 @@ export function CreateEditUserFormDialog({
         papel: UsuarioResponseDtoPapel.PROFESSOR,
       } as UserFormValues)
     }
-    
+
     // Limpa erros de validação
     form.clearErrors()
-  }, [isEditMode, userId, userData, form])
+  }, [isEditMode, user, userData, form])
 
   // Função para lidar com o envio do formulário
   const onSubmit = async (data: UserFormValues) => {
-    if (isEditMode && userId) {
+    if (isEditMode && user) {
       // Na edição, a senha é opcional
-      const updateData = data as UpdateUserFormValues;
-      
+      const updateData = data as UpdateUserFormValues
+
       // Criar payload apenas com os campos que foram alterados
-      const updatePayload: Partial<UpdateUserFormValues> = {};
-      
+      const updatePayload: Partial<UpdateUserFormValues> = {}
+
       // Adicionar apenas os campos que foram fornecidos
-      if (updateData.nome) updatePayload.nome = updateData.nome;
-      if (updateData.email) updatePayload.email = updateData.email;
-      if (updateData.papel) updatePayload.papel = updateData.papel;
-      
+      if (updateData.nome) updatePayload.nome = updateData.nome
+      if (updateData.email) updatePayload.email = updateData.email
+      if (updateData.papel) updatePayload.papel = updateData.papel
+
       // Se a senha foi fornecida e não está vazia, adicionar ao payload
-      if (updateData.senha && updateData.senha.trim() !== '') {
-        updatePayload.senha = updateData.senha;
+      if (updateData.senha && updateData.senha.trim() !== "") {
+        updatePayload.senha = updateData.senha
       }
 
       mutateUpdate(
-        { 
-          id: userId, 
-          data: updatePayload 
+        {
+          id: user.id,
+          data: updatePayload,
         },
         {
           onSuccess: () => {
@@ -157,8 +158,8 @@ export function CreateEditUserFormDialog({
       )
     } else {
       // Na criação, usamos o schema de criação que já valida a senha
-      const createData = data as CreateUserFormValues;
-      
+      const createData = data as CreateUserFormValues
+
       mutateCreate(
         { data: createData },
         {

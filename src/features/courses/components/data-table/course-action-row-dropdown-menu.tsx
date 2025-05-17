@@ -8,16 +8,17 @@ import {
 import { Button } from "@/components/ui/button"
 import { MoreHorizontalIcon, PenSquare, Trash } from "lucide-react"
 import { useState } from "react"
-import { DeleteUserAlertDialog } from "./delete-user-alert-dialog"
-import { CreateEditUserFormDialog } from "./create-edit-user-form-dialog"
+import { DeleteCourseAlertDialog } from "../delete-course-alert-dialog"
+import { CreateEditCourseFormDialog } from "../create-edit-course-form-dialog"
+import type { CursoResponseDto } from "@/api-generated/model"
 
-interface UserActionRowDropdownMenuProps {
-  userId: string
+interface CourseActionRowDropdownMenuProps {
+  course: CursoResponseDto
 }
 
-export function UserActionRowDropdownMenu({
-  userId,
-}: UserActionRowDropdownMenuProps) {
+export function CourseActionRowDropdownMenu({
+  course,
+}: CourseActionRowDropdownMenuProps) {
   const [isEditMenuOpen, setIsEditMenuOpen] = useState(false)
   const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false)
 
@@ -41,20 +42,20 @@ export function UserActionRowDropdownMenu({
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsDeleteMenuOpen(true)}>
             <Trash className="mr-2 h-4 w-4" />
-            Remover
+            Excluir
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DeleteUserAlertDialog
-        userId={userId}
+      <DeleteCourseAlertDialog
+        course={course}
         isOpen={isDeleteMenuOpen}
         onOpenChange={setIsDeleteMenuOpen}
       />
-      <CreateEditUserFormDialog
-        userId={userId}
+      <CreateEditCourseFormDialog
+        course={course}
         isOpen={isEditMenuOpen}
-        onOpenChange={() => setIsEditMenuOpen(false)}
+        onOpenChange={setIsEditMenuOpen}
       />
     </>
   )
