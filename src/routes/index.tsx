@@ -11,6 +11,7 @@ import { RoleBasedRedirect } from "@/features/auth/components/role-based-redirec
 import { Illustration, NotFoundPage } from "../pages/not-found-page"
 import { AdminDashboard } from "@/features/admin/pages/admin-dashboard"
 import { CoursesListPage } from "@/features/courses/pages/courses-list-page"
+import { ConfiguracoesHorarioPage } from "@/features/configuracoes-horario/pages/configuracoes-horario-page"
 
 // Placeholders genéricos para cada tipo de usuário
 const DiretorDashboard = () => <div>Dashboard do Diretor (em breve)</div>
@@ -72,6 +73,14 @@ export function AppRoutes() {
               element={
                 <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
                   <CoursesListPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="configuracoes-horario"
+              element={
+                <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
+                  <ConfiguracoesHorarioPage />
                 </RequireAuth>
               }
             />

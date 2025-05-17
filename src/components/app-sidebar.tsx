@@ -1,5 +1,6 @@
 import { Link } from "react-router"
 import {
+  CalendarCog,
   CalendarIcon,
   GraduationCapIcon,
   HomeIcon,
@@ -151,9 +152,9 @@ export function AppSidebar() {
                     tooltip="Horários"
                     isActive={isPathActive("/horarios")}
                   >
-                    <Link to="/horarios">
-                      <CalendarIcon />
-                      <span>Horários</span>
+                    <Link to="/diretor/configuracoes-horario">
+                      <CalendarCog />
+                      <span>Configurações de Horário</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
