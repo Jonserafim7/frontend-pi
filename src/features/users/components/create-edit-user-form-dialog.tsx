@@ -24,7 +24,6 @@ import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import { UsuarioResponseDtoPapel } from "@/api-generated/model/usuario-response-dto-papel"
 import {
-  useUsuariosControllerFindOne,
   useUsuariosControllerCreate,
   useUsuariosControllerUpdate,
   getUsuariosControllerFindAllQueryKey,
@@ -45,6 +44,7 @@ import { Loader2, UserPen, UserPlus } from "lucide-react"
 import { PasswordInput } from "@/components/ui/password-input"
 import { useQueryClient } from "@tanstack/react-query"
 import type { UsuarioResponseDto } from "@/api-generated/model/usuario-response-dto"
+import type { AxiosError } from "axios"
 
 // Tipos inferidos dos schemas
 type CreateUserFormValues = z.infer<typeof usuariosControllerCreateBody>
@@ -77,7 +77,6 @@ export function CreateEditUserFormDialog({
   const { isAdmin } = useAuth()
   const { mutateAsync: mutateUpdate } = useUsuariosControllerUpdate()
   const { mutateAsync: mutateCreate } = useUsuariosControllerCreate()
-  const { data: userData } = useUsuariosControllerFindOne(user?.id ?? "")
   const queryClient = useQueryClient()
 
   // Estados
@@ -96,13 +95,13 @@ export function CreateEditUserFormDialog({
 
   // Carrega os dados do usuário para edição
   useEffect(() => {
-    if (isEditMode && user && userData) {
+    if (isEditMode && user) {
       // Atualiza o formulário com os dados do usuário existente
       form.reset({
-        nome: userData.nome || "",
-        email: userData.email || "",
+        nome: user.nome || "",
+        email: user.email || "",
         // Não definimos a senha para manter a existente
-        papel: userData.papel || UsuarioResponseDtoPapel.PROFESSOR,
+        papel: user.papel || UsuarioResponseDtoPapel.PROFESSOR,
       } as UserFormValues)
     } else if (!isEditMode) {
       // Reseta para os valores padrão no modo de criação
@@ -116,7 +115,7 @@ export function CreateEditUserFormDialog({
 
     // Limpa erros de validação
     form.clearErrors()
-  }, [isEditMode, user, userData, form])
+  }, [isEditMode, user, form])
 
   // Função para lidar com o envio do formulário
   const onSubmit = async (data: UserFormValues) => {
@@ -154,6 +153,15 @@ export function CreateEditUserFormDialog({
               queryKey: getUsuariosControllerFindAllQueryKey(),
             })
           },
+          onError: (error: AxiosError) => {
+            const errorMessage =
+              error?.request.response || "Ocorreu um erro ao atualizar o usuário"
+            toast({
+              title: "Erro ao atualizar usuário",
+              description: errorMessage,
+              variant: "destructive",
+            })
+          },
         },
       )
     } else {
@@ -173,6 +181,15 @@ export function CreateEditUserFormDialog({
             onOpenChange(false)
             queryClient.invalidateQueries({
               queryKey: getUsuariosControllerFindAllQueryKey(),
+            })
+          },
+          onError: (error: AxiosError) => {
+            const errorMessage =
+              error?.request.response || "Ocorreu um erro ao criar o usuário"
+            toast({
+              title: "Erro ao criar usuário",
+              description: errorMessage,
+              variant: "destructive",
             })
           },
         },

@@ -43,6 +43,7 @@ import {
 } from "@/api-generated/zod-schemas/cursos/cursos"
 import { z } from "zod"
 import { HeaderIconContainer } from "@/components/icon-container"
+import type { AxiosError } from "axios"
 
 // Tipos inferidos dos schemas
 type CourseFormValues = z.infer<typeof cursosControllerCreateBody>
@@ -119,8 +120,8 @@ export function CreateEditCourseFormDialog({
 
   // Atualiza a lista de coordenadores quando os dados forem carregados
   useEffect(() => {
-    if (usersData?.data) {
-      setCoordinators(usersData.data)
+    if (usersData) {
+      setCoordinators(usersData)
     }
   }, [usersData])
 
@@ -144,9 +145,9 @@ export function CreateEditCourseFormDialog({
             })
             onOpenChange(false)
           },
-          onError: (error) => {
+          onError: (error: AxiosError) => {
             const errorMessage =
-              error?.message || "Ocorreu um erro ao atualizar o curso"
+              error?.request.response || "Ocorreu um erro ao atualizar o curso"
             toast({
               title: "Erro ao atualizar curso",
               description: errorMessage,
@@ -170,9 +171,9 @@ export function CreateEditCourseFormDialog({
             })
             onOpenChange(false)
           },
-          onError: (error) => {
+          onError: (error: AxiosError) => {
             const errorMessage =
-              error?.message || "Ocorreu um erro ao criar o curso"
+              error?.request.response || "Ocorreu um erro ao criar o curso"
             toast({
               title: "Erro ao criar curso",
               description: errorMessage,

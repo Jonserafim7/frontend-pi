@@ -10,6 +10,7 @@ import { useNavigate } from "react-router"
 import type { AuthResponseDto } from "@/api-generated/model"
 import { UsuarioResponseDtoPapel } from "@/api-generated/model/usuario-response-dto-papel"
 import { useAuthControllerSignIn } from "@/api-generated/client/auth/auth"
+import { queryClient } from "@/lib/react-query"
 
 /**
  * Interface representando o estado e métodos do contexto de autenticação
@@ -140,6 +141,9 @@ export const AuthProvider = ({
     // Reset state
     setAccessToken(null)
     setUser(null)
+
+    //clear react query cache
+    queryClient.clear()
 
     // Redirect to login page
     navigate("/login")

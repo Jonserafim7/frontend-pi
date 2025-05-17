@@ -21,7 +21,7 @@ export function UsersDataTable() {
     return <div>Erro ao carregar usuários</div>
   }
 
-  const users = usersResponseOrval?.data || []
+  const users = usersResponseOrval || []
 
   return (
     <DataTable
