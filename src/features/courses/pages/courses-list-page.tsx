@@ -13,7 +13,7 @@ export function CoursesListPage() {
     useState(false)
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="container mx-auto flex flex-col gap-8 p-12">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <HeaderIconContainer Icon={GraduationCapIcon} />

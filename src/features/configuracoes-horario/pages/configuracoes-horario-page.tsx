@@ -1,89 +1,24 @@
-import { ConfiguracaoHorarioForm } from "../components/configuracao-horario-form"
-import {
-  useConfiguracoesHorarioControllerGet,
-  useConfiguracoesHorarioControllerUpsert,
-} from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
-import type { UpsertConfiguracaoHorarioDto } from "@/api-generated/model"
-import { toast } from "sonner"
-import { CalendarCog, Loader2 } from "lucide-react"
-
-interface ApiError {
-  message?: string
-  response?: {
-    data?: {
-      message?: string
-      error?: string
-      statusCode?: number
-    }
-  }
-}
-
+import { CalendarCog, Clock, Sun, Sunset, Moon, Settings2, GraduationCap } from "lucide-react"
+import { HeaderIconContainer } from "@/components/icon-container"
+import { DuracaoAulasForm } from "../components/duracao-aulas-form"
+import { QuantidadeAulasForm } from "../components/quantidade-aulas-form"
+import { HorarioInicioTurnoForm } from "../components/horario-inicio-turno-form"
+import { TurnoHorariosDetalhes } from "../components/turno-horarios-detalhes"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 /**
  * Página para gerenciar as configurações globais de horário.
  * Apenas acessível por usuários com o papel de DIRETOR.
  */
 export function ConfiguracoesHorarioPage() {
-  const {
-    data: configuracaoAtual,
-    isLoading: isLoadingGet,
-    error: errorGet,
-  } = useConfiguracoesHorarioControllerGet({})
-
-  const {
-    mutateAsync: upsertConfiguracao,
-    isPending: isSubmitting,
-    error: errorUpsert,
-  } = useConfiguracoesHorarioControllerUpsert()
-
-  const handleSubmit = async (data: UpsertConfiguracaoHorarioDto) => {
-    try {
-      await upsertConfiguracao({ data })
-      toast.success("Sucesso!", {
-        description: "Configurações de horário salvas com sucesso.",
-      })
-    } catch {
-      const upsertError = errorUpsert as ApiError | null
-      const errorMessage =
-        upsertError?.response?.data?.message ||
-        upsertError?.message ||
-        "Não foi possível salvar as configurações. Tente novamente."
-      toast.error("Erro ao Salvar", {
-        description: errorMessage,
-      })
-    }
-  }
-
-  if (isLoadingGet) {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <Loader2 className="text-primary h-8 w-8 animate-spin" />
-        <p className="ml-2 text-lg">Carregando configurações...</p>
-      </div>
-    )
-  }
-
-  if (errorGet) {
-    const getError = errorGet as ApiError | null
-    const errorMessage =
-      getError?.response?.data?.message ||
-      getError?.message ||
-      "Tente recarregar a página."
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center text-red-600">
-        <p className="text-xl font-semibold">Erro ao carregar configurações</p>
-        <p>{errorMessage}</p>
-      </div>
-    )
-  }
-
   return (
-    <div className="flex flex-col gap-8">
+    <div className="container mx-auto py-8 px-4 lg:px-8 space-y-8">
+      {/* Cabeçalho da página */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-primary flex h-12 w-12 items-center justify-center rounded-lg">
-            <CalendarCog className="h-6 w-6" />
-          </div>
-          <div>
+          <HeaderIconContainer Icon={CalendarCog} />
+          <div className="flex flex-col gap-1">
             <h1 className="text-2xl font-bold">
               Configurações Globais de Horário
             </h1>
@@ -95,12 +30,115 @@ export function ConfiguracoesHorarioPage() {
         </div>
       </div>
 
-      <div className="max-w-4xl">
-        <ConfiguracaoHorarioForm
-          valoresIniciais={configuracaoAtual || null}
-          onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Área de configurações gerais - ocupa 5/12 em telas grandes */}
+        <div className="lg:col-span-5 space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Settings2 className="h-5 w-5 text-primary" />
+                <CardTitle>Configurações Gerais</CardTitle>
+              </div>
+              <CardDescription>
+                Parâmetros globais que afetam todos os turnos e horários
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="rounded-lg border p-4">
+                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4 text-primary" />
+                  Duração e Quantidade de Aulas
+                </h3>
+                <div className="space-y-4">
+                  <DuracaoAulasForm />
+                  <Separator />
+                  <QuantidadeAulasForm />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-primary" />
+                <CardTitle>Horários de Início dos Turnos</CardTitle>
+              </div>
+              <CardDescription>
+                Configure o horário de início para cada turno
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="rounded-lg border p-4 flex flex-col gap-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Sun className="h-4 w-4 text-amber-500" />
+                  <h4 className="font-medium">Turno da Manhã</h4>
+                </div>
+                <HorarioInicioTurnoForm turno="manha" />
+              </div>
+              
+              <div className="rounded-lg border p-4 flex flex-col gap-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Sunset className="h-4 w-4 text-orange-500" />
+                  <h4 className="font-medium">Turno da Tarde</h4>
+                </div>
+                <HorarioInicioTurnoForm turno="tarde" />
+              </div>
+              
+              <div className="rounded-lg border p-4 flex flex-col gap-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Moon className="h-4 w-4 text-indigo-500" />
+                  <h4 className="font-medium">Turno da Noite</h4>
+                </div>
+                <HorarioInicioTurnoForm turno="noite" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Área de visualização dos horários - ocupa 7/12 em telas grandes */}
+        <div className="lg:col-span-7">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <CalendarCog className="h-5 w-5 text-primary" />
+                <CardTitle>Visualização dos Horários</CardTitle>
+              </div>
+              <CardDescription>
+                Veja como as configurações afetam os horários de cada turno
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="manha" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="manha" className="flex items-center gap-1">
+                    <Sun className="h-4 w-4" />
+                    <span>Manhã</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="tarde" className="flex items-center gap-1">
+                    <Sunset className="h-4 w-4" />
+                    <span>Tarde</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="noite" className="flex items-center gap-1">
+                    <Moon className="h-4 w-4" />
+                    <span>Noite</span>
+                  </TabsTrigger>
+                </TabsList>
+                <div className="mt-4">
+                  <TabsContent value="manha">
+                    <TurnoHorariosDetalhes turno="manha" />
+                  </TabsContent>
+                  <TabsContent value="tarde">
+                    <TurnoHorariosDetalhes turno="tarde" />
+                  </TabsContent>
+                  <TabsContent value="noite">
+                    <TurnoHorariosDetalhes turno="noite" />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

@@ -12,9 +12,10 @@ import { Illustration, NotFoundPage } from "../pages/not-found-page"
 import { AdminDashboard } from "@/features/admin/pages/admin-dashboard"
 import { CoursesListPage } from "@/features/courses/pages/courses-list-page"
 import { ConfiguracoesHorarioPage } from "@/features/configuracoes-horario/pages/configuracoes-horario-page"
+import { DashboardDiretor } from "@/features/configuracoes-horario/pages/dashboard-diretor"
+import { DiretorHelpPage } from "@/features/ajuda/pages/diretor-help-page"
 
 // Placeholders genéricos para cada tipo de usuário
-const DiretorDashboard = () => <div>Dashboard do Diretor (em breve)</div>
 const CoordenadorDashboard = () => <div>Dashboard do Coordenador (em breve)</div>
 const ProfessorDashboard = () => <div>Dashboard do Professor (em breve)</div>
 
@@ -64,7 +65,7 @@ export function AppRoutes() {
               index
               element={
                 <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
-                  <DiretorDashboard />
+                  <DashboardDiretor />
                 </RequireAuth>
               }
             />
@@ -81,6 +82,14 @@ export function AppRoutes() {
               element={
                 <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
                   <ConfiguracoesHorarioPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="ajuda"
+              element={
+                <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
+                  <DiretorHelpPage />
                 </RequireAuth>
               }
             />

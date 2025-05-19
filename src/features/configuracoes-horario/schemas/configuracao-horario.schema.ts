@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { parse, isAfter, isEqual } from "date-fns"
+import { parse, isAfter, isEqual, addMinutes } from "date-fns"
 
 const timeSchema = z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
   message: "Horário deve estar no formato HH:mm",
@@ -15,78 +15,70 @@ export const configuracaoHorarioSchema = z
       .int({ message: "Duração da aula deve ser um número inteiro." })
       .positive({ message: "Duração da aula deve ser positiva." })
       .min(1, { message: "Duração da aula deve ser de no mínimo 1 minuto." }),
-    qtdAulasPorBloco: z
+    numeroAulasPorTurno: z
       .number({
-        required_error: "Quantidade de aulas por bloco é obrigatória.",
-        invalid_type_error: "Quantidade de aulas por bloco deve ser um número.",
+        required_error: "Número de aulas por turno é obrigatório.",
+        invalid_type_error: "Número de aulas por turno deve ser um número.",
       })
       .int({
-        message: "Quantidade de aulas por bloco deve ser um número inteiro.",
+        message: "Número de aulas por turno deve ser um número inteiro.",
       })
-      .positive({ message: "Quantidade de aulas por bloco deve ser positiva." })
-      .min(1, { message: "Quantidade de aulas por bloco deve ser no mínimo 1." }),
+      .positive({ message: "Número de aulas por turno deve ser positivo." })
+      .min(1, { message: "Número de aulas por turno deve ser no mínimo 1." }),
     inicioTurnoManha: timeSchema,
-    fimTurnoManha: timeSchema,
     inicioTurnoTarde: timeSchema,
-    fimTurnoTarde: timeSchema,
     inicioTurnoNoite: timeSchema,
-    fimTurnoNoite: timeSchema,
   })
   .superRefine((data, ctx) => {
     const referenceDate = new Date() // Usada para parsear HH:mm para objetos Date
 
-    // Validações de consistência para o turno da MANHÃ
+    // Parse dos horários de início
     const inicioManha = parse(data.inicioTurnoManha, "HH:mm", referenceDate)
-    const fimManha = parse(data.fimTurnoManha, "HH:mm", referenceDate)
-    if (isAfter(inicioManha, fimManha) || isEqual(inicioManha, fimManha)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message:
-          "O horário de término do turno da manhã deve ser após o horário de início.",
-        path: ["fimTurnoManha"], // Associa o erro ao campo fimTurnoManha
-      })
-    }
-
-    // Validações de consistência para o turno da TARDE
     const inicioTarde = parse(data.inicioTurnoTarde, "HH:mm", referenceDate)
-    const fimTarde = parse(data.fimTurnoTarde, "HH:mm", referenceDate)
-    if (isAfter(inicioTarde, fimTarde) || isEqual(inicioTarde, fimTarde)) {
+    const inicioNoite = parse(data.inicioTurnoNoite, "HH:mm", referenceDate)
+
+    // Validação da ordem dos horários de início dos turnos
+    if (isAfter(inicioManha, inicioTarde) || isEqual(inicioManha, inicioTarde)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message:
-          "O horário de término do turno da tarde deve ser após o horário de início.",
-        path: ["fimTurnoTarde"],
+          "O horário de início do turno da tarde deve ser após o horário de início do turno da manhã.",
+        path: ["inicioTurnoTarde"],
+      })
+    }
+    if (isAfter(inicioTarde, inicioNoite) || isEqual(inicioTarde, inicioNoite)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "O horário de início do turno da noite deve ser após o horário de início do turno da tarde.",
+        path: ["inicioTurnoNoite"],
       })
     }
 
-    // Validação entre MANHÃ e TARDE
-    if (isAfter(fimManha, inicioTarde)) {
+    // Cálculo dos horários de fim dos turnos
+    const duracaoTotalAulasMinutos =
+      data.numeroAulasPorTurno * data.duracaoAulaMinutos
+
+    const fimManhaCalculado = addMinutes(inicioManha, duracaoTotalAulasMinutos)
+    const fimTardeCalculado = addMinutes(inicioTarde, duracaoTotalAulasMinutos)
+
+    // Validação de sobreposição entre turnos (usando horários de fim calculados)
+    // Manhã -> Tarde
+    if (isAfter(fimManhaCalculado, inicioTarde)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message:
-          "O início do turno da tarde não pode ser antes do término do turno da manhã.",
+          "O término calculado do turno da manhã (baseado na duração e número de aulas) não pode ser após o início do turno da tarde.",
         path: ["inicioTurnoTarde"],
       })
     }
 
-    // Validações de consistência para o turno da NOITE
-    const inicioNoite = parse(data.inicioTurnoNoite, "HH:mm", referenceDate)
-    const fimNoite = parse(data.fimTurnoNoite, "HH:mm", referenceDate)
-    if (isAfter(inicioNoite, fimNoite) || isEqual(inicioNoite, fimNoite)) {
+    // Tarde -> Noite
+    if (isAfter(fimTardeCalculado, inicioNoite)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message:
-          "O horário de término do turno da noite deve ser após o horário de início.",
-        path: ["fimTurnoNoite"],
-      })
-    }
-
-    // Validação entre TARDE e NOITE
-    if (isAfter(fimTarde, inicioNoite)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message:
-          "O início do turno da noite não pode ser antes do término do turno da tarde.",
+          "O término calculado do turno da tarde (baseado na duração e número de aulas) não pode ser após o início do turno da noite.",
         path: ["inicioTurnoNoite"],
       })
     }
