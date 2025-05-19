@@ -1,7 +1,9 @@
 import { Link } from "react-router"
 import {
+  CalendarCog,
   CalendarIcon,
   GraduationCapIcon,
+  HelpCircle,
   HomeIcon,
   LogOut,
   UsersIcon,
@@ -115,51 +117,72 @@ export function AppSidebar() {
 
         {/* Menu para Diretores */}
         {isDiretor() && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Gestão</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip="Cursos"
-                    isActive={isPathActive("/diretor/cursos")}
-                  >
-                    <Link to="/diretor/cursos">
-                      <GraduationCapIcon />
-                      <span>Cursos</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+          <>
+            <SidebarGroup>
+              <SidebarGroupLabel>Gestão</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip="Cursos"
+                      isActive={isPathActive("/diretor/cursos")}
+                    >
+                      <Link to="/diretor/cursos">
+                        <GraduationCapIcon />
+                        <span>Cursos</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
 
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip="Usuários"
-                    isActive={isPathActive("/usuarios")}
-                  >
-                    <Link to="/usuarios">
-                      <UsersIcon />
-                      <span>Usuários</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip="Usuários"
+                      isActive={isPathActive("/usuarios")}
+                    >
+                      <Link to="/usuarios">
+                        <UsersIcon />
+                        <span>Usuários</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
 
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip="Horários"
-                    isActive={isPathActive("/horarios")}
-                  >
-                    <Link to="/horarios">
-                      <CalendarIcon />
-                      <span>Horários</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip="Horários"
+                      isActive={isPathActive("/diretor/configuracoes-horario")}
+                    >
+                      <Link to="/diretor/configuracoes-horario">
+                        <CalendarCog />
+                        <span>Configurações de Horário</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarGroup className="mt-auto">
+              <SidebarGroupLabel>Ajuda</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip="Ajuda"
+                      isActive={isPathActive("/diretor/ajuda")}
+                    >
+                      <Link to="/diretor/ajuda">
+                        <HelpCircle />
+                        <span>Ajuda</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
         )}
 
         {/* Menu para Coordenadores */}
@@ -248,7 +271,7 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="border-t">
         <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
