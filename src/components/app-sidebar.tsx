@@ -8,6 +8,7 @@ import {
   HomeIcon,
   LogOut,
   UsersIcon,
+  BookText,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import {
@@ -209,10 +210,10 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     tooltip="Disciplinas"
-                    isActive={isPathActive("/disciplinas")}
+                    isActive={isPathActive("/coordenador/disciplinas")}
                   >
-                    <Link to="/disciplinas">
-                      <GraduationCapIcon />
+                    <Link to="/coordenador/disciplinas">
+                      <BookText />
                       <span>Disciplinas</span>
                     </Link>
                   </SidebarMenuButton>
@@ -222,9 +223,9 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     tooltip="Professores"
-                    isActive={isPathActive("/professores")}
+                    isActive={isPathActive("/usuarios")}
                   >
-                    <Link to="/professores">
+                    <Link to="/usuarios">
                       <UsersIcon />
                       <span>Professores</span>
                     </Link>

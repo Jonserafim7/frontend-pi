@@ -17,7 +17,7 @@ export function CoursesListPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <HeaderIconContainer Icon={GraduationCapIcon} />
-          <div>
+          <div className="flex flex-col gap-1">
             <h1 className="text-2xl font-bold">Cursos</h1>
             <p className="text-muted-foreground">Gerencie os cursos do sistema</p>
           </div>
