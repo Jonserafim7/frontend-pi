@@ -17,7 +17,7 @@ export function UserListPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <HeaderIconContainer Icon={Users} />
-          <div>
+          <div className="flex flex-col gap-1">
             <h1 className="text-2xl font-bold">Usuários</h1>
             <p className="text-muted-foreground">
               Lista de todos os usuários do sistema
