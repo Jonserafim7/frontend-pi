@@ -1,5 +1,6 @@
 import { Link } from "react-router"
 import {
+  BookOpenCheck as BookOpenCheckIcon,
   CalendarCog,
   CalendarIcon,
   GraduationCapIcon,
@@ -191,6 +192,19 @@ export function AppSidebar() {
             <SidebarGroupLabel>Coordenação</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Matrizes Curriculares"
+                    isActive={isPathActive("/coordenador/matrizes-curriculares")}
+                  >
+                    <Link to="/coordenador/matrizes-curriculares">
+                      <BookOpenCheckIcon />
+                      <span>Matrizes Curriculares</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
