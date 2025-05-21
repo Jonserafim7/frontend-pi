@@ -17,6 +17,7 @@ import { DiretorHelpPage } from "@/features/ajuda/pages/diretor-help-page"
 import { MatrizesCurricularesListPage } from "@/features/matrizes-curriculares/pages/matrizes-curriculares-list-page"
 import { MatrizCurricularDetailsPage } from "@/features/matrizes-curriculares/pages/matriz-curricular-details-page"
 import { DisciplinasListPage } from "@/features/disciplinas/pages/disciplinas-list-page"
+import { DisciplinasOfertadasListPage } from "@/features/disciplinas-ofertadas/pages/disciplinas-ofertadas-list-page"
 
 // Placeholders genéricos para cada tipo de usuário
 const CoordenadorDashboard = () => <div>Dashboard do Coordenador (em breve)</div>
@@ -138,6 +139,19 @@ export function AppRoutes() {
                     allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
                   >
                     <DisciplinasListPage />
+                  </RequireAuth>
+                }
+              />
+            </Route>
+
+            <Route path="disciplinas-ofertadas">
+              <Route
+                index
+                element={
+                  <RequireAuth
+                    allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
+                  >
+                    <DisciplinasOfertadasListPage />
                   </RequireAuth>
                 }
               />

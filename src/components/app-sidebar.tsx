@@ -9,6 +9,7 @@ import {
   LogOut,
   UsersIcon,
   BookText,
+  Calendar,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import {
@@ -215,6 +216,19 @@ export function AppSidebar() {
                     <Link to="/coordenador/disciplinas">
                       <BookText />
                       <span>Disciplinas</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Disciplinas Ofertadas"
+                    isActive={isPathActive("/coordenador/disciplinas-ofertadas")}
+                  >
+                    <Link to="/coordenador/disciplinas-ofertadas">
+                      <Calendar />
+                      <span>Disciplinas Ofertadas</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
