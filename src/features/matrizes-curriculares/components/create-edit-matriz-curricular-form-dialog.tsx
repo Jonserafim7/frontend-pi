@@ -24,6 +24,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
+  getMatrizesCurricularesControllerFindAllQueryKey,
   useMatrizesCurricularesControllerCreate,
   useMatrizesCurricularesControllerFindAll,
   useMatrizesCurricularesControllerUpdate,
@@ -37,29 +38,6 @@ import {
 } from "@/components/ui/select"
 import { useCursosControllerFindAll } from "@/api-generated/client/cursos/cursos"
 import { ScrollArea } from "@/components/ui/scroll-area"
-// Dados mockados para as disciplinas enquanto o módulo de disciplinas não é implementado
-const DISCIPLINAS_MOCK = [
-  { id: "1", nome: "Cálculo I", codigo: "MAT101", cargaHoraria: 60 },
-  {
-    id: "2",
-    nome: "Programação Orientada a Objetos",
-    codigo: "INF201",
-    cargaHoraria: 80,
-  },
-  { id: "3", nome: "Banco de Dados", codigo: "INF301", cargaHoraria: 60 },
-  { id: "4", nome: "Estrutura de Dados", codigo: "INF202", cargaHoraria: 80 },
-  {
-    id: "5",
-    nome: "Inteligência Artificial",
-    codigo: "INF401",
-    cargaHoraria: 60,
-  },
-  { id: "6", nome: "Engenharia de Software", codigo: "INF302", cargaHoraria: 80 },
-  { id: "7", nome: "Redes de Computadores", codigo: "INF303", cargaHoraria: 60 },
-  { id: "8", nome: "Sistemas Operacionais", codigo: "INF304", cargaHoraria: 60 },
-  { id: "9", nome: "Computação Gráfica", codigo: "INF402", cargaHoraria: 60 },
-  { id: "10", nome: "Desenvolvimento Web", codigo: "INF403", cargaHoraria: 80 },
-]
 import {
   Command,
   CommandEmpty,
@@ -73,6 +51,8 @@ import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { matrizesCurricularesControllerCreateBody } from "@/api-generated/zod-schemas/matrizes-curriculares/matrizes-curriculares"
+import { useDisciplinasControllerFindAll } from "@/api-generated/client/disciplinas/disciplinas"
+import { useQueryClient } from "@tanstack/react-query"
 
 /**
  * Schema de validação para o formulário de matriz curricular
@@ -106,22 +86,21 @@ export function CreateEditMatrizCurricularFormDialog({
   matrizCurricularId,
 }: CreateEditMatrizCurricularFormDialogProps) {
   const isEditMode = !!matrizCurricularId
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedDisciplinas, setSelectedDisciplinas] = useState<string[]>([])
   const [commandOpen, setCommandOpen] = useState(false)
 
   const { toast } = useToast()
   const { data: cursosData } = useCursosControllerFindAll({})
-  // Usando os dados mockados ao invés de chamar a API
-  const disciplinasData = { data: DISCIPLINAS_MOCK }
+  const { data: disciplinasData } = useDisciplinasControllerFindAll({})
   const { data: matrizCurricularData } = useMatrizesCurricularesControllerFindAll(
     {},
   )
 
-  const { mutateAsync: createMatrizCurricular } =
+  const { mutate: createMatrizCurricular } =
     useMatrizesCurricularesControllerCreate()
-  const { mutateAsync: updateMatrizCurricular } =
+  const { mutate: updateMatrizCurricular } =
     useMatrizesCurricularesControllerUpdate()
+  const queryClient = useQueryClient()
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -156,51 +135,77 @@ export function CreateEditMatrizCurricularFormDialog({
   /**
    * Manipula o envio do formulário
    */
-  async function onSubmit(data: FormData) {
-    try {
-      setIsSubmitting(true)
-
-      if (isEditMode) {
-        await updateMatrizCurricular({
+  function onSubmit(data: FormData) {
+    if (isEditMode) {
+      updateMatrizCurricular(
+        {
           id: matrizCurricularId,
           data: {
             nome: data.nome,
             idCurso: data.idCurso,
             disciplinasIds: data.disciplinasIds,
           },
-        })
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Matriz curricular atualizada com sucesso",
+              description: `A matriz curricular "${data.nome}" foi atualizada.`,
+            })
+            queryClient.invalidateQueries({
+              queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
+            })
+            onOpenChange(false)
+            form.reset()
+          },
+          onError: (error) => {
+            toast({
+              title: "Erro ao atualizar matriz curricular",
+              description:
+                error?.message || "Erro ao atualizar matriz curricular",
+              variant: "destructive",
+            })
+          },
+        },
+      )
 
-        toast({
-          title: "Matriz curricular atualizada com sucesso",
-          description: `A matriz curricular "${data.nome}" foi atualizada.`,
-        })
-      } else {
-        await createMatrizCurricular({
+      toast({
+        title: "Matriz curricular atualizada com sucesso",
+        description: `A matriz curricular "${data.nome}" foi atualizada.`,
+      })
+    } else {
+      createMatrizCurricular(
+        {
           data: {
             nome: data.nome,
             idCurso: data.idCurso,
             disciplinasIds: data.disciplinasIds,
           },
-        })
-
-        toast({
-          title: "Matriz curricular criada com sucesso",
-          description: `A matriz curricular "${data.nome}" foi criada.`,
-        })
-      }
-
-      onOpenChange(false)
-    } catch (error) {
-      console.error("Erro ao salvar matriz curricular:", error)
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar matriz curricular",
-        description:
-          "Ocorreu um erro ao tentar salvar a matriz curricular. Tente novamente.",
-      })
-    } finally {
-      setIsSubmitting(false)
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Matriz curricular criada com sucesso",
+              description: `A matriz curricular "${data.nome}" foi criada.`,
+            })
+            queryClient.invalidateQueries({
+              queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
+            })
+            onOpenChange(false)
+            form.reset()
+          },
+          onError: (error) => {
+            toast({
+              title: "Erro ao criar matriz curricular",
+              description: error?.message || "Erro ao criar matriz curricular",
+              variant: "destructive",
+            })
+          },
+        },
+      )
     }
+
+    onOpenChange(false)
   }
 
   /**
@@ -224,8 +229,7 @@ export function CreateEditMatrizCurricularFormDialog({
     if (!selectedDisciplinas.length) return null
 
     const selectedDisciplinasData =
-      disciplinasData?.data?.filter((d) => selectedDisciplinas.includes(d.id)) ||
-      []
+      disciplinasData?.filter((d) => selectedDisciplinas.includes(d.id)) || []
 
     return (
       <div className="mt-2 flex flex-wrap gap-2">
@@ -354,7 +358,7 @@ export function CreateEditMatrizCurricularFormDialog({
                           </CommandEmpty>
                           <ScrollArea className="h-[300px]">
                             <CommandGroup>
-                              {disciplinasData?.data?.map((disciplina) => (
+                              {disciplinasData?.map((disciplina) => (
                                 <CommandItem
                                   key={disciplina.id}
                                   value={disciplina.id}
@@ -390,15 +394,15 @@ export function CreateEditMatrizCurricularFormDialog({
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                disabled={isSubmitting}
+                disabled={form.formState.isSubmitting}
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={form.formState.isSubmitting}
               >
-                {isSubmitting ?
+                {form.formState.isSubmitting ?
                   isEditMode ?
                     "Salvando..."
                   : "Criando..."
