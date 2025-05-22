@@ -18,6 +18,7 @@ import { MatrizesCurricularesListPage } from "@/features/matrizes-curriculares/p
 import { MatrizCurricularDetailsPage } from "@/features/matrizes-curriculares/pages/matriz-curricular-details-page"
 import { DisciplinasListPage } from "@/features/disciplinas/pages/disciplinas-list-page"
 import { DisciplinasOfertadasListPage } from "@/features/disciplinas-ofertadas/pages/disciplinas-ofertadas-list-page"
+import { PeriodosLetivosListPage } from "@/features/periodos-letivos/pages/periodos-letivos-list-page"
 
 // Placeholders genéricos para cada tipo de usuário
 const CoordenadorDashboard = () => <div>Dashboard do Coordenador (em breve)</div>
@@ -73,6 +74,16 @@ export function AppRoutes() {
                 </RequireAuth>
               }
             />
+            <Route path="periodos-letivos">
+              <Route
+                index
+                element={
+                  <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
+                    <PeriodosLetivosListPage />
+                  </RequireAuth>
+                }
+              />
+            </Route>
             <Route
               path="cursos"
               element={

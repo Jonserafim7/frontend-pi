@@ -10,6 +10,7 @@ import {
   UsersIcon,
   BookText,
   Calendar,
+  CalendarDays,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import {
@@ -125,6 +126,18 @@ export function AppSidebar() {
               <SidebarGroupLabel>Gestão</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip="Períodos Letivos"
+                      isActive={isPathActive("/diretor/periodos-letivos")}
+                    >
+                      <Link to="/diretor/periodos-letivos">
+                        <CalendarDays />
+                        <span>Períodos Letivos</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
