@@ -11,6 +11,7 @@ import {
   BookText,
   Calendar,
   CalendarDays,
+  Clock,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import {
@@ -249,6 +250,19 @@ export function AppSidebar() {
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
+                    tooltip="Disponibilidades"
+                    isActive={isPathActive("/coordenador/disponibilidades")}
+                  >
+                    <Link to="/coordenador/disponibilidades">
+                      <Clock />
+                      <span>Disponibilidades</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
                     tooltip="Professores"
                     isActive={isPathActive("/usuarios")}
                   >
@@ -282,6 +296,19 @@ export function AppSidebar() {
             <SidebarGroupLabel>Professor</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Disponibilidades"
+                    isActive={isPathActive("/professor/disponibilidades")}
+                  >
+                    <Link to="/professor/disponibilidades">
+                      <Clock />
+                      <span>Disponibilidades</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
