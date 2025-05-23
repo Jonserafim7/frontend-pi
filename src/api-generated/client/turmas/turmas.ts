@@ -6,24 +6,286 @@
  * OpenAPI spec version: 1.0
  */
 import {
+  useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
-  TurmaResponseDto
+  AtribuirProfessorDto,
+  CreateTurmaDto,
+  TurmaResponseDto,
+  TurmasControllerFindAllParams,
+  UpdateTurmaDto
 } from '../../model';
 
 import { orvalCustomInstance } from '../../../lib/orval-axios-instance';
-import type { ErrorType } from '../../../lib/orval-axios-instance';
+import type { ErrorType , BodyType } from '../../../lib/orval-axios-instance';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+
+/**
+ * @summary Criar uma nova turma (Coordenador)
+ */
+export const turmasControllerCreate = (
+    createTurmaDto: BodyType<CreateTurmaDto>,
+ options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalCustomInstance<TurmaResponseDto>(
+      {url: `/turmas`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createTurmaDto, signal
+    },
+      options);
+    }
+  
+
+
+export const getTurmasControllerCreateMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerCreate>>, TError,{data: BodyType<CreateTurmaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof turmasControllerCreate>>, TError,{data: BodyType<CreateTurmaDto>}, TContext> => {
+
+const mutationKey = ['turmasControllerCreate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof turmasControllerCreate>>, {data: BodyType<CreateTurmaDto>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  turmasControllerCreate(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TurmasControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof turmasControllerCreate>>>
+    export type TurmasControllerCreateMutationBody = BodyType<CreateTurmaDto>
+    export type TurmasControllerCreateMutationError = ErrorType<void>
+
+    /**
+ * @summary Criar uma nova turma (Coordenador)
+ */
+export const useTurmasControllerCreate = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerCreate>>, TError,{data: BodyType<CreateTurmaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof turmasControllerCreate>>,
+        TError,
+        {data: BodyType<CreateTurmaDto>},
+        TContext
+      > => {
+
+      const mutationOptions = getTurmasControllerCreateMutationOptions(options);
+
+      return useMutation(mutationOptions );
+    }
+    /**
+ * @summary Listar turmas com filtros (Coordenador, Diretor)
+ */
+export const turmasControllerFindAll = (
+    params?: TurmasControllerFindAllParams,
+ options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalCustomInstance<TurmaResponseDto[]>(
+      {url: `/turmas`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getTurmasControllerFindAllQueryKey = (params?: TurmasControllerFindAllParams,) => {
+    return ['turmas', ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getTurmasControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof turmasControllerFindAll>>, TError = ErrorType<unknown>>(params?: TurmasControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof turmasControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTurmasControllerFindAllQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof turmasControllerFindAll>>> = ({ signal }) => turmasControllerFindAll(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof turmasControllerFindAll>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type TurmasControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof turmasControllerFindAll>>>
+export type TurmasControllerFindAllQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Listar turmas com filtros (Coordenador, Diretor)
+ */
+
+export function useTurmasControllerFindAll<TData = Awaited<ReturnType<typeof turmasControllerFindAll>>, TError = ErrorType<unknown>>(
+ params?: TurmasControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof turmasControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getTurmasControllerFindAllQueryOptions(params,options)
+
+  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Listar turmas de uma disciplina ofertada (Coordenador, Diretor)
+ */
+export const turmasControllerFindByDisciplinaOfertada = (
+    idDisciplinaOfertada: string,
+ options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalCustomInstance<TurmaResponseDto[]>(
+      {url: `/turmas/disciplina-ofertada/${idDisciplinaOfertada}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getTurmasControllerFindByDisciplinaOfertadaQueryKey = (idDisciplinaOfertada: string,) => {
+    return ['turmas','disciplina-ofertada',idDisciplinaOfertada] as const;
+    }
+
+    
+export const getTurmasControllerFindByDisciplinaOfertadaQueryOptions = <TData = Awaited<ReturnType<typeof turmasControllerFindByDisciplinaOfertada>>, TError = ErrorType<unknown>>(idDisciplinaOfertada: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof turmasControllerFindByDisciplinaOfertada>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTurmasControllerFindByDisciplinaOfertadaQueryKey(idDisciplinaOfertada);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof turmasControllerFindByDisciplinaOfertada>>> = ({ signal }) => turmasControllerFindByDisciplinaOfertada(idDisciplinaOfertada, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(idDisciplinaOfertada), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof turmasControllerFindByDisciplinaOfertada>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type TurmasControllerFindByDisciplinaOfertadaQueryResult = NonNullable<Awaited<ReturnType<typeof turmasControllerFindByDisciplinaOfertada>>>
+export type TurmasControllerFindByDisciplinaOfertadaQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Listar turmas de uma disciplina ofertada (Coordenador, Diretor)
+ */
+
+export function useTurmasControllerFindByDisciplinaOfertada<TData = Awaited<ReturnType<typeof turmasControllerFindByDisciplinaOfertada>>, TError = ErrorType<unknown>>(
+ idDisciplinaOfertada: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof turmasControllerFindByDisciplinaOfertada>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getTurmasControllerFindByDisciplinaOfertadaQueryOptions(idDisciplinaOfertada,options)
+
+  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Listar turmas de um professor (Coordenador, Diretor, Professor)
+ */
+export const turmasControllerFindByProfessor = (
+    idProfessor: string,
+ options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalCustomInstance<TurmaResponseDto[]>(
+      {url: `/turmas/professor/${idProfessor}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getTurmasControllerFindByProfessorQueryKey = (idProfessor: string,) => {
+    return ['turmas','professor',idProfessor] as const;
+    }
+
+    
+export const getTurmasControllerFindByProfessorQueryOptions = <TData = Awaited<ReturnType<typeof turmasControllerFindByProfessor>>, TError = ErrorType<unknown>>(idProfessor: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof turmasControllerFindByProfessor>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTurmasControllerFindByProfessorQueryKey(idProfessor);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof turmasControllerFindByProfessor>>> = ({ signal }) => turmasControllerFindByProfessor(idProfessor, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(idProfessor), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof turmasControllerFindByProfessor>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type TurmasControllerFindByProfessorQueryResult = NonNullable<Awaited<ReturnType<typeof turmasControllerFindByProfessor>>>
+export type TurmasControllerFindByProfessorQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Listar turmas de um professor (Coordenador, Diretor, Professor)
+ */
+
+export function useTurmasControllerFindByProfessor<TData = Awaited<ReturnType<typeof turmasControllerFindByProfessor>>, TError = ErrorType<unknown>>(
+ idProfessor: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof turmasControllerFindByProfessor>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getTurmasControllerFindByProfessorQueryOptions(idProfessor,options)
+
+  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
 
 
 
@@ -90,3 +352,254 @@ export function useTurmasControllerFindOne<TData = Awaited<ReturnType<typeof tur
 
 
 
+/**
+ * @summary Atualizar dados de uma turma (Coordenador)
+ */
+export const turmasControllerUpdate = (
+    id: string,
+    updateTurmaDto: BodyType<UpdateTurmaDto>,
+ options?: SecondParameter<typeof orvalCustomInstance>,) => {
+      
+      
+      return orvalCustomInstance<TurmaResponseDto>(
+      {url: `/turmas/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateTurmaDto
+    },
+      options);
+    }
+  
+
+
+export const getTurmasControllerUpdateMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerUpdate>>, TError,{id: string;data: BodyType<UpdateTurmaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof turmasControllerUpdate>>, TError,{id: string;data: BodyType<UpdateTurmaDto>}, TContext> => {
+
+const mutationKey = ['turmasControllerUpdate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof turmasControllerUpdate>>, {id: string;data: BodyType<UpdateTurmaDto>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  turmasControllerUpdate(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TurmasControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof turmasControllerUpdate>>>
+    export type TurmasControllerUpdateMutationBody = BodyType<UpdateTurmaDto>
+    export type TurmasControllerUpdateMutationError = ErrorType<void>
+
+    /**
+ * @summary Atualizar dados de uma turma (Coordenador)
+ */
+export const useTurmasControllerUpdate = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerUpdate>>, TError,{id: string;data: BodyType<UpdateTurmaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof turmasControllerUpdate>>,
+        TError,
+        {id: string;data: BodyType<UpdateTurmaDto>},
+        TContext
+      > => {
+
+      const mutationOptions = getTurmasControllerUpdateMutationOptions(options);
+
+      return useMutation(mutationOptions );
+    }
+    /**
+ * @summary Deletar uma turma (Coordenador)
+ */
+export const turmasControllerRemove = (
+    id: string,
+ options?: SecondParameter<typeof orvalCustomInstance>,) => {
+      
+      
+      return orvalCustomInstance<void>(
+      {url: `/turmas/${id}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getTurmasControllerRemoveMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof turmasControllerRemove>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['turmasControllerRemove'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof turmasControllerRemove>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  turmasControllerRemove(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TurmasControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof turmasControllerRemove>>>
+    
+    export type TurmasControllerRemoveMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Deletar uma turma (Coordenador)
+ */
+export const useTurmasControllerRemove = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof turmasControllerRemove>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getTurmasControllerRemoveMutationOptions(options);
+
+      return useMutation(mutationOptions );
+    }
+    /**
+ * @summary Atribuir professor à turma (Coordenador)
+ */
+export const turmasControllerAtribuirProfessor = (
+    id: string,
+    atribuirProfessorDto: BodyType<AtribuirProfessorDto>,
+ options?: SecondParameter<typeof orvalCustomInstance>,) => {
+      
+      
+      return orvalCustomInstance<TurmaResponseDto>(
+      {url: `/turmas/${id}/professor`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: atribuirProfessorDto
+    },
+      options);
+    }
+  
+
+
+export const getTurmasControllerAtribuirProfessorMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerAtribuirProfessor>>, TError,{id: string;data: BodyType<AtribuirProfessorDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof turmasControllerAtribuirProfessor>>, TError,{id: string;data: BodyType<AtribuirProfessorDto>}, TContext> => {
+
+const mutationKey = ['turmasControllerAtribuirProfessor'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof turmasControllerAtribuirProfessor>>, {id: string;data: BodyType<AtribuirProfessorDto>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  turmasControllerAtribuirProfessor(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TurmasControllerAtribuirProfessorMutationResult = NonNullable<Awaited<ReturnType<typeof turmasControllerAtribuirProfessor>>>
+    export type TurmasControllerAtribuirProfessorMutationBody = BodyType<AtribuirProfessorDto>
+    export type TurmasControllerAtribuirProfessorMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Atribuir professor à turma (Coordenador)
+ */
+export const useTurmasControllerAtribuirProfessor = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerAtribuirProfessor>>, TError,{id: string;data: BodyType<AtribuirProfessorDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof turmasControllerAtribuirProfessor>>,
+        TError,
+        {id: string;data: BodyType<AtribuirProfessorDto>},
+        TContext
+      > => {
+
+      const mutationOptions = getTurmasControllerAtribuirProfessorMutationOptions(options);
+
+      return useMutation(mutationOptions );
+    }
+    /**
+ * @summary Remover professor da turma (Coordenador)
+ */
+export const turmasControllerRemoverProfessor = (
+    id: string,
+ options?: SecondParameter<typeof orvalCustomInstance>,) => {
+      
+      
+      return orvalCustomInstance<TurmaResponseDto>(
+      {url: `/turmas/${id}/professor`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getTurmasControllerRemoverProfessorMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerRemoverProfessor>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof turmasControllerRemoverProfessor>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['turmasControllerRemoverProfessor'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof turmasControllerRemoverProfessor>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  turmasControllerRemoverProfessor(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TurmasControllerRemoverProfessorMutationResult = NonNullable<Awaited<ReturnType<typeof turmasControllerRemoverProfessor>>>
+    
+    export type TurmasControllerRemoverProfessorMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Remover professor da turma (Coordenador)
+ */
+export const useTurmasControllerRemoverProfessor = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerRemoverProfessor>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof turmasControllerRemoverProfessor>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getTurmasControllerRemoverProfessorMutationOptions(options);
+
+      return useMutation(mutationOptions );
+    }
+    
