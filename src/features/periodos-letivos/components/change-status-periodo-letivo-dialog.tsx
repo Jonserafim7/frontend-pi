@@ -1,0 +1,146 @@
+import React from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { useToast } from "@/hooks/use-toast"
+import { useQueryClient } from "@tanstack/react-query"
+import {
+  getPeriodosLetivosControllerFindAllQueryKey,
+  usePeriodosLetivosControllerChangeStatus,
+} from "@/api-generated/client/períodos-letivos/períodos-letivos"
+import type {
+  PeriodoLetivoResponseDto,
+  ChangeStatusPeriodoLetivoDtoStatus,
+} from "@/api-generated/model"
+import type { AxiosError } from "axios"
+
+interface ChangeStatusPeriodoLetivoDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  periodoLetivo: PeriodoLetivoResponseDto
+  newStatus: ChangeStatusPeriodoLetivoDtoStatus
+}
+
+/**
+ * Componente de diálogo para confirmar mudança de status de um Período Letivo.
+ * Permite ativar ou desativar um período letivo com confirmação do usuário.
+ */
+export const ChangeStatusPeriodoLetivoDialog: React.FC<
+  ChangeStatusPeriodoLetivoDialogProps
+> = ({ open, onOpenChange, periodoLetivo, newStatus }) => {
+  const { mutate: mutateChangeStatus, isPending } =
+    usePeriodosLetivosControllerChangeStatus()
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  const isActivating = newStatus === "ATIVO"
+  const currentStatusText = periodoLetivo.status === "ATIVO" ? "ativo" : "inativo"
+  const newStatusText = isActivating ? "ativo" : "inativo"
+
+  const handleConfirm = () => {
+    mutateChangeStatus(
+      {
+        id: periodoLetivo.id,
+        data: { status: newStatus },
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: `Período letivo ${isActivating ? "ativado" : "desativado"} com sucesso!`,
+            description: `${periodoLetivo.ano}/${periodoLetivo.semestre} está agora ${newStatusText}.`,
+          })
+          queryClient.invalidateQueries({
+            queryKey: getPeriodosLetivosControllerFindAllQueryKey(),
+          })
+          onOpenChange(false)
+        },
+        onError: (error: AxiosError) => {
+          const errorMessage =
+            (
+              error.response?.data as { message?: string | string[] }
+            )?.message?.toString() ||
+            error.message ||
+            `Erro ao ${isActivating ? "ativar" : "desativar"} período letivo`
+
+          console.error(
+            `Erro ao ${isActivating ? "ativar" : "desativar"} período letivo:`,
+            error,
+          )
+          toast({
+            title: `Erro ao ${isActivating ? "ativar" : "desativar"} período letivo`,
+            description: errorMessage,
+            variant: "destructive",
+          })
+        },
+      },
+    )
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>
+            {isActivating ? "Ativar" : "Desativar"} Período Letivo
+          </DialogTitle>
+          <DialogDescription>
+            {isActivating ?
+              <>
+                Tem certeza que deseja <strong>ativar</strong> o período letivo{" "}
+                <strong>
+                  {periodoLetivo.ano}/{periodoLetivo.semestre}
+                </strong>
+                ?
+                <br />
+                <br />
+                <span className="text-amber-600 dark:text-amber-400">
+                  ⚠️ Atenção: Apenas um período letivo pode estar ativo por vez.
+                  Se houver outro período ativo, ele será automaticamente
+                  desativado.
+                </span>
+              </>
+            : <>
+                Tem certeza que deseja <strong>desativar</strong> o período letivo{" "}
+                <strong>
+                  {periodoLetivo.ano}/{periodoLetivo.semestre}
+                </strong>
+                ?
+                <br />
+                <br />O período está atualmente {currentStatusText}.
+              </>
+            }
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isPending}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant={isActivating ? "default" : "destructive"}
+            onClick={handleConfirm}
+            disabled={isPending}
+          >
+            {isPending ?
+              "Processando..."
+            : isActivating ?
+              "Ativar"
+            : "Desativar"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}

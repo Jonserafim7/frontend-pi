@@ -85,7 +85,7 @@ export function MatrizCurricularDetailsPage() {
           disciplinas: matriz.disciplinas.map((d) => ({
             id: d.id,
             nome: d.nome,
-            codigo: d.codigo,
+            codigo: d.codigo || "",
             cargaHoraria: d.cargaHoraria,
           })),
         }

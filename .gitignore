@@ -29,5 +29,3 @@ dist-ssr
 .env.test.local
 .env.production.local
 .env.local
-
-/src/api-generated
