@@ -1,12 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,29 +11,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { toast } from "sonner"
-import { Plus, Calendar, Clock } from "lucide-react"
+import { Plus, Clock, Calendar, CheckCircle } from "lucide-react"
+import { HeaderIconContainer } from "@/components/icon-container"
+import { CreateEditDisponibilidadeFormDialog } from "../components/create-edit-disponibilidade-form-dialog"
+import { DisponibilidadesDataTable } from "../components/data-table/disponibilidades-data-table"
+import { SkeletonTable } from "@/components/skeleton-table"
+import { disponibilidadeColumns } from "../components/data-table/disponibilidade-columns"
 import {
-  DisponibilidadeForm,
-  DisponibilidadeList,
-  DisponibilidadesDataTable,
-} from "../components"
-import type { DisponibilidadeTableData } from "../components"
-import {
-  useCreateDisponibilidade,
-  useUpdateDisponibilidade,
   useDeleteDisponibilidade,
-  useDisponibilidades,
+  useDisponibilidadesByProfessor,
 } from "../hooks/use-disponibilidades"
-import type {
-  CreateDisponibilidadeDto,
-  UpdateDisponibilidadeDto,
-  DisponibilidadeResponseDto,
-} from "@/api-generated/model"
-import type {
-  DiaSemana,
-  StatusDisponibilidade,
-} from "../schemas/disponibilidade-schemas"
+import type { DisponibilidadeResponseDto } from "@/api-generated/model"
 
 /**
  * Interface para dados do professor (mock)
@@ -60,125 +42,50 @@ interface PeriodoLetivo {
 }
 
 /**
- * Função para converter DisponibilidadeResponseDto para DisponibilidadeTableData
- */
-function convertToTableData(
-  dto: DisponibilidadeResponseDto,
-): DisponibilidadeTableData {
-  return {
-    id: dto.id,
-    diaDaSemana: dto.diaDaSemana as DiaSemana,
-    horaInicio: dto.horaInicio,
-    horaFim: dto.horaFim,
-    status: dto.status as StatusDisponibilidade,
-    professor: {
-      id: dto.usuarioProfessor.id,
-      nome: dto.usuarioProfessor.nome,
-    },
-    periodoLetivo: {
-      id: dto.periodoLetivo.id,
-      nome: `${dto.periodoLetivo.ano}.${dto.periodoLetivo.semestre}`,
-    },
-    dataCriacao: new Date(dto.dataCriacao),
-    dataAtualizacao: new Date(dto.dataAtualizacao),
-  }
-}
-
-/**
  * Página principal de disponibilidade do professor
  */
 export function ProfessorDisponibilidadePage() {
-  // Estados do modal
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
+  // Estados do dialog e modal
+  const [showDialog, setShowDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [selectedDisponibilidade, setSelectedDisponibilidade] =
-    useState<DisponibilidadeTableData | null>(null)
+    useState<DisponibilidadeResponseDto | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
-
-  // Estado da visualização
-  const [viewMode, setViewMode] = useState<"cards" | "table">("cards")
 
   // Mock data - substituir por dados reais
   const currentProfessor: Professor = {
-    id: "prof-123",
-    nome: "Dr. João Silva",
-    email: "joao.silva@universidade.edu.br",
+    id: "19eab2e6-4f8c-482e-aadf-c81a2f6e09d8", // Pedro Professor
+    nome: "Pedro Professor",
+    email: "professor1@escola.edu",
   }
 
   const currentPeriodo: PeriodoLetivo = {
-    id: "periodo-2024-1",
-    nome: "2024.1",
+    id: "06a6d41c-40d5-42b6-a7f1-5137a4533ea6", // Período 2025.1 ATIVO
+    nome: "2025.1",
     ativo: true,
   }
 
   // Hooks para operações
-  const { data: disponibilidades, isLoading } = useDisponibilidades({
-    professorId: currentProfessor.id,
-    periodoLetivoId: currentPeriodo.id,
-  })
-  const createMutation = useCreateDisponibilidade()
-  const updateMutation = useUpdateDisponibilidade()
+  const { data: disponibilidades, isLoading } = useDisponibilidadesByProfessor(
+    currentProfessor.id,
+    { periodoLetivoId: currentPeriodo.id },
+  )
   const deleteMutation = useDeleteDisponibilidade()
-
-  // Converter dados para o formato da tabela
-  const disponibilidadesList =
-    disponibilidades?.data ? disponibilidades.data.map(convertToTableData) : []
 
   // Handlers
   const handleCreate = () => {
-    setShowCreateModal(true)
+    setSelectedDisponibilidade(null)
+    setShowDialog(true)
   }
 
-  const handleEdit = (disponibilidade: DisponibilidadeTableData) => {
+  const handleEdit = (disponibilidade: DisponibilidadeResponseDto) => {
     setSelectedDisponibilidade(disponibilidade)
-    setShowEditModal(true)
+    setShowDialog(true)
   }
 
   const handleDelete = (id: string) => {
     setDeleteId(id)
     setShowDeleteDialog(true)
-  }
-
-  const handleCreateSubmit = (
-    data: CreateDisponibilidadeDto | UpdateDisponibilidadeDto,
-  ) => {
-    // Garantir que seja CreateDisponibilidadeDto para criação
-    const createData = data as CreateDisponibilidadeDto
-    createMutation.mutate(
-      { data: createData },
-      {
-        onSuccess: () => {
-          setShowCreateModal(false)
-          toast.success("Disponibilidade criada com sucesso!")
-        },
-        onError: () => {
-          toast.error("Erro ao criar disponibilidade. Tente novamente.")
-        },
-      },
-    )
-  }
-
-  const handleEditSubmit = (
-    data: CreateDisponibilidadeDto | UpdateDisponibilidadeDto,
-  ) => {
-    if (!selectedDisponibilidade) return
-
-    // Garantir que seja UpdateDisponibilidadeDto para edição
-    const updateData = data as UpdateDisponibilidadeDto
-    updateMutation.mutate(
-      { id: selectedDisponibilidade.id, data: updateData },
-      {
-        onSuccess: () => {
-          setShowEditModal(false)
-          setSelectedDisponibilidade(null)
-          toast.success("Disponibilidade atualizada com sucesso!")
-        },
-        onError: () => {
-          toast.error("Erro ao atualizar disponibilidade. Tente novamente.")
-        },
-      },
-    )
   }
 
   const confirmDelete = () => {
@@ -190,193 +97,135 @@ export function ProfessorDisponibilidadePage() {
         onSuccess: () => {
           setShowDeleteDialog(false)
           setDeleteId(null)
-          toast.success("Disponibilidade excluída com sucesso!")
-        },
-        onError: () => {
-          toast.error("Erro ao excluir disponibilidade. Tente novamente.")
         },
       },
     )
   }
 
-  const closeCreateModal = () => {
-    setShowCreateModal(false)
-  }
-
-  const closeEditModal = () => {
-    setShowEditModal(false)
-    setSelectedDisponibilidade(null)
-  }
-
-  // Loading states
-  const loadingStates: Record<string, boolean> = {}
-  if (deleteMutation.isPending && deleteId) {
-    loadingStates[deleteId] = true
-  }
+  // Calcular estatísticas
+  const disponibilidadesList = (disponibilidades as any)?.data || []
+  const disponiveisCount = disponibilidadesList.filter(
+    (d: DisponibilidadeResponseDto) => d.status === "DISPONIVEL",
+  ).length
+  const indisponiveisCount = disponibilidadesList.filter(
+    (d: DisponibilidadeResponseDto) => d.status === "INDISPONIVEL",
+  ).length
+  const totalCount = disponibilidadesList.length
 
   return (
-    <div className="container mx-auto py-6">
-      {/* Header */}
-      <div className="mb-8">
+    <>
+      <div className="container mx-auto space-y-8 p-12">
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Minhas Disponibilidades
-            </h1>
-            <p className="text-muted-foreground">
-              Gerencie seus horários de disponibilidade para o período{" "}
-              <span className="font-semibold">{currentPeriodo.nome}</span>
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() =>
-                setViewMode(viewMode === "cards" ? "table" : "cards")
-              }
-            >
-              {viewMode === "cards" ?
-                <>
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Tabela
-                </>
-              : <>
-                  <Clock className="mr-2 h-4 w-4" />
-                  Cards
-                </>
-              }
-            </Button>
-
-            <Button onClick={handleCreate}>
-              <Plus className="mr-2 h-4 w-4" />
-              Nova Disponibilidade
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Estatísticas rápidas */}
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
-        <div className="bg-card rounded-lg border p-4">
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-green-600" />
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Disponibilidades
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {disponibilidadesList.filter(
-                  (d: DisponibilidadeTableData) => d.status === "DISPONIVEL",
-                ).length || 0}
+          <div className="flex items-center gap-3">
+            <HeaderIconContainer Icon={Clock} />
+            <div className="flex flex-col gap-1">
+              <h1 className="text-2xl font-bold">Minhas Disponibilidades</h1>
+              <p className="text-muted-foreground">
+                Gerencie seus horários de disponibilidade para o período{" "}
+                <span className="font-semibold">{currentPeriodo.nome}</span>
               </p>
             </div>
           </div>
+          <Button onClick={handleCreate}>
+            <Plus />
+            Nova Disponibilidade
+          </Button>
         </div>
 
-        <div className="bg-card rounded-lg border p-4">
-          <div className="flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-red-600" />
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Indisponibilidades
+        {/* Cards de Resumo */}
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card className="overflow-hidden pt-0 transition-all duration-300 hover:shadow-md">
+            <CardHeader className="bg-gradient-to-r from-green-500/10 to-transparent py-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-green-500/20 p-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="text-sm font-medium">
+                    Disponibilidades
+                  </CardTitle>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-2 pb-4">
+              <div className="text-2xl font-bold text-green-600">
+                {disponiveisCount}
+              </div>
+              <p className="text-muted-foreground text-xs">
+                Horários disponíveis para agendamento
               </p>
-              <p className="text-2xl font-bold text-red-600">
-                {disponibilidadesList.filter(
-                  (d: DisponibilidadeTableData) => d.status === "INDISPONIVEL",
-                ).length || 0}
+            </CardContent>
+          </Card>
+
+          <Card className="overflow-hidden pt-0 transition-all duration-300 hover:shadow-md">
+            <CardHeader className="bg-gradient-to-r from-red-500/10 to-transparent py-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-red-500/20 p-2">
+                  <Clock className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="text-sm font-medium">
+                    Indisponibilidades
+                  </CardTitle>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-2 pb-4">
+              <div className="text-2xl font-bold text-red-600">
+                {indisponiveisCount}
+              </div>
+              <p className="text-muted-foreground text-xs">
+                Horários bloqueados ou indisponíveis
               </p>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
+
+          <Card className="overflow-hidden pt-0 transition-all duration-300 hover:shadow-md">
+            <CardHeader className="bg-gradient-to-r from-blue-500/10 to-transparent py-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-blue-500/20 p-2">
+                  <Calendar className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="text-sm font-medium">
+                    Total de Horários
+                  </CardTitle>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-2 pb-4">
+              <div className="text-2xl font-bold text-blue-600">{totalCount}</div>
+              <p className="text-muted-foreground text-xs">
+                Total de horários cadastrados no sistema
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="bg-card rounded-lg border p-4">
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-blue-600" />
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Total de Horários
-              </p>
-              <p className="text-2xl font-bold text-blue-600">
-                {disponibilidadesList.length || 0}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Conteúdo Principal */}
-      <div className="space-y-6">
-        {viewMode === "cards" ?
-          <DisponibilidadeList
-            disponibilidades={disponibilidadesList}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onCreate={handleCreate}
-            isLoading={isLoading}
-            loadingStates={loadingStates}
-            title="Suas Disponibilidades"
-            description="Visualize e gerencie seus horários de disponibilidade"
-            showCreateButton={true}
+        {/* Data Table */}
+        {isLoading ?
+          <SkeletonTable
+            columns={disponibilidadeColumns.length}
+            rows={5}
           />
         : <DisponibilidadesDataTable
             data={disponibilidadesList}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onCreate={handleCreate}
             isLoading={isLoading}
-            title="Suas Disponibilidades"
           />
         }
       </div>
 
-      {/* Modal de Criação */}
-      <Dialog
-        open={showCreateModal}
-        onOpenChange={setShowCreateModal}
-      >
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Nova Disponibilidade</DialogTitle>
-            <DialogDescription>
-              Informe um novo horário de disponibilidade para o período{" "}
-              {currentPeriodo.nome}.
-            </DialogDescription>
-          </DialogHeader>
-          <DisponibilidadeForm
-            mode="create"
-            professorId={currentProfessor.id}
-            periodoLetivoId={currentPeriodo.id}
-            onSubmit={handleCreateSubmit}
-            onCancel={closeCreateModal}
-            isLoading={createMutation.isPending}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal de Edição */}
-      <Dialog
-        open={showEditModal}
-        onOpenChange={setShowEditModal}
-      >
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Editar Disponibilidade</DialogTitle>
-            <DialogDescription>
-              Altere os dados da sua disponibilidade conforme necessário.
-            </DialogDescription>
-          </DialogHeader>
-          {selectedDisponibilidade && (
-            <DisponibilidadeForm
-              mode="edit"
-              initialData={selectedDisponibilidade}
-              onSubmit={handleEditSubmit}
-              onCancel={closeEditModal}
-              isLoading={updateMutation.isPending}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Dialog de Criação/Edição */}
+      <CreateEditDisponibilidadeFormDialog
+        isOpen={showDialog}
+        onOpenChange={setShowDialog}
+        disponibilidade={selectedDisponibilidade || undefined}
+        professorId={!selectedDisponibilidade ? currentProfessor.id : undefined}
+        periodoLetivoId={!selectedDisponibilidade ? currentPeriodo.id : undefined}
+      />
 
       {/* Dialog de Confirmação de Exclusão */}
       <AlertDialog
@@ -404,6 +253,6 @@ export function ProfessorDisponibilidadePage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   )
 }

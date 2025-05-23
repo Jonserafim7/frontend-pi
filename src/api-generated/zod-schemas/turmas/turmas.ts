@@ -11,6 +11,142 @@ import {
 
 
 /**
+ * @summary Criar uma nova turma (Coordenador)
+ */
+export const turmasControllerCreateBody = zod.object({
+  "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada à qual esta turma pertence.'),
+  "codigoDaTurma": zod.string().describe('Código/identificador da turma (ex: T1, T2, A, B).')
+})
+
+/**
+ * @summary Listar turmas com filtros (Coordenador, Diretor)
+ */
+export const turmasControllerFindAllQueryParams = zod.object({
+  "idDisciplinaOfertada": zod.string().optional().describe('ID da disciplina ofertada para filtrar'),
+  "idProfessor": zod.string().optional().describe('ID do professor para filtrar'),
+  "idPeriodoLetivo": zod.string().optional().describe('ID do período letivo para filtrar')
+})
+
+export const turmasControllerFindAllResponseItem = zod.object({
+  "id": zod.string().describe('ID da turma'),
+  "codigoDaTurma": zod.string().describe('Código/identificador da turma'),
+  "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada à qual esta turma pertence.'),
+  "disciplinaOfertada": zod.object({
+  "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
+  "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
+  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
+  "disciplina": zod.object({
+  "id": zod.string().describe('ID único da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().optional().describe('Código único da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária total da disciplina em horas'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do registro')
+}).describe('Detalhes da disciplina ofertada'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID único do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo (1 ou 2)'),
+  "status": zod.enum(['ATIVO', 'INATIVO']).describe('Status atual do período letivo'),
+  "dataInicio": zod.string().describe('Data de início do período letivo'),
+  "dataFim": zod.string().describe('Data de fim do período letivo'),
+  "dataCriacao": zod.string().describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().describe('Data da última atualização do registro')
+}).describe('Detalhes do período letivo da oferta'),
+  "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
+  "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
+}).optional().describe('Detalhes da disciplina ofertada'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
+})
+export const turmasControllerFindAllResponse = zod.array(turmasControllerFindAllResponseItem)
+
+/**
+ * @summary Listar turmas de uma disciplina ofertada (Coordenador, Diretor)
+ */
+export const turmasControllerFindByDisciplinaOfertadaParams = zod.object({
+  "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada')
+})
+
+export const turmasControllerFindByDisciplinaOfertadaResponseItem = zod.object({
+  "id": zod.string().describe('ID da turma'),
+  "codigoDaTurma": zod.string().describe('Código/identificador da turma'),
+  "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada à qual esta turma pertence.'),
+  "disciplinaOfertada": zod.object({
+  "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
+  "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
+  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
+  "disciplina": zod.object({
+  "id": zod.string().describe('ID único da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().optional().describe('Código único da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária total da disciplina em horas'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do registro')
+}).describe('Detalhes da disciplina ofertada'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID único do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo (1 ou 2)'),
+  "status": zod.enum(['ATIVO', 'INATIVO']).describe('Status atual do período letivo'),
+  "dataInicio": zod.string().describe('Data de início do período letivo'),
+  "dataFim": zod.string().describe('Data de fim do período letivo'),
+  "dataCriacao": zod.string().describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().describe('Data da última atualização do registro')
+}).describe('Detalhes do período letivo da oferta'),
+  "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
+  "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
+}).optional().describe('Detalhes da disciplina ofertada'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
+})
+export const turmasControllerFindByDisciplinaOfertadaResponse = zod.array(turmasControllerFindByDisciplinaOfertadaResponseItem)
+
+/**
+ * @summary Listar turmas de um professor (Coordenador, Diretor, Professor)
+ */
+export const turmasControllerFindByProfessorParams = zod.object({
+  "idProfessor": zod.string().describe('ID do professor')
+})
+
+export const turmasControllerFindByProfessorResponseItem = zod.object({
+  "id": zod.string().describe('ID da turma'),
+  "codigoDaTurma": zod.string().describe('Código/identificador da turma'),
+  "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada à qual esta turma pertence.'),
+  "disciplinaOfertada": zod.object({
+  "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
+  "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
+  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
+  "disciplina": zod.object({
+  "id": zod.string().describe('ID único da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().optional().describe('Código único da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária total da disciplina em horas'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do registro')
+}).describe('Detalhes da disciplina ofertada'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID único do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo (1 ou 2)'),
+  "status": zod.enum(['ATIVO', 'INATIVO']).describe('Status atual do período letivo'),
+  "dataInicio": zod.string().describe('Data de início do período letivo'),
+  "dataFim": zod.string().describe('Data de fim do período letivo'),
+  "dataCriacao": zod.string().describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().describe('Data da última atualização do registro')
+}).describe('Detalhes do período letivo da oferta'),
+  "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
+  "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
+}).optional().describe('Detalhes da disciplina ofertada'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
+})
+export const turmasControllerFindByProfessorResponse = zod.array(turmasControllerFindByProfessorResponseItem)
+
+/**
  * @summary Obter detalhes de uma turma específica
  */
 export const turmasControllerFindOneParams = zod.object({
@@ -18,6 +154,145 @@ export const turmasControllerFindOneParams = zod.object({
 })
 
 export const turmasControllerFindOneResponse = zod.object({
+  "id": zod.string().describe('ID da turma'),
+  "codigoDaTurma": zod.string().describe('Código/identificador da turma'),
+  "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada à qual esta turma pertence.'),
+  "disciplinaOfertada": zod.object({
+  "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
+  "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
+  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
+  "disciplina": zod.object({
+  "id": zod.string().describe('ID único da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().optional().describe('Código único da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária total da disciplina em horas'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do registro')
+}).describe('Detalhes da disciplina ofertada'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID único do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo (1 ou 2)'),
+  "status": zod.enum(['ATIVO', 'INATIVO']).describe('Status atual do período letivo'),
+  "dataInicio": zod.string().describe('Data de início do período letivo'),
+  "dataFim": zod.string().describe('Data de fim do período letivo'),
+  "dataCriacao": zod.string().describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().describe('Data da última atualização do registro')
+}).describe('Detalhes do período letivo da oferta'),
+  "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
+  "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
+}).optional().describe('Detalhes da disciplina ofertada'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
+})
+
+/**
+ * @summary Atualizar dados de uma turma (Coordenador)
+ */
+export const turmasControllerUpdateParams = zod.object({
+  "id": zod.string().describe('ID da turma')
+})
+
+export const turmasControllerUpdateBody = zod.object({
+  "codigoDaTurma": zod.string().optional().describe('Novo código/identificador da turma (ex: T1, T2, A, B)'),
+  "idUsuarioProfessor": zod.string().optional().describe('ID do professor a ser atribuído à turma')
+})
+
+export const turmasControllerUpdateResponse = zod.object({
+  "id": zod.string().describe('ID da turma'),
+  "codigoDaTurma": zod.string().describe('Código/identificador da turma'),
+  "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada à qual esta turma pertence.'),
+  "disciplinaOfertada": zod.object({
+  "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
+  "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
+  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
+  "disciplina": zod.object({
+  "id": zod.string().describe('ID único da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().optional().describe('Código único da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária total da disciplina em horas'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do registro')
+}).describe('Detalhes da disciplina ofertada'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID único do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo (1 ou 2)'),
+  "status": zod.enum(['ATIVO', 'INATIVO']).describe('Status atual do período letivo'),
+  "dataInicio": zod.string().describe('Data de início do período letivo'),
+  "dataFim": zod.string().describe('Data de fim do período letivo'),
+  "dataCriacao": zod.string().describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().describe('Data da última atualização do registro')
+}).describe('Detalhes do período letivo da oferta'),
+  "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
+  "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
+}).optional().describe('Detalhes da disciplina ofertada'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
+})
+
+/**
+ * @summary Deletar uma turma (Coordenador)
+ */
+export const turmasControllerRemoveParams = zod.object({
+  "id": zod.string().describe('ID da turma')
+})
+
+/**
+ * @summary Atribuir professor à turma (Coordenador)
+ */
+export const turmasControllerAtribuirProfessorParams = zod.object({
+  "id": zod.string().describe('ID da turma')
+})
+
+export const turmasControllerAtribuirProfessorBody = zod.object({
+  "idUsuarioProfessor": zod.string().describe('ID do professor a ser atribuído à turma')
+})
+
+export const turmasControllerAtribuirProfessorResponse = zod.object({
+  "id": zod.string().describe('ID da turma'),
+  "codigoDaTurma": zod.string().describe('Código/identificador da turma'),
+  "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada à qual esta turma pertence.'),
+  "disciplinaOfertada": zod.object({
+  "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
+  "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
+  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
+  "disciplina": zod.object({
+  "id": zod.string().describe('ID único da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().optional().describe('Código único da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária total da disciplina em horas'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do registro')
+}).describe('Detalhes da disciplina ofertada'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID único do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo (1 ou 2)'),
+  "status": zod.enum(['ATIVO', 'INATIVO']).describe('Status atual do período letivo'),
+  "dataInicio": zod.string().describe('Data de início do período letivo'),
+  "dataFim": zod.string().describe('Data de fim do período letivo'),
+  "dataCriacao": zod.string().describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().describe('Data da última atualização do registro')
+}).describe('Detalhes do período letivo da oferta'),
+  "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
+  "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
+}).optional().describe('Detalhes da disciplina ofertada'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
+})
+
+/**
+ * @summary Remover professor da turma (Coordenador)
+ */
+export const turmasControllerRemoverProfessorParams = zod.object({
+  "id": zod.string().describe('ID da turma')
+})
+
+export const turmasControllerRemoverProfessorResponse = zod.object({
   "id": zod.string().describe('ID da turma'),
   "codigoDaTurma": zod.string().describe('Código/identificador da turma'),
   "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada à qual esta turma pertence.'),

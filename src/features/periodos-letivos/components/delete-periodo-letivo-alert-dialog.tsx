@@ -81,7 +81,10 @@ export function DeletePeriodoLetivoAlertDialog({
             <AlertDialogTitle>Excluir período letivo</AlertDialogTitle>
           </div>
           <AlertDialogDescription>
-            Tem certeza que deseja excluir o período letivo <strong>{periodoLetivo?.periodoFormatado}</strong>
+            Tem certeza que deseja excluir o período letivo{" "}
+            <strong>
+              {periodoLetivo?.ano}/{periodoLetivo?.semestre}
+            </strong>
             ? Esta ação não pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -91,10 +94,12 @@ export function DeletePeriodoLetivoAlertDialog({
           onChange={(e) => setConfirmationText(e.target.value)}
         />
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => {
-            setConfirmationText("")
-            onOpenChange(false)
-          }}>
+          <AlertDialogCancel
+            onClick={() => {
+              setConfirmationText("")
+              onOpenChange(false)
+            }}
+          >
             Cancelar
           </AlertDialogCancel>
           <AlertDialogAction
@@ -110,14 +115,12 @@ export function DeletePeriodoLetivoAlertDialog({
               }),
             )}
           >
-            {isRemoving ? (
+            {isRemoving ?
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Excluindo...
               </>
-            ) : (
-              "Excluir"
-            )}
+            : "Excluir"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

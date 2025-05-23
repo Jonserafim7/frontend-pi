@@ -29,9 +29,11 @@ export const createDisponibilidadeSchema = z
   .object({
     idUsuarioProfessor: z
       .string()
+      .min(1, "ID do professor é obrigatório")
       .uuid("ID do professor deve ser um UUID válido"),
     idPeriodoLetivo: z
       .string()
+      .min(1, "ID do período letivo é obrigatório")
       .uuid("ID do período letivo deve ser um UUID válido"),
     diaDaSemana: DiaSemanaEnum,
     horaInicio: z

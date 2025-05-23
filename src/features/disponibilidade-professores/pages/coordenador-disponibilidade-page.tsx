@@ -1,6 +1,13 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -9,24 +16,23 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Calendar, Clock, Filter, Users, Search, RefreshCw } from "lucide-react"
-import { DisponibilidadeList, DisponibilidadesDataTable } from "../components"
-import type { DisponibilidadeTableData } from "../components"
+import {
+  Calendar,
+  Clock,
+  Filter,
+  Users,
+  Search,
+  RefreshCw,
+  Eye,
+} from "lucide-react"
+import { HeaderIconContainer } from "@/components/icon-container"
+import { DisponibilidadesDataTable } from "../components/data-table/disponibilidades-data-table"
+import { SkeletonTable } from "@/components/skeleton-table"
+import { disponibilidadeColumns } from "../components/data-table/disponibilidade-columns"
 import { useDisponibilidades } from "../hooks/use-disponibilidades"
 import type { DisponibilidadeResponseDto } from "@/api-generated/model"
-import type {
-  DiaSemana,
-  StatusDisponibilidade,
-} from "../schemas/disponibilidade-schemas"
 
 /**
  * Interface para dados do professor (mock)
@@ -48,31 +54,6 @@ interface PeriodoLetivo {
 }
 
 /**
- * Função para converter DisponibilidadeResponseDto para DisponibilidadeTableData
- */
-function convertToTableData(
-  dto: DisponibilidadeResponseDto,
-): DisponibilidadeTableData {
-  return {
-    id: dto.id,
-    diaDaSemana: dto.diaDaSemana as DiaSemana,
-    horaInicio: dto.horaInicio,
-    horaFim: dto.horaFim,
-    status: dto.status as StatusDisponibilidade,
-    professor: {
-      id: dto.usuarioProfessor.id,
-      nome: dto.usuarioProfessor.nome,
-    },
-    periodoLetivo: {
-      id: dto.periodoLetivo.id,
-      nome: `${dto.periodoLetivo.ano}.${dto.periodoLetivo.semestre}`,
-    },
-    dataCriacao: new Date(dto.dataCriacao),
-    dataAtualizacao: new Date(dto.dataAtualizacao),
-  }
-}
-
-/**
  * Página de visualização de disponibilidades para coordenadores
  */
 export function CoordenadorDisponibilidadePage() {
@@ -80,38 +61,31 @@ export function CoordenadorDisponibilidadePage() {
   const [selectedProfessor, setSelectedProfessor] = useState<string>("all")
   const [selectedPeriodo, setSelectedPeriodo] = useState<string>("current")
   const [searchTerm, setSearchTerm] = useState("")
-  const [viewMode, setViewMode] = useState<"cards" | "table">("table")
 
-  // Mock data - substituir por dados reais
+  // Mock data - substituir por dados reais do contexto/API
   const professores: Professor[] = [
     {
-      id: "prof-123",
-      nome: "Dr. João Silva",
-      email: "joao.silva@univ.br",
+      id: "19eab2e6-4f8c-482e-aadf-c81a2f6e09d8", // Pedro Professor
+      nome: "Pedro Professor",
+      email: "professor1@escola.edu",
       departamento: "Computação",
     },
     {
-      id: "prof-124",
-      nome: "Dra. Maria Santos",
-      email: "maria.santos@univ.br",
+      id: "31cb9124-3610-4267-951b-eba64e4981b6", // Maria Professora
+      nome: "Maria Professora",
+      email: "professor2@escola.edu",
       departamento: "Matemática",
-    },
-    {
-      id: "prof-125",
-      nome: "Dr. Pedro Oliveira",
-      email: "pedro.oliveira@univ.br",
-      departamento: "Computação",
     },
   ]
 
   const periodos: PeriodoLetivo[] = [
-    { id: "periodo-2024-1", nome: "2024.1", ativo: true },
-    { id: "periodo-2023-2", nome: "2023.2", ativo: false },
+    { id: "06a6d41c-40d5-42b6-a7f1-5137a4533ea6", nome: "2025.1", ativo: true },
+    { id: "periodo-2024-2", nome: "2024.2", ativo: false },
   ]
 
   const currentPeriodo = periodos.find((p) => p.ativo) || periodos[0]
 
-  // Usar apenas o hook principal com filtros específicos
+  // Query com filtros
   const queryParams = {
     professorId: selectedProfessor !== "all" ? selectedProfessor : undefined,
     periodoLetivoId:
@@ -121,17 +95,14 @@ export function CoordenadorDisponibilidadePage() {
   const { data: allDisponibilidades, isLoading } =
     useDisponibilidades(queryParams)
 
-  // Converter dados para o formato da tabela
-  const disponibilidades =
-    allDisponibilidades?.data ?
-      allDisponibilidades.data.map(convertToTableData)
-    : []
+  // Usar dados diretamente da API
+  const disponibilidades = (allDisponibilidades as any)?.data || []
 
-  // Filtro adicional por termo de busca (se necessário)
+  // Filtro adicional por termo de busca
   const filteredDisponibilidades =
     searchTerm ?
-      disponibilidades.filter((d) =>
-        d.professor?.nome?.toLowerCase().includes(searchTerm.toLowerCase()),
+      disponibilidades.filter((d: DisponibilidadeResponseDto) =>
+        d.usuarioProfessor.nome.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     : disponibilidades
 
@@ -143,20 +114,23 @@ export function CoordenadorDisponibilidadePage() {
   }
 
   const handleRefresh = () => {
-    // O React Query automaticamente refaz as queries ao chamar novamente
     window.location.reload()
   }
 
   // Calcular estatísticas
   const stats = {
     total: filteredDisponibilidades.length,
-    disponivel: filteredDisponibilidades.filter((d) => d.status === "DISPONIVEL")
-      .length,
-    indisponivel: filteredDisponibilidades.filter(
-      (d) => d.status === "INDISPONIVEL",
+    disponivel: filteredDisponibilidades.filter(
+      (d: DisponibilidadeResponseDto) => d.status === "DISPONIVEL",
     ).length,
-    professores: new Set(filteredDisponibilidades.map((d) => d.professor?.id))
-      .size,
+    indisponivel: filteredDisponibilidades.filter(
+      (d: DisponibilidadeResponseDto) => d.status === "INDISPONIVEL",
+    ).length,
+    professores: new Set(
+      filteredDisponibilidades.map(
+        (d: DisponibilidadeResponseDto) => d.usuarioProfessor.id,
+      ),
+    ).size,
   }
 
   const selectedProfessorName =
@@ -170,51 +144,31 @@ export function CoordenadorDisponibilidadePage() {
     : null
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto space-y-8 p-12">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <HeaderIconContainer Icon={Eye} />
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl font-bold">
               Disponibilidades dos Professores
             </h1>
             <p className="text-muted-foreground">
-              Visualize e gerencie as disponibilidades de todos os professores
+              Visualize e monitore as disponibilidades de todos os professores
             </p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={handleRefresh}
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Atualizar
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() =>
-                setViewMode(viewMode === "cards" ? "table" : "cards")
-              }
-            >
-              {viewMode === "cards" ?
-                <>
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Tabela
-                </>
-              : <>
-                  <Clock className="mr-2 h-4 w-4" />
-                  Cards
-                </>
-              }
-            </Button>
-          </div>
         </div>
+        <Button
+          variant="outline"
+          onClick={handleRefresh}
+        >
+          <RefreshCw />
+          Atualizar
+        </Button>
       </div>
 
       {/* Filtros */}
-      <Card className="mb-6">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
@@ -327,87 +281,110 @@ export function CoordenadorDisponibilidadePage() {
         </CardContent>
       </Card>
 
-      {/* Estatísticas */}
-      <div className="mb-6 grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <Users className="h-8 w-8 text-blue-600" />
-            <div className="ml-4">
-              <p className="text-muted-foreground text-sm font-medium">
-                Professores
-              </p>
-              <p className="text-2xl font-bold">{stats.professores}</p>
+      {/* Cards de Resumo */}
+      <div className="grid gap-6 md:grid-cols-4">
+        <Card className="overflow-hidden pt-0 transition-all duration-300 hover:shadow-md">
+          <CardHeader className="bg-gradient-to-r from-blue-500/10 to-transparent py-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-blue-500/20 p-2">
+                <Users className="h-5 w-5 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <CardTitle className="text-sm font-medium">Professores</CardTitle>
+              </div>
             </div>
+          </CardHeader>
+          <CardContent className="pt-2 pb-4">
+            <div className="text-2xl font-bold text-blue-600">
+              {stats.professores}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              Professores com disponibilidade cadastrada
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <Calendar className="h-8 w-8 text-green-600" />
-            <div className="ml-4">
-              <p className="text-muted-foreground text-sm font-medium">
-                Disponível
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {stats.disponivel}
-              </p>
+        <Card className="overflow-hidden pt-0 transition-all duration-300 hover:shadow-md">
+          <CardHeader className="bg-gradient-to-r from-green-500/10 to-transparent py-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-green-500/20 p-2">
+                <Calendar className="h-5 w-5 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <CardTitle className="text-sm font-medium">Disponível</CardTitle>
+              </div>
             </div>
+          </CardHeader>
+          <CardContent className="pt-2 pb-4">
+            <div className="text-2xl font-bold text-green-600">
+              {stats.disponivel}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              Horários disponíveis para agendamento
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <Clock className="h-8 w-8 text-red-600" />
-            <div className="ml-4">
-              <p className="text-muted-foreground text-sm font-medium">
-                Indisponível
-              </p>
-              <p className="text-2xl font-bold text-red-600">
-                {stats.indisponivel}
-              </p>
+        <Card className="overflow-hidden pt-0 transition-all duration-300 hover:shadow-md">
+          <CardHeader className="bg-gradient-to-r from-red-500/10 to-transparent py-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-red-500/20 p-2">
+                <Clock className="h-5 w-5 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <CardTitle className="text-sm font-medium">
+                  Indisponível
+                </CardTitle>
+              </div>
             </div>
+          </CardHeader>
+          <CardContent className="pt-2 pb-4">
+            <div className="text-2xl font-bold text-red-600">
+              {stats.indisponivel}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              Horários bloqueados ou indisponíveis
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <Calendar className="h-8 w-8 text-blue-600" />
-            <div className="ml-4">
-              <p className="text-muted-foreground text-sm font-medium">Total</p>
-              <p className="text-2xl font-bold">{stats.total}</p>
+        <Card className="overflow-hidden pt-0 transition-all duration-300 hover:shadow-md">
+          <CardHeader className="bg-gradient-to-r from-purple-500/10 to-transparent py-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-purple-500/20 p-2">
+                <Calendar className="h-5 w-5 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <CardTitle className="text-sm font-medium">Total</CardTitle>
+              </div>
             </div>
+          </CardHeader>
+          <CardContent className="pt-2 pb-4">
+            <div className="text-2xl font-bold text-purple-600">
+              {stats.total}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              Total de registros no sistema
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      <Separator className="my-6" />
+      <Separator />
 
-      {/* Conteúdo Principal */}
-      <div className="space-y-6">
-        {viewMode === "cards" ?
-          <DisponibilidadeList
-            disponibilidades={filteredDisponibilidades}
-            onEdit={() => {}} // Coordenadores não editam
-            onDelete={() => {}} // Coordenadores não deletam
-            onCreate={() => {}} // Coordenadores não criam
-            isLoading={isLoading}
-            loadingStates={{}}
-            title="Disponibilidades dos Professores"
-            description={`Visualizando ${filteredDisponibilidades.length} disponibilidades`}
-            showCreateButton={false}
-            showProfessor={true} // Mostrar informações do professor
-          />
-        : <DisponibilidadesDataTable
-            data={filteredDisponibilidades}
-            onEdit={() => {}} // Coordenadores não editam
-            onDelete={() => {}} // Coordenadores não deletam
-            onCreate={() => {}} // Coordenadores não criam
-            isLoading={isLoading}
-            title="Disponibilidades dos Professores"
-            showProfessorColumn={true} // Mostrar coluna do professor
-          />
-        }
-      </div>
+      {/* Data Table */}
+      {isLoading ?
+        <SkeletonTable
+          columns={disponibilidadeColumns.length}
+          rows={5}
+        />
+      : <DisponibilidadesDataTable
+          data={filteredDisponibilidades}
+          onEdit={undefined} // Coordenadores não editam
+          onDelete={undefined} // Coordenadores não deletam
+          isLoading={isLoading}
+        />
+      }
     </div>
   )
 }

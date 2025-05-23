@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
+export * from './atribuir-professor-dto';
 export * from './aula-horario-dto';
 export * from './auth-response-dto';
 export * from './change-status-periodo-letivo-dto';
@@ -22,6 +23,7 @@ export * from './create-matriz-curricular-dto';
 export * from './create-periodo-letivo-dto';
 export * from './create-periodo-letivo-dto-data-fim';
 export * from './create-periodo-letivo-dto-status';
+export * from './create-turma-dto';
 export * from './create-usuario-dto';
 export * from './create-usuario-dto-papel';
 export * from './curso-response-dto';
@@ -61,6 +63,7 @@ export * from './periodos-letivos-controller-find-all-status';
 export * from './professor-simplificado-dto';
 export * from './sign-in-dto';
 export * from './turma-response-dto';
+export * from './turmas-controller-find-all-params';
 export * from './update-curso-dto';
 export * from './update-disciplina-dto';
 export * from './update-disciplina-ofertada-dto';
@@ -71,6 +74,7 @@ export * from './update-matriz-curricular-dto';
 export * from './update-periodo-letivo-dto';
 export * from './update-periodo-letivo-dto-data-fim';
 export * from './update-periodo-letivo-dto-status';
+export * from './update-turma-dto';
 export * from './update-usuario-dto';
 export * from './update-usuario-dto-papel';
 export * from './upsert-configuracao-horario-dto';

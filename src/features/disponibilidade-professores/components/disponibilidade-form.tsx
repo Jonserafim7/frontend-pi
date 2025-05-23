@@ -1,7 +1,7 @@
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -10,22 +10,15 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Loader2, Save, X } from "lucide-react"
+import { TimeInput } from "@/components/time-input"
 import {
   createDisponibilidadeSchema,
   updateDisponibilidadeSchema,
@@ -80,20 +73,75 @@ export function DisponibilidadeForm({
   const schema =
     isEditMode ? updateDisponibilidadeSchema : createDisponibilidadeSchema
 
+  // Configuração do formulário
   const form = useForm<
     CreateDisponibilidadeFormData | UpdateDisponibilidadeFormData
   >({
-    resolver: zodResolver(schema),
+    resolver: async (data, context, options) => {
+      // Manter apenas o log do zodResolver para debugging
+      console.log("🔍 [zodResolver] Validando dados:", {
+        data,
+        schema: isEditMode ? "update" : "create",
+      })
+
+      try {
+        const result = await zodResolver(schema)(data, context, options)
+        console.log("✅ [zodResolver] Validação bem-sucedida")
+        return result
+      } catch (error) {
+        console.log("❌ [zodResolver] Erro de validação:", error)
+        throw error
+      }
+    },
     defaultValues: {
-      ...(isEditMode ? initialData : (
-        {
-          idUsuarioProfessor: professorId || "",
-          idPeriodoLetivo: periodoLetivoId || "",
-          status: "DISPONIVEL" as StatusDisponibilidade,
-        }
-      )),
+      idUsuarioProfessor: "",
+      idPeriodoLetivo: "",
+      status: "DISPONIVEL" as StatusDisponibilidade,
+      diaDaSemana: undefined,
+      horaInicio: "",
+      horaFim: "",
     },
   })
+
+  // Carrega os dados para edição ou define valores padrão para criação
+  useEffect(() => {
+    if (isEditMode && initialData) {
+      // Atualiza o formulário com os dados existentes
+      const resetData = {
+        idUsuarioProfessor: initialData.idUsuarioProfessor || "",
+        idPeriodoLetivo: initialData.idPeriodoLetivo || "",
+        status: initialData.status || "DISPONIVEL",
+        diaDaSemana: initialData.diaDaSemana || undefined,
+        horaInicio: initialData.horaInicio || "",
+        horaFim: initialData.horaFim || "",
+      }
+
+      form.reset(
+        resetData as
+          | CreateDisponibilidadeFormData
+          | UpdateDisponibilidadeFormData,
+      )
+    } else if (!isEditMode) {
+      // Reseta para valores padrão no modo de criação
+      const resetData = {
+        idUsuarioProfessor: professorId || "",
+        idPeriodoLetivo: periodoLetivoId || "",
+        status: "DISPONIVEL" as StatusDisponibilidade,
+        diaDaSemana: undefined,
+        horaInicio: "",
+        horaFim: "",
+      }
+
+      form.reset(
+        resetData as
+          | CreateDisponibilidadeFormData
+          | UpdateDisponibilidadeFormData,
+      )
+    }
+
+    // Limpa erros de validação
+    form.clearErrors()
+  }, [isEditMode, initialData, professorId, periodoLetivoId, form])
 
   const handleSubmit = (
     data: CreateDisponibilidadeFormData | UpdateDisponibilidadeFormData,
@@ -102,199 +150,139 @@ export function DisponibilidadeForm({
   }
 
   return (
-    <Card className="mx-auto w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle>
-          {isEditMode ? "Editar Disponibilidade" : "Nova Disponibilidade"}
-        </CardTitle>
-        <CardDescription>
-          {isEditMode ?
-            "Altere os campos desejados e clique em salvar."
-          : "Preencha os dados da sua disponibilidade de horário."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6"
-          >
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {/* Dia da Semana */}
-              <FormField
-                control={form.control}
-                name="diaDaSemana"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Dia da Semana</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o dia" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {Object.entries(DIAS_SEMANA_LABELS).map(
-                          ([value, label]) => (
-                            <SelectItem
-                              key={value}
-                              value={value}
-                            >
-                              {label}
-                            </SelectItem>
-                          ),
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Status */}
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {Object.entries(STATUS_DISPONIBILIDADE_LABELS).map(
-                          ([value, label]) => (
-                            <SelectItem
-                              key={value}
-                              value={value}
-                            >
-                              {label}
-                            </SelectItem>
-                          ),
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {/* Horário de Início */}
-              <FormField
-                control={form.control}
-                name="horaInicio"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Horário de Início</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="time"
-                        placeholder="07:30"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>Formato: HH:mm (24 horas)</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Horário de Fim */}
-              <FormField
-                control={form.control}
-                name="horaFim"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Horário de Fim</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="time"
-                        placeholder="12:00"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Deve ser maior que o horário de início
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Campos ocultos para IDs no modo criação */}
-            {!isEditMode && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="idUsuarioProfessor"
-                  render={({ field }) => (
-                    <FormItem className="hidden">
-                      <FormControl>
-                        <Input
-                          type="hidden"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="idPeriodoLetivo"
-                  render={({ field }) => (
-                    <FormItem className="hidden">
-                      <FormControl>
-                        <Input
-                          type="hidden"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-
-            {/* Botões de Ação */}
-            <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-              {onCancel && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onCancel}
-                  disabled={isLoading}
-                  className="sm:order-1"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="space-y-6"
+      >
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* Dia da Semana */}
+          <FormField
+            control={form.control}
+            name="diaDaSemana"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Dia da Semana</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
                 >
-                  <X className="mr-2 h-4 w-4" />
-                  Cancelar
-                </Button>
-              )}
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="sm:order-2"
-              >
-                {isLoading ?
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                : <Save className="mr-2 h-4 w-4" />}
-                {isEditMode ? "Salvar Alterações" : "Criar Disponibilidade"}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o dia" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {Object.entries(DIAS_SEMANA_LABELS).map(([value, label]) => (
+                      <SelectItem
+                        key={value}
+                        value={value}
+                      >
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Status */}
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {Object.entries(STATUS_DISPONIBILIDADE_LABELS).map(
+                      ([value, label]) => (
+                        <SelectItem
+                          key={value}
+                          value={value}
+                        >
+                          {label}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Hora Início */}
+          <FormField
+            control={form.control}
+            name="horaInicio"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Hora de Início</FormLabel>
+                <FormControl>
+                  <TimeInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    aria-label="Hora de início"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Hora Fim */}
+          <FormField
+            control={form.control}
+            name="horaFim"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Hora de Fim</FormLabel>
+                <FormControl>
+                  <TimeInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    aria-label="Hora de fim"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Botões de Ação */}
+        <div className="flex justify-end gap-3">
+          {onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+            >
+              <X />
+              Cancelar
+            </Button>
+          )}
+          <Button
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading && <Loader2 className="animate-spin" />}
+            <Save />
+            {isEditMode ? "Atualizar" : "Criar"}
+          </Button>
+        </div>
+      </form>
+    </Form>
   )
 }
