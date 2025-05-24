@@ -268,3 +268,18 @@ export const disponibilidadeProfessorControllerFindByProfessorAndPeriodoResponse
 })
 export const disponibilidadeProfessorControllerFindByProfessorAndPeriodoResponse = zod.array(disponibilidadeProfessorControllerFindByProfessorAndPeriodoResponseItem)
 
+/**
+ * Retorna os slots de horário válidos configurados para o período letivo
+ * @summary Buscar slots válidos
+ */
+export const disponibilidadeProfessorControllerGetSlotsValidosParams = zod.object({
+  "periodoId": zod.string().describe('ID do período letivo')
+})
+
+export const disponibilidadeProfessorControllerGetSlotsValidosResponse = zod.object({
+  "slots": zod.array(zod.object({
+  "inicio": zod.string().optional(),
+  "fim": zod.string().optional()
+})).optional()
+})
+

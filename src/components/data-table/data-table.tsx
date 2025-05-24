@@ -65,14 +65,14 @@ export function DataTable<TData, TValue>({
       {/* Header with Search and Actions */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative w-80 max-w-sm">
-          <Search className="text-muted-foreground/70 absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transition-colors" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transition-colors" />
           <Input
             placeholder="Pesquisar em todos os campos..."
             value={globalFilter ?? ""}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className={cn(
               "pl-10 transition-all duration-300",
-              "bg-background/80 border-border/50 backdrop-blur-sm",
+              "bg-background/80 border-border/50",
               "focus-visible:bg-background focus-visible:border-border",
               "focus-visible:ring-ring/20 focus-visible:ring-4",
               "placeholder:text-muted-foreground/60",
@@ -86,7 +86,7 @@ export function DataTable<TData, TValue>({
       <div
         className={cn(
           "border-border/50 overflow-hidden rounded-xl border",
-          "bg-background/80 backdrop-blur-sm",
+          "bg-background/80",
           "shadow-lg shadow-black/5",
           "ring-1 ring-white/10",
           "transition-all duration-300",
@@ -96,7 +96,7 @@ export function DataTable<TData, TValue>({
           {/* Decorative gradient overlay */}
           <div className="via-border absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent" />
 
-          <Table className="[&_thead]:bg-muted/30 [&_thead]:backdrop-blur-sm">
+          <Table className="[&_thead]:bg-muted/30 [&_thead]:">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow

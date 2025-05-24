@@ -90,11 +90,10 @@ export function CreateEditMatrizCurricularFormDialog({
   const [commandOpen, setCommandOpen] = useState(false)
 
   const { toast } = useToast()
-  const { data: cursosData } = useCursosControllerFindAll({})
-  const { data: disciplinasData } = useDisciplinasControllerFindAll({})
-  const { data: matrizCurricularData } = useMatrizesCurricularesControllerFindAll(
-    {},
-  )
+  const { data: cursosData } = useCursosControllerFindAll()
+  const { data: disciplinasData } = useDisciplinasControllerFindAll()
+  const { data: matrizCurricularData } =
+    useMatrizesCurricularesControllerFindAll()
 
   const { mutate: createMatrizCurricular } =
     useMatrizesCurricularesControllerCreate()
@@ -148,6 +147,7 @@ export function CreateEditMatrizCurricularFormDialog({
         },
         {
           onSuccess: () => {
+            console.log("Matriz curricular atualizada com sucesso")
             toast({
               title: "Matriz curricular atualizada com sucesso",
               description: `A matriz curricular "${data.nome}" foi atualizada.`,
@@ -168,11 +168,6 @@ export function CreateEditMatrizCurricularFormDialog({
           },
         },
       )
-
-      toast({
-        title: "Matriz curricular atualizada com sucesso",
-        description: `A matriz curricular "${data.nome}" foi atualizada.`,
-      })
     } else {
       createMatrizCurricular(
         {
@@ -204,8 +199,6 @@ export function CreateEditMatrizCurricularFormDialog({
         },
       )
     }
-
-    onOpenChange(false)
   }
 
   /**
@@ -225,6 +218,9 @@ export function CreateEditMatrizCurricularFormDialog({
     setSelectedDisciplinas(newDisciplinas)
   }
 
+  /**
+   * Renderiza as disciplinas selecionadas
+   */
   function renderSelectedDisciplinas() {
     if (!selectedDisciplinas.length) return null
 

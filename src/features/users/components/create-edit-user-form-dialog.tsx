@@ -74,7 +74,32 @@ export function CreateEditUserFormDialog({
   // Hooks
   const navigate = useNavigate()
   const { toast } = useToast()
-  const { isAdmin } = useAuth()
+  const { isAdmin, isDiretor, isCoordenador } = useAuth()
+
+  // Centraliza definição dos papéis e permissões de exibição
+  const papelOptions = [
+    {
+      value: UsuarioResponseDtoPapel.ADMIN,
+      label: "Administrador",
+      canShow: () => isAdmin(),
+    },
+    {
+      value: UsuarioResponseDtoPapel.DIRETOR,
+      label: "Diretor",
+      canShow: () => isAdmin(),
+    },
+    {
+      value: UsuarioResponseDtoPapel.COORDENADOR,
+      label: "Coordenador",
+      canShow: () => isAdmin() || isDiretor(),
+    },
+    {
+      value: UsuarioResponseDtoPapel.PROFESSOR,
+      label: "Professor",
+      canShow: () => isAdmin() || isDiretor() || isCoordenador(),
+    },
+  ];
+
   const { mutateAsync: mutateUpdate } = useUsuariosControllerUpdate()
   const { mutateAsync: mutateCreate } = useUsuariosControllerCreate()
   const queryClient = useQueryClient()
@@ -295,18 +320,13 @@ export function CreateEditUserFormDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={UsuarioResponseDtoPapel.ADMIN}>
-                        Administrador
-                      </SelectItem>
-                      <SelectItem value={UsuarioResponseDtoPapel.DIRETOR}>
-                        Diretor
-                      </SelectItem>
-                      <SelectItem value={UsuarioResponseDtoPapel.COORDENADOR}>
-                        Coordenador
-                      </SelectItem>
-                      <SelectItem value={UsuarioResponseDtoPapel.PROFESSOR}>
-                        Professor
-                      </SelectItem>
+                      {papelOptions
+                        .filter(option => option.canShow())
+                        .map(option => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

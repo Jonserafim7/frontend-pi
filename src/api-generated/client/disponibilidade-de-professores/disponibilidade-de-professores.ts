@@ -24,6 +24,7 @@ import type {
   DisponibilidadeProfessorControllerFindAllParams,
   DisponibilidadeProfessorControllerFindByPeriodoParams,
   DisponibilidadeProfessorControllerFindByProfessorParams,
+  DisponibilidadeProfessorControllerGetSlotsValidos200,
   DisponibilidadeResponseDto,
   UpdateDisponibilidadeDto
 } from '../../model';
@@ -553,6 +554,70 @@ export function useDisponibilidadeProfessorControllerFindByProfessorAndPeriodo<T
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getDisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryOptions(professorId,periodoId,options)
+
+  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * Retorna os slots de horário válidos configurados para o período letivo
+ * @summary Buscar slots válidos
+ */
+export const disponibilidadeProfessorControllerGetSlotsValidos = (
+    periodoId: string,
+ options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalCustomInstance<DisponibilidadeProfessorControllerGetSlotsValidos200>(
+      {url: `/disponibilidades/slots-validos/${periodoId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getDisponibilidadeProfessorControllerGetSlotsValidosQueryKey = (periodoId: string,) => {
+    return ['disponibilidades','slots-validos',periodoId] as const;
+    }
+
+    
+export const getDisponibilidadeProfessorControllerGetSlotsValidosQueryOptions = <TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError = ErrorType<unknown>>(periodoId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDisponibilidadeProfessorControllerGetSlotsValidosQueryKey(periodoId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>> = ({ signal }) => disponibilidadeProfessorControllerGetSlotsValidos(periodoId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(periodoId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type DisponibilidadeProfessorControllerGetSlotsValidosQueryResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>>
+export type DisponibilidadeProfessorControllerGetSlotsValidosQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Buscar slots válidos
+ */
+
+export function useDisponibilidadeProfessorControllerGetSlotsValidos<TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError = ErrorType<unknown>>(
+ periodoId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getDisponibilidadeProfessorControllerGetSlotsValidosQueryOptions(periodoId,options)
 
   const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

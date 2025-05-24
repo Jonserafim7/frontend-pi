@@ -57,17 +57,17 @@ export function PeriodosLetivosActionRowDropdownMenu({
             onClick={() => setIsChangeStatusOpen(true)}
             className={
               isActive ?
-                "text-orange-600 hover:!text-orange-600"
-              : "text-green-600 hover:!text-green-600"
+                "text-amber-400 hover:!text-amber-400"
+              : "text-emerald-400 hover:!text-emerald-400"
             }
           >
             {isActive ?
               <>
-                <PowerOff className="mr-2 h-4 w-4" />
+                <PowerOff className="mr-2 h-4 w-4 text-amber-400" />
                 Desativar
               </>
             : <>
-                <Power className="mr-2 h-4 w-4" />
+                <Power className="mr-2 h-4 w-4 text-emerald-400" />
                 Ativar
               </>
             }
@@ -78,7 +78,7 @@ export function PeriodosLetivosActionRowDropdownMenu({
             onClick={() => setIsDeleteMenuOpen(true)}
             className="text-destructive hover:!text-destructive"
           >
-            <Trash2 className="mr-2 h-4 w-4" />
+            <Trash2 className="text-destructive mr-2 h-4 w-4" />
             Excluir
           </DropdownMenuItem>
         </DropdownMenuContent>

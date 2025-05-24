@@ -19,6 +19,7 @@ import type {
   ChangeStatusPeriodoLetivoDtoStatus,
 } from "@/api-generated/model"
 import type { AxiosError } from "axios"
+import { AlertTriangleIcon } from "lucide-react"
 
 interface ChangeStatusPeriodoLetivoDialogProps {
   open: boolean
@@ -89,9 +90,12 @@ export const ChangeStatusPeriodoLetivoDialog: React.FC<
     >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
-            {isActivating ? "Ativar" : "Desativar"} Período Letivo
-          </DialogTitle>
+          <div className="flex items-center gap-2">
+            <AlertTriangleIcon className="h-5 w-5 text-amber-500" />
+            <DialogTitle>
+              {isActivating ? "Ativar" : "Desativar"} Período Letivo
+            </DialogTitle>
+          </div>
           <DialogDescription>
             {isActivating ?
               <>
@@ -102,10 +106,9 @@ export const ChangeStatusPeriodoLetivoDialog: React.FC<
                 ?
                 <br />
                 <br />
-                <span className="text-amber-600 dark:text-amber-400">
-                  ⚠️ Atenção: Apenas um período letivo pode estar ativo por vez.
-                  Se houver outro período ativo, ele será automaticamente
-                  desativado.
+                <span className="leading-relaxed text-amber-600 dark:text-amber-400">
+                  Apenas um período letivo pode estar ativo por vez. Se houver
+                  outro período ativo, ele será automaticamente desativado.
                 </span>
               </>
             : <>

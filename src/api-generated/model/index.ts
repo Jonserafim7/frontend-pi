@@ -83,3 +83,5 @@ export * from "./usuario-response-dto";
 export * from "./usuario-response-dto-papel";
 export * from "./usuarios-controller-find-all-papel";
 export * from "./usuarios-controller-find-all-params";
+export * from './disponibilidade-professor-controller-get-slots-validos200';
+export * from './disponibilidade-professor-controller-get-slots-validos200-slots-item';
