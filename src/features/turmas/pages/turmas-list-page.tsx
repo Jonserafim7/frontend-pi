@@ -1,9 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "react-router"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Search, Filter } from "lucide-react"
+import { Plus, Search, Filter, X } from "lucide-react"
 import { TurmaCard } from "../components/turma-card"
 import { CreateTurmaModal } from "../components/create-turma-modal"
 import { EditTurmaModal } from "../components/edit-turma-modal"
@@ -16,6 +17,7 @@ import type { TurmaResponseDto } from "@/api-generated/model"
  * Página para listagem e gestão de turmas
  */
 export function TurmasListPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [searchTerm, setSearchTerm] = useState("")
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
@@ -31,6 +33,23 @@ export function TurmasListPage() {
 
   // Hook para remover professor
   const removerProfessorMutation = useRemoverProfessor()
+
+  // Aplicar filtro da URL ao carregar a página
+  useEffect(() => {
+    const filtroFromUrl = searchParams.get("filtro")
+    if (filtroFromUrl) {
+      setSearchTerm(decodeURIComponent(filtroFromUrl))
+    }
+  }, [searchParams])
+
+  // Função para limpar filtros
+  const handleClearFilter = () => {
+    setSearchTerm("")
+    // Remove o parâmetro filtro da URL
+    const newSearchParams = new URLSearchParams(searchParams)
+    newSearchParams.delete("filtro")
+    setSearchParams(newSearchParams)
+  }
 
   // Filtrar turmas pelo termo de busca
   const filteredTurmas = turmas?.filter((turma) => {
@@ -180,6 +199,17 @@ export function TurmasListPage() {
                 className="pl-10"
               />
             </div>
+            {searchTerm && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearFilter}
+                className="gap-2"
+              >
+                <X className="h-4 w-4" />
+                Limpar Filtro
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>

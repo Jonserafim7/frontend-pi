@@ -12,6 +12,7 @@ import {
   Calendar,
   CalendarDays,
   Clock,
+  Users,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import {
@@ -151,7 +152,6 @@ export function AppSidebar() {
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
@@ -164,7 +164,6 @@ export function AppSidebar() {
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
@@ -220,7 +219,6 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -233,7 +231,6 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -246,7 +243,18 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Turmas"
+                    isActive={isPathActive("/coordenador/turmas")}
+                  >
+                    <Link to="/coordenador/turmas">
+                      <Users />
+                      <span>Turmas</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -259,7 +267,6 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -272,7 +279,6 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -308,7 +314,6 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -321,7 +326,6 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild

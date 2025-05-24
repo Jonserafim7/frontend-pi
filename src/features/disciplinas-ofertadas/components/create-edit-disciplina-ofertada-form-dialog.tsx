@@ -33,17 +33,7 @@ import {
   getDisciplinasOfertadasControllerFindAllQueryKey,
 } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
 import { useDisciplinasControllerFindAll } from "@/api-generated/client/disciplinas/disciplinas"
-// TODO: Importação abaixo deve ser corrigida quando o endpoint estiver disponível
-// import {
-//   usePeriodosLetivosControllerFindAll,
-// } from "@/api-generated/client/periodos-letivos/periodos-letivos"
-
-// Mock temporário para períodos letivos até que o endpoint esteja disponível
-const mockPeriodosLetivos = [
-  { id: "1", ano: 2025, semestre: 1 },
-  { id: "2", ano: 2025, semestre: 2 },
-  { id: "3", ano: 2026, semestre: 1 },
-]
+import { usePeriodosLetivosControllerFindAll } from "@/api-generated/client/períodos-letivos/períodos-letivos"
 import {
   disciplinasOfertadasControllerCreateBody,
   disciplinasOfertadasControllerUpdateBody,
@@ -53,6 +43,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { Loader2, Calendar, PenLine } from "lucide-react"
 import type { AxiosError } from "axios"
+import { getTurmasControllerFindAllQueryKey } from "@/api-generated/client/turmas/turmas"
 
 // Tipos inferidos dos schemas
 type CreateDisciplinaOfertadaFormValues = z.infer<
@@ -96,9 +87,8 @@ export function CreateEditDisciplinaOfertadaFormDialog({
   // Busca dados para os selects
   const { data: disciplinas, isLoading: isLoadingDisciplinas } =
     useDisciplinasControllerFindAll()
-  // TODO: Substituir pelo hook real quando disponível
-  const periodosLetivos = mockPeriodosLetivos
-  const isLoadingPeriodos = false
+  const { data: periodosLetivos, isLoading: isLoadingPeriodos } =
+    usePeriodosLetivosControllerFindAll()
 
   // Estados
   const [isEditMode] = useState(!!disciplinaOfertada)
@@ -117,6 +107,10 @@ export function CreateEditDisciplinaOfertadaFormDialog({
       quantidadeTurmas: 1,
     },
   })
+
+  // Watch dos valores do formulário para preview reativo
+  const quantidadeTurmas = form.watch("quantidadeTurmas") || 0
+  const disciplinaId = form.watch("idDisciplina")
 
   // Carrega os dados da disciplina ofertada para edição
   useEffect(() => {
@@ -157,9 +151,14 @@ export function CreateEditDisciplinaOfertadaFormDialog({
               title: "Disciplina ofertada atualizada",
               description: "A disciplina ofertada foi atualizada com sucesso.",
             })
-            queryClient.invalidateQueries({
-              queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
-            })
+            Promise.all([
+              queryClient.invalidateQueries({
+                queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
+              }),
+              queryClient.invalidateQueries({
+                queryKey: getTurmasControllerFindAllQueryKey(),
+              }),
+            ])
             onOpenChange(false)
           },
           onError: (error: AxiosError) => {
@@ -185,9 +184,14 @@ export function CreateEditDisciplinaOfertadaFormDialog({
               title: "Disciplina ofertada criada",
               description: "A disciplina ofertada foi criada com sucesso.",
             })
-            queryClient.invalidateQueries({
-              queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
-            })
+            Promise.all([
+              queryClient.invalidateQueries({
+                queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
+              }),
+              queryClient.invalidateQueries({
+                queryKey: getTurmasControllerFindAllQueryKey(),
+              }),
+            ])
             onOpenChange(false)
           },
           onError: (error: AxiosError) => {
@@ -206,10 +210,8 @@ export function CreateEditDisciplinaOfertadaFormDialog({
 
   // Preview das turmas a serem criadas
   const renderTurmasPreview = () => {
-    const quantidadeTurmas = form.getValues("quantidadeTurmas") || 0
     if (quantidadeTurmas <= 0) return null
 
-    const disciplinaId = form.getValues("idDisciplina")
     const disciplinaSelecionada = disciplinas?.find((d) => d.id === disciplinaId)
 
     return (
@@ -338,20 +340,14 @@ export function CreateEditDisciplinaOfertadaFormDialog({
                           <span className="ml-2">Carregando...</span>
                         </div>
                       : periodosLetivos && periodosLetivos.length > 0 ?
-                        periodosLetivos.map(
-                          (periodo: {
-                            id: string
-                            ano: number
-                            semestre: number
-                          }) => (
-                            <SelectItem
-                              key={periodo.id}
-                              value={periodo.id}
-                            >
-                              {periodo.ano}/{periodo.semestre}º Semestre
-                            </SelectItem>
-                          ),
-                        )
+                        periodosLetivos.map((periodo) => (
+                          <SelectItem
+                            key={periodo.id}
+                            value={periodo.id}
+                          >
+                            {periodo.ano}/{periodo.semestre}º Semestre
+                          </SelectItem>
+                        ))
                       : <div className="px-2 py-2 text-sm">
                           Nenhum período letivo encontrado
                         </div>

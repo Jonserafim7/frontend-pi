@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -27,8 +27,9 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
-import { useCreateTurma } from "../hooks/use-turmas"
+import { Badge } from "@/components/ui/badge"
+import { Loader2, AlertTriangle } from "lucide-react"
+import { useCreateTurma, useTurmas } from "../hooks/use-turmas"
 import { useDisciplinasOfertadasControllerFindAll } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
 
 /**
@@ -64,6 +65,9 @@ export function CreateTurmaModal({
   const { data: disciplinasOfertadas } =
     useDisciplinasOfertadasControllerFindAll()
 
+  // Buscar todas as turmas para calcular disponibilidade
+  const { data: todasTurmas } = useTurmas()
+
   // Hook para criar turma
   const createTurmaMutation = useCreateTurma()
 
@@ -75,6 +79,35 @@ export function CreateTurmaModal({
       idDisciplinaOfertada: "",
     },
   })
+
+  /**
+   * Calcula ofertas disponíveis (que ainda têm vagas para turmas)
+   */
+  const ofertasDisponibles = useMemo(() => {
+    if (!disciplinasOfertadas || !todasTurmas) return []
+
+    return disciplinasOfertadas
+      .map((oferta) => {
+        // Contar turmas existentes para esta oferta
+        const turmasExistentes = todasTurmas.filter(
+          (turma) => turma.idDisciplinaOfertada === oferta.id,
+        ).length
+
+        return {
+          ...oferta,
+          turmasExistentes,
+          vagasDisponiveis: oferta.quantidadeTurmas - turmasExistentes,
+          temVagas: turmasExistentes < oferta.quantidadeTurmas,
+        }
+      })
+      .filter((oferta) => oferta.temVagas) // Apenas ofertas com vagas
+      .sort((a, b) => {
+        // Ordenar por disciplina
+        const nomeA = a.disciplina?.nome || ""
+        const nomeB = b.disciplina?.nome || ""
+        return nomeA.localeCompare(nomeB)
+      })
+  }, [disciplinasOfertadas, todasTurmas])
 
   /**
    * Handler para envio do formulário
@@ -119,6 +152,12 @@ export function CreateTurmaModal({
           <DialogTitle>Criar Nova Turma</DialogTitle>
           <DialogDescription>
             Crie uma nova turma para uma disciplina ofertada.
+            {ofertasDisponibles.length === 0 && disciplinasOfertadas && (
+              <span className="mt-2 flex items-center gap-1 text-amber-600">
+                <AlertTriangle className="h-4 w-4" />
+                Todas as disciplinas ofertadas já atingiram o limite de turmas.
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -137,27 +176,45 @@ export function CreateTurmaModal({
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
+                    disabled={ofertasDisponibles.length === 0}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma disciplina ofertada" />
+                        <SelectValue
+                          placeholder={
+                            ofertasDisponibles.length === 0 ?
+                              "Nenhuma disciplina com vagas disponíveis"
+                            : "Selecione uma disciplina ofertada"
+                          }
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {disciplinasOfertadas?.map((oferta) => (
+                      {ofertasDisponibles.map((oferta) => (
                         <SelectItem
                           key={oferta.id}
                           value={oferta.id}
                         >
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {oferta.disciplina?.nome}
-                            </span>
+                          <div className="flex w-full flex-col gap-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-medium">
+                                {oferta.disciplina?.nome}
+                              </span>
+                              <Badge
+                                variant="secondary"
+                                className="text-xs"
+                              >
+                                {oferta.vagasDisponiveis} vaga(s)
+                              </Badge>
+                            </div>
                             <span className="text-muted-foreground text-xs">
                               {oferta.periodoLetivo?.ano}/
                               {oferta.periodoLetivo?.semestre}º Semestre
                               {oferta.disciplina?.codigo &&
                                 ` • ${oferta.disciplina.codigo}`}
+                              {" • "}
+                              {oferta.turmasExistentes}/{oferta.quantidadeTurmas}{" "}
+                              turmas
                             </span>
                           </div>
                         </SelectItem>
@@ -180,7 +237,7 @@ export function CreateTurmaModal({
                     <Input
                       placeholder="Ex: T1, T2, A, B..."
                       {...field}
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || ofertasDisponibles.length === 0}
                     />
                   </FormControl>
                   <FormMessage />
@@ -199,7 +256,7 @@ export function CreateTurmaModal({
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || ofertasDisponibles.length === 0}
               >
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

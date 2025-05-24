@@ -3,6 +3,7 @@ import {
   type ColumnDef,
   type SortingState,
   type ColumnFiltersState,
+  type Table as ReactTable,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -27,11 +28,13 @@ import { cn } from "@/lib/utils"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  header?: (table: ReactTable<TData>) => React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  header,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -69,6 +72,7 @@ export function DataTable<TData, TValue>({
             className="bg-background/60 focus-visible:bg-background pl-8 transition-colors"
           />
         </div>
+        {header && header(table)}
       </div>
       <div className="bg-background/50 overflow-hidden rounded-lg border backdrop-blur-sm transition">
         <div className="relative">

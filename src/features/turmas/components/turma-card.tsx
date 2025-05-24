@@ -117,7 +117,9 @@ export function TurmaCard({
         {/* Professor Alocado - por enquanto mostra sempre não atribuído */}
         <div className="text-sm">
           <span className="text-muted-foreground font-medium">Professor:</span>
-          <span className="text-muted-foreground ml-2">Não atribuído</span>
+          <span className="text-muted-foreground ml-2">
+            {turma.professorAlocado?.nome}
+          </span>
         </div>
 
         {/* Carga Horária */}

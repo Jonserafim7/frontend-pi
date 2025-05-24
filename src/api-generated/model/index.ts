@@ -63,6 +63,7 @@ export * from './periodos-letivos-controller-find-all-status';
 export * from './professor-simplificado-dto';
 export * from './sign-in-dto';
 export * from './turma-response-dto';
+export * from './turma-response-dto-id-usuario-professor';
 export * from './turmas-controller-find-all-params';
 export * from './update-curso-dto';
 export * from './update-disciplina-dto';
