@@ -303,30 +303,6 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip="Minhas Disciplinas"
-                    isActive={isPathActive("/minhas-disciplinas")}
-                  >
-                    <Link to="/minhas-disciplinas">
-                      <GraduationCapIcon />
-                      <span>Minhas Disciplinas</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip="Meu Horário"
-                    isActive={isPathActive("/meu-horario")}
-                  >
-                    <Link to="/meu-horario">
-                      <CalendarIcon />
-                      <span>Meu Horário</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
