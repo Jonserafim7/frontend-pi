@@ -7,7 +7,7 @@ import { SkeletonTable } from "@/components/skeleton-table"
  * Componente de tabela de dados para Matrizes Curriculares
  */
 export function MatrizCurricularDataTable() {
-  const { data: matrizesCurriculares, isPending: isLoading } = 
+  const { data: matrizesCurriculares, isPending: isLoading } =
     useMatrizesCurricularesControllerFindAll()
 
   if (isLoading) {
@@ -20,7 +20,7 @@ export function MatrizCurricularDataTable() {
   }
 
   return (
-    <DataTable 
+    <DataTable
       columns={matrizCurricularColumns}
       data={matrizesCurriculares ?? []}
     />

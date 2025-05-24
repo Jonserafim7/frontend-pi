@@ -31,27 +31,14 @@ import { HeaderIconContainer } from "@/components/icon-container"
 import { DisponibilidadesDataTable } from "../components/data-table/disponibilidades-data-table"
 import { SkeletonTable } from "@/components/skeleton-table"
 import { disponibilidadeColumns } from "../components/data-table/disponibilidade-columns"
-import { useDisponibilidades } from "../hooks/use-disponibilidades"
+import { useDisponibilidadeProfessorControllerFindAll } from "@/api-generated/client/disponibilidade-de-professores/disponibilidade-de-professores"
+import {
+  usePeriodosLetivosControllerFindAll,
+  usePeriodosLetivosControllerFindPeriodoAtivo,
+} from "@/api-generated/client/períodos-letivos/períodos-letivos"
 import type { DisponibilidadeResponseDto } from "@/api-generated/model"
-
-/**
- * Interface para dados do professor (mock)
- */
-interface Professor {
-  id: string
-  nome: string
-  email: string
-  departamento?: string
-}
-
-/**
- * Interface para dados do período letivo (mock)
- */
-interface PeriodoLetivo {
-  id: string
-  nome: string
-  ativo: boolean
-}
+import { useUsuariosControllerFindAll } from "@/api-generated/client/usuarios/usuarios"
+import { getUsuariosControllerFindAllQueryKey } from "@/api-generated/client/usuarios/usuarios"
 
 /**
  * Página de visualização de disponibilidades para coordenadores
@@ -62,28 +49,56 @@ export function CoordenadorDisponibilidadePage() {
   const [selectedPeriodo, setSelectedPeriodo] = useState<string>("current")
   const [searchTerm, setSearchTerm] = useState("")
 
-  // Mock data - substituir por dados reais do contexto/API
-  const professores: Professor[] = [
-    {
-      id: "19eab2e6-4f8c-482e-aadf-c81a2f6e09d8", // Pedro Professor
-      nome: "Pedro Professor",
-      email: "professor1@escola.edu",
-      departamento: "Computação",
-    },
-    {
-      id: "31cb9124-3610-4267-951b-eba64e4981b6", // Maria Professora
-      nome: "Maria Professora",
-      email: "professor2@escola.edu",
-      departamento: "Matemática",
-    },
-  ]
+  // Buscar períodos letivos e período ativo da API
+  const { data: allPeriodos, isLoading: isLoadingPeriodos } =
+    usePeriodosLetivosControllerFindAll()
+  const { data: periodoAtivo, isLoading: isLoadingPeriodoAtivo } =
+    usePeriodosLetivosControllerFindPeriodoAtivo()
+  const { data: professores, isLoading: isLoadingProfessores } =
+    useUsuariosControllerFindAll(
+      {
+        papel: "PROFESSOR",
+      },
+      {
+        query: {
+          enabled: !!allPeriodos,
+          queryKey: getUsuariosControllerFindAllQueryKey(),
+        },
+      },
+    )
 
-  const periodos: PeriodoLetivo[] = [
-    { id: "06a6d41c-40d5-42b6-a7f1-5137a4533ea6", nome: "2025.1", ativo: true },
-    { id: "periodo-2024-2", nome: "2024.2", ativo: false },
-  ]
+  // Usar dados reais da API
+  const periodos = allPeriodos || []
+  const currentPeriodo = periodoAtivo
 
-  const currentPeriodo = periodos.find((p) => p.ativo) || periodos[0]
+  // Mostrar loading se ainda estiver carregando dados essenciais
+  if (isLoadingPeriodos || isLoadingPeriodoAtivo) {
+    return (
+      <div className="container mx-auto p-12">
+        <div className="flex items-center justify-center">
+          <p className="text-muted-foreground">Carregando dados...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Verificar se há período ativo
+  if (!currentPeriodo) {
+    return (
+      <div className="container mx-auto p-12">
+        <div className="flex items-center justify-center text-center">
+          <div>
+            <h2 className="mb-2 text-xl font-semibold">
+              Nenhum Período Letivo Ativo
+            </h2>
+            <p className="text-muted-foreground">
+              Não há período letivo ativo no momento.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // Query com filtros
   const queryParams = {
@@ -93,7 +108,7 @@ export function CoordenadorDisponibilidadePage() {
   }
 
   const { data: allDisponibilidades, isLoading } =
-    useDisponibilidades(queryParams)
+    useDisponibilidadeProfessorControllerFindAll(queryParams)
 
   // Usar dados diretamente da API
   const disponibilidades = (allDisponibilidades as any)?.data || []
@@ -135,12 +150,15 @@ export function CoordenadorDisponibilidadePage() {
 
   const selectedProfessorName =
     selectedProfessor !== "all" ?
-      professores.find((p) => p.id === selectedProfessor)?.nome
+      professores?.find((p) => p.id === selectedProfessor)?.nome
     : null
 
   const selectedPeriodoName =
     selectedPeriodo !== "current" ?
-      periodos.find((p) => p.id === selectedPeriodo)?.nome
+      (() => {
+        const periodo = periodos.find((p) => p.id === selectedPeriodo)
+        return periodo ? `${periodo.ano}.${periodo.semestre}` : null
+      })()
     : null
 
   return (
@@ -207,14 +225,15 @@ export function CoordenadorDisponibilidadePage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os professores</SelectItem>
-                  {professores.map((professor) => (
-                    <SelectItem
-                      key={professor.id}
-                      value={professor.id}
-                    >
-                      {professor.nome}
-                    </SelectItem>
-                  ))}
+                  {professores &&
+                    professores.map((professor) => (
+                      <SelectItem
+                        key={professor.id}
+                        value={professor.id}
+                      >
+                        {professor.nome}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -227,18 +246,25 @@ export function CoordenadorDisponibilidadePage() {
                 onValueChange={setSelectedPeriodo}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={currentPeriodo.nome} />
+                  <SelectValue
+                    placeholder={`${currentPeriodo.ano}.${currentPeriodo.semestre}`}
+                  />
                 </SelectTrigger>
                 <SelectContent>
+                  {" "}
                   <SelectItem value="current">
-                    Período Atual ({currentPeriodo.nome})
-                  </SelectItem>
+                    {" "}
+                    Período Atual ({currentPeriodo.ano}.{currentPeriodo.semestre}
+                    ){" "}
+                  </SelectItem>{" "}
                   {periodos.map((periodo) => (
                     <SelectItem
                       key={periodo.id}
                       value={periodo.id}
                     >
-                      {periodo.nome} {periodo.ativo && "(Ativo)"}
+                      {" "}
+                      {periodo.ano}.{periodo.semestre}{" "}
+                      {periodo.status === "ATIVO" && "(Ativo)"}{" "}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
   DialogContent,
@@ -10,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { HeaderIconContainer } from "@/components/icon-container"
 import {
   Form,
   FormControl,
@@ -27,10 +29,14 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, User, Clock, BookOpen } from "lucide-react"
-import { useAtribuirProfessor } from "../hooks/use-turmas"
+import { Loader2, UserPlus, BookOpen, Clock } from "lucide-react"
+import {
+  useTurmasControllerAtribuirProfessor,
+  getTurmasControllerFindAllQueryKey,
+} from "@/api-generated/client/turmas/turmas"
 import { useUsuariosControllerFindAll } from "@/api-generated/client/usuarios/usuarios"
 import type { TurmaResponseDto } from "@/api-generated/model"
+import { useQueryClient } from "@tanstack/react-query"
 
 /**
  * Schema de validação para atribuição de professor
@@ -41,7 +47,7 @@ const atribuirProfessorSchema = z.object({
 
 type AtribuirProfessorFormData = z.infer<typeof atribuirProfessorSchema>
 
-interface AtribuirProfessorModalProps {
+interface AtribuirProfessorDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   turma: TurmaResponseDto | null
@@ -49,15 +55,16 @@ interface AtribuirProfessorModalProps {
 }
 
 /**
- * Modal para atribuir professor à turma
+ * Dialog para atribuir professor à turma
  */
-export function AtribuirProfessorModal({
+export function AtribuirProfessorDialog({
   open,
   onOpenChange,
   turma,
   onSuccess,
-}: AtribuirProfessorModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+}: AtribuirProfessorDialogProps) {
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   // Buscar professores disponíveis
   const { data: usuarios } = useUsuariosControllerFindAll({
@@ -65,7 +72,7 @@ export function AtribuirProfessorModal({
   })
 
   // Hook para atribuir professor
-  const atribuirProfessorMutation = useAtribuirProfessor()
+  const { mutate: atribuirProfessor } = useTurmasControllerAtribuirProfessor()
 
   // Configurar form com React Hook Form + Zod
   const form = useForm<AtribuirProfessorFormData>({
@@ -81,25 +88,39 @@ export function AtribuirProfessorModal({
   const onSubmit = async (data: AtribuirProfessorFormData) => {
     if (!turma) return
 
-    try {
-      setIsSubmitting(true)
-
-      await atribuirProfessorMutation.mutateAsync({
+    atribuirProfessor(
+      {
         id: turma.id,
         data: {
           idUsuarioProfessor: data.idUsuarioProfessor,
         },
-      })
-
-      // Resetar form e fechar modal
-      form.reset()
-      onOpenChange(false)
-      onSuccess?.()
-    } catch (error) {
-      console.error("Erro ao atribuir professor:", error)
-    } finally {
-      setIsSubmitting(false)
-    }
+      },
+      {
+        onSuccess: () => {
+          const professor = professores.find(
+            (p) => p.id === data.idUsuarioProfessor,
+          )
+          toast({
+            title: "Professor atribuído",
+            description: `O professor ${professor?.nome} foi atribuído à turma ${turma.codigoDaTurma} com sucesso.`,
+          })
+          queryClient.invalidateQueries({
+            queryKey: getTurmasControllerFindAllQueryKey(),
+          })
+          form.reset()
+          onOpenChange(false)
+          onSuccess?.()
+        },
+        onError: (error) => {
+          toast({
+            title: "Erro ao atribuir professor",
+            description:
+              error?.message || "Ocorreu um erro ao atribuir o professor.",
+            variant: "destructive",
+          })
+        },
+      },
+    )
   }
 
   /**
@@ -118,20 +139,22 @@ export function AtribuirProfessorModal({
       open={open}
       onOpenChange={handleClose}
     >
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Atribuir Professor
-          </DialogTitle>
-          <DialogDescription>
-            Selecione um professor para a turma{" "}
-            <strong>{turma?.codigoDaTurma}</strong>
-            {turma?.disciplinaOfertada?.disciplina?.nome && (
-              <> de {turma.disciplinaOfertada.disciplina.nome}</>
-            )}
-            .
-          </DialogDescription>
+      <DialogContent className="gap-8 sm:max-w-[600px]">
+        <DialogHeader className="flex-row items-center gap-3">
+          <HeaderIconContainer Icon={UserPlus} />
+          <div className="flex flex-col gap-1">
+            <DialogTitle className="text-2xl font-bold">
+              Atribuir Professor
+            </DialogTitle>
+            <DialogDescription>
+              Selecione um professor para a turma{" "}
+              <strong>{turma?.codigoDaTurma}</strong>
+              {turma?.disciplinaOfertada?.disciplina?.nome && (
+                <> de {turma.disciplinaOfertada.disciplina.nome}</>
+              )}
+              .
+            </DialogDescription>
+          </div>
         </DialogHeader>
 
         {/* Informações da Turma */}
@@ -174,7 +197,7 @@ export function AtribuirProfessorModal({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
+            className="space-y-6"
           >
             {/* Seleção de Professor */}
             <FormField
@@ -229,25 +252,27 @@ export function AtribuirProfessorModal({
               </div>
             </div>
 
-            <DialogFooter>
+            <div className="flex justify-end gap-2 pt-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleClose}
-                disabled={isSubmitting}
+                disabled={form.formState.isSubmitting}
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting || professores.length === 0}
+                disabled={form.formState.isSubmitting || professores.length === 0}
               >
-                {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Atribuir Professor
+                {form.formState.isSubmitting ?
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Atribuindo...
+                  </>
+                : "Atribuir Professor"}
               </Button>
-            </DialogFooter>
+            </div>
           </form>
         </Form>
       </DialogContent>

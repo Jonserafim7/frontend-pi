@@ -21,7 +21,6 @@ import type {
 
 import type {
   CreateDisponibilidadeDto,
-  DisponibilidadeProfessorControllerFindAll200,
   DisponibilidadeProfessorControllerFindAllParams,
   DisponibilidadeProfessorControllerFindByPeriodoParams,
   DisponibilidadeProfessorControllerFindByProfessorParams,
@@ -57,7 +56,7 @@ export const disponibilidadeProfessorControllerCreate = (
   
 
 
-export const getDisponibilidadeProfessorControllerCreateMutationOptions = <TError = ErrorType<void>,
+export const getDisponibilidadeProfessorControllerCreateMutationOptions = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>, TError,{data: BodyType<CreateDisponibilidadeDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>, TError,{data: BodyType<CreateDisponibilidadeDto>}, TContext> => {
 
@@ -84,12 +83,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DisponibilidadeProfessorControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>>
     export type DisponibilidadeProfessorControllerCreateMutationBody = BodyType<CreateDisponibilidadeDto>
-    export type DisponibilidadeProfessorControllerCreateMutationError = ErrorType<void>
+    export type DisponibilidadeProfessorControllerCreateMutationError = ErrorType<unknown>
 
     /**
  * @summary Criar nova disponibilidade
  */
-export const useDisponibilidadeProfessorControllerCreate = <TError = ErrorType<void>,
+export const useDisponibilidadeProfessorControllerCreate = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>, TError,{data: BodyType<CreateDisponibilidadeDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>,
@@ -112,7 +111,7 @@ export const disponibilidadeProfessorControllerFindAll = (
 ) => {
       
       
-      return orvalCustomInstance<DisponibilidadeProfessorControllerFindAll200>(
+      return orvalCustomInstance<DisponibilidadeResponseDto[]>(
       {url: `/disponibilidades`, method: 'GET',
         params, signal
     },
@@ -189,7 +188,7 @@ export const getDisponibilidadeProfessorControllerFindOneQueryKey = (id: string,
     }
 
     
-export const getDisponibilidadeProfessorControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError = ErrorType<void>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
+export const getDisponibilidadeProfessorControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -208,14 +207,14 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type DisponibilidadeProfessorControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>>
-export type DisponibilidadeProfessorControllerFindOneQueryError = ErrorType<void>
+export type DisponibilidadeProfessorControllerFindOneQueryError = ErrorType<unknown>
 
 
 /**
  * @summary Buscar disponibilidade por ID
  */
 
-export function useDisponibilidadeProfessorControllerFindOne<TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError = ErrorType<void>>(
+export function useDisponibilidadeProfessorControllerFindOne<TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError = ErrorType<unknown>>(
  id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
   
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
@@ -251,7 +250,7 @@ export const disponibilidadeProfessorControllerUpdate = (
   
 
 
-export const getDisponibilidadeProfessorControllerUpdateMutationOptions = <TError = ErrorType<void>,
+export const getDisponibilidadeProfessorControllerUpdateMutationOptions = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisponibilidadeDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisponibilidadeDto>}, TContext> => {
 
@@ -278,12 +277,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DisponibilidadeProfessorControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>>
     export type DisponibilidadeProfessorControllerUpdateMutationBody = BodyType<UpdateDisponibilidadeDto>
-    export type DisponibilidadeProfessorControllerUpdateMutationError = ErrorType<void>
+    export type DisponibilidadeProfessorControllerUpdateMutationError = ErrorType<unknown>
 
     /**
  * @summary Atualizar disponibilidade
  */
-export const useDisponibilidadeProfessorControllerUpdate = <TError = ErrorType<void>,
+export const useDisponibilidadeProfessorControllerUpdate = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisponibilidadeDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>,
@@ -305,7 +304,7 @@ export const disponibilidadeProfessorControllerRemove = (
  options?: SecondParameter<typeof orvalCustomInstance>,) => {
       
       
-      return orvalCustomInstance<void>(
+      return orvalCustomInstance<DisponibilidadeResponseDto>(
       {url: `/disponibilidades/${id}`, method: 'DELETE'
     },
       options);
@@ -313,7 +312,7 @@ export const disponibilidadeProfessorControllerRemove = (
   
 
 
-export const getDisponibilidadeProfessorControllerRemoveMutationOptions = <TError = ErrorType<void>,
+export const getDisponibilidadeProfessorControllerRemoveMutationOptions = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>, TError,{id: string}, TContext> => {
 
@@ -340,12 +339,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DisponibilidadeProfessorControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>>
     
-    export type DisponibilidadeProfessorControllerRemoveMutationError = ErrorType<void>
+    export type DisponibilidadeProfessorControllerRemoveMutationError = ErrorType<unknown>
 
     /**
  * @summary Remover disponibilidade
  */
-export const useDisponibilidadeProfessorControllerRemove = <TError = ErrorType<void>,
+export const useDisponibilidadeProfessorControllerRemove = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>,
@@ -369,7 +368,7 @@ export const disponibilidadeProfessorControllerFindByProfessor = (
 ) => {
       
       
-      return orvalCustomInstance<void>(
+      return orvalCustomInstance<DisponibilidadeResponseDto[]>(
       {url: `/disponibilidades/professor/${professorId}`, method: 'GET',
         params, signal
     },
@@ -438,7 +437,7 @@ export const disponibilidadeProfessorControllerFindByPeriodo = (
 ) => {
       
       
-      return orvalCustomInstance<void>(
+      return orvalCustomInstance<DisponibilidadeResponseDto[]>(
       {url: `/disponibilidades/periodo/${periodoId}`, method: 'GET',
         params, signal
     },

@@ -8,50 +8,51 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
-import { useDisciplinasControllerRemove } from "@/api-generated/client/disciplinas/disciplinas"
+import { useDisponibilidadeProfessorControllerRemove } from "@/api-generated/client/disponibilidade-de-professores/disponibilidade-de-professores"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { TriangleAlert } from "lucide-react"
-import { getDisciplinasControllerFindAllQueryKey } from "@/api-generated/client/disciplinas/disciplinas"
+import { getDisponibilidadeProfessorControllerFindAllQueryKey } from "@/api-generated/client/disponibilidade-de-professores/disponibilidade-de-professores"
 import { useQueryClient } from "@tanstack/react-query"
-import type { DisciplinaResponseDto } from "@/api-generated/model/disciplina-response-dto"
+import type { DisponibilidadeResponseDto } from "@/api-generated/model/disponibilidade-response-dto"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
-interface DeleteDisciplinaAlertDialogProps {
-  disciplina: DisciplinaResponseDto
+interface DeleteDisponibilidadeAlertDialogProps {
+  disponibilidade: DisponibilidadeResponseDto
   isOpen: boolean
   onOpenChange: (open: boolean) => void
 }
 
 /**
- * Componente de diálogo para confirmação de exclusão de disciplina
+ * Componente de diálogo para confirmação de exclusão de disponibilidade de professor
  */
-export function DeleteDisciplinaAlertDialog({
-  disciplina,
+export function DeleteDisponibilidadeAlertDialog({
+  disponibilidade,
   isOpen,
   onOpenChange,
-}: DeleteDisciplinaAlertDialogProps) {
+}: DeleteDisponibilidadeAlertDialogProps) {
   const queryClient = useQueryClient()
-  const { mutateAsync: removeDisciplina } = useDisciplinasControllerRemove()
+  const { mutateAsync: removeDisponibilidade } =
+    useDisponibilidadeProfessorControllerRemove()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "REMOVER"
   const { toast } = useToast()
 
-  const handleDeleteDisciplina = () => {
-    removeDisciplina(
-      { id: disciplina.id },
+  const handleDeleteDisponibilidade = () => {
+    removeDisponibilidade(
+      { id: disponibilidade.id },
       {
         onSuccess: () => {
           setConfirmationText("")
           onOpenChange(false)
           toast({
-            title: "Disciplina removida com sucesso",
-            description: "A disciplina foi removida com sucesso.",
+            title: "Disponibilidade removida com sucesso",
+            description: "A disponibilidade foi removida com sucesso.",
           })
           queryClient.invalidateQueries({
-            queryKey: getDisciplinasControllerFindAllQueryKey(),
+            queryKey: getDisponibilidadeProfessorControllerFindAllQueryKey(),
           })
         },
         onError: () => {
@@ -59,7 +60,7 @@ export function DeleteDisciplinaAlertDialog({
           onOpenChange(false)
           toast({
             title: "Erro",
-            description: "Erro ao remover a disciplina.",
+            description: "Erro ao remover a disponibilidade.",
             variant: "destructive",
           })
         },
@@ -81,14 +82,18 @@ export function DeleteDisciplinaAlertDialog({
         <AlertDialogHeader>
           <div className="flex items-center gap-2">
             <TriangleAlert className="text-destructive" />
-            <AlertDialogTitle>
-              Tem certeza que deseja remover a disciplina?
+            <AlertDialogTitle className="leading-normal">
+              Tem certeza que deseja remover esta disponibilidade?
             </AlertDialogTitle>
           </div>
-          <AlertDialogDescription>
-            Esta ação não pode ser desfeita. Isso irá permanentemente excluir a
-            disciplina <strong>{disciplina.nome}</strong> e remover seus dados do
-            nosso servidor.
+          <AlertDialogDescription className="leading-normal whitespace-pre-line">
+            Esta ação não pode ser desfeita. Isso irá excluir permanentemente a
+            disponibilidade do professor{" "}
+            <strong>{disponibilidade.usuarioProfessor?.nome ?? ""}</strong> no
+            semestre{" "}
+            <strong>{disponibilidade.periodoLetivo?.semestre ?? ""}</strong> das{" "}
+            <strong>{disponibilidade.horaInicio}</strong> às{" "}
+            <strong>{disponibilidade.horaFim}</strong>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Input
@@ -100,7 +105,7 @@ export function DeleteDisciplinaAlertDialog({
           <AlertDialogCancel onClick={handleCancel}>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             disabled={!isConfirmed}
-            onClick={handleDeleteDisciplina}
+            onClick={handleDeleteDisponibilidade}
             className={cn(
               buttonVariants({
                 variant: "destructive",

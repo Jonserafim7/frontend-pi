@@ -31,12 +31,4 @@ orderBy?: DisponibilidadeProfessorControllerFindByProfessorOrderBy;
  * Direção da ordenação
  */
 orderDirection?: DisponibilidadeProfessorControllerFindByProfessorOrderDirection;
-/**
- * Página para paginação (começa em 1)
- */
-page?: number;
-/**
- * Quantidade de itens por página
- */
-limit?: number;
 };

@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import {
   AlertDialog,
@@ -9,70 +10,75 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { useMatrizesCurricularesControllerRemove } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
-import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { Loader2, TriangleAlert } from "lucide-react"
+import { TriangleAlert, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import {
+  useTurmasControllerRemove,
+  getTurmasControllerFindAllQueryKey,
+} from "@/api-generated/client/turmas/turmas"
 import { useQueryClient } from "@tanstack/react-query"
-import { getMatrizesCurricularesControllerFindAllQueryKey } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
 
 /**
- * Propriedades para o diálogo de exclusão de matriz curricular
+ * Propriedades do alert dialog de deleção de turma
  */
-interface DeleteMatrizCurricularAlertDialogProps {
+interface DeleteTurmaAlertDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  matrizCurricularId: string
-  matrizCurricularName: string
+  turmaId: string
+  turmaCode: string
 }
 
 /**
- * Componente de diálogo de alerta para confirmar exclusão de uma matriz curricular
+ * Alert dialog para confirmação de deleção de turma
  */
-export function DeleteMatrizCurricularAlertDialog({
+export function DeleteTurmaAlertDialog({
   open,
   onOpenChange,
-  matrizCurricularId,
-  matrizCurricularName,
-}: DeleteMatrizCurricularAlertDialogProps) {
+  turmaId,
+  turmaCode,
+}: DeleteTurmaAlertDialogProps) {
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "EXCLUIR"
-  const { mutate: deleteMatrizCurricular, isPending: isDeleting } =
-    useMatrizesCurricularesControllerRemove()
 
-  /**
-   * Manipula a operação de exclusão da matriz curricular
-   */
+  const { mutate: deleteTurma, isPending: isDeleting } =
+    useTurmasControllerRemove()
+
   const handleDelete = () => {
-    deleteMatrizCurricular(
-      { id: matrizCurricularId },
+    deleteTurma(
+      { id: turmaId },
       {
         onSuccess: () => {
           toast({
-            title: "Matriz curricular excluída",
-            description: `A matriz curricular "${matrizCurricularName}" foi excluída com sucesso.`,
+            title: "Turma excluída",
+            description: `A turma "${turmaCode}" foi excluída com sucesso.`,
           })
           queryClient.invalidateQueries({
-            queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
+            queryKey: getTurmasControllerFindAllQueryKey(),
           })
+          setConfirmationText("")
           onOpenChange(false)
         },
         onError: (error) => {
           const errorMessage =
             error?.message ||
-            "A matriz curricular pode estar em uso por outras entidades do sistema."
+            "A turma pode estar em uso por outras entidades do sistema."
           toast({
-            title: "Erro ao excluir matriz curricular",
+            title: "Erro ao excluir turma",
             description: errorMessage,
             variant: "destructive",
           })
         },
       },
     )
+  }
+
+  const handleCancel = () => {
+    setConfirmationText("")
+    onOpenChange(false)
   }
 
   return (
@@ -84,12 +90,11 @@ export function DeleteMatrizCurricularAlertDialog({
         <AlertDialogHeader>
           <div className="flex items-center gap-2">
             <TriangleAlert className="text-destructive" />
-            <AlertDialogTitle>Excluir matriz curricular</AlertDialogTitle>
+            <AlertDialogTitle>Excluir turma</AlertDialogTitle>
           </div>
           <AlertDialogDescription>
-            Tem certeza que deseja excluir a matriz curricular{" "}
-            <strong>{matrizCurricularName}</strong>? Esta ação não pode ser
-            desfeita.
+            Tem certeza que deseja excluir a turma <strong>{turmaCode}</strong>?
+            Esta ação não pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Input
@@ -98,7 +103,7 @@ export function DeleteMatrizCurricularAlertDialog({
           onChange={(e) => setConfirmationText(e.target.value)}
         />
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel onClick={handleCancel}>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             disabled={!isConfirmed || isDeleting}
             onClick={(e) => {

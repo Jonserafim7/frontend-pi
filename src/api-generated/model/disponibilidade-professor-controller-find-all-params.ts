@@ -35,12 +35,4 @@ orderBy?: DisponibilidadeProfessorControllerFindAllOrderBy;
  * Direção da ordenação
  */
 orderDirection?: DisponibilidadeProfessorControllerFindAllOrderDirection;
-/**
- * Página (padrão: 1)
- */
-page?: number;
-/**
- * Itens por página (padrão: 10)
- */
-limit?: number;
 };

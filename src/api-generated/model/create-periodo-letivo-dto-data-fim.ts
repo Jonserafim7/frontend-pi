@@ -10,4 +10,4 @@
  * Data de fim do período letivo no formato YYYY-MM-DD
  * @nullable
  */
-export type CreatePeriodoLetivoDtoDataFim = { [key: string]: unknown } | null;
+export type CreatePeriodoLetivoDtoDataFim = { [key: string]: unknown } | null

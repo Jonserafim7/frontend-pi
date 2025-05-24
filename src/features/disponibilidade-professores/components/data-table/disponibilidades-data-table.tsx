@@ -34,7 +34,7 @@ export function DisponibilidadesDataTable({
       if (column.id === "actions") {
         return {
           ...column,
-          cell: ({ row }: { row: any }) => {
+          cell: ({ row }) => {
             const disponibilidade = row.original
 
             return (

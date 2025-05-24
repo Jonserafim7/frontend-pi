@@ -9,4 +9,6 @@
 /**
  * Detalhes do período letivo da oferta
  */
-export type DisciplinaOfertadaResponseDtoPeriodoLetivo = { [key: string]: unknown };
+export type DisciplinaOfertadaResponseDtoPeriodoLetivo = {
+  [key: string]: unknown
+}

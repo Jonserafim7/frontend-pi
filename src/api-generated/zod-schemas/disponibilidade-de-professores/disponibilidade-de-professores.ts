@@ -31,22 +31,16 @@ export const disponibilidadeProfessorControllerCreateBody = zod.object({
  * Lista disponibilidades com filtros opcionais e paginação. Professores veem apenas suas próprias.
  * @summary Listar disponibilidades
  */
-export const disponibilidadeProfessorControllerFindAllQueryLimitMax = 100;
-
-
 export const disponibilidadeProfessorControllerFindAllQueryParams = zod.object({
   "professorId": zod.string().optional().describe('Filtrar por ID do professor'),
   "periodoLetivoId": zod.string().optional().describe('Filtrar por ID do período letivo'),
   "diaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).optional().describe('Filtrar por dia da semana'),
   "status": zod.enum(['DISPONIVEL', 'INDISPONIVEL']).optional().describe('Filtrar por status'),
   "orderBy": zod.enum(['diaDaSemana', 'horaInicio', 'horaFim', 'dataCriacao']).optional().describe('Campo para ordenação'),
-  "orderDirection": zod.enum(['asc', 'desc']).optional().describe('Direção da ordenação'),
-  "page": zod.number().min(1).optional().describe('Página (padrão: 1)'),
-  "limit": zod.number().min(1).max(disponibilidadeProfessorControllerFindAllQueryLimitMax).optional().describe('Itens por página (padrão: 10)')
+  "orderDirection": zod.enum(['asc', 'desc']).optional().describe('Direção da ordenação')
 })
 
-export const disponibilidadeProfessorControllerFindAllResponse = zod.object({
-  "data": zod.array(zod.object({
+export const disponibilidadeProfessorControllerFindAllResponseItem = zod.object({
   "id": zod.string().describe('ID único da disponibilidade'),
   "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
   "horaInicio": zod.string().describe('Horário de início (formato HH:mm)'),
@@ -65,12 +59,8 @@ export const disponibilidadeProfessorControllerFindAllResponse = zod.object({
   "semestre": zod.number().describe('Semestre do período'),
   "status": zod.string().describe('Status do período letivo')
 }).describe('Dados do período letivo')
-})).optional(),
-  "total": zod.number().optional(),
-  "page": zod.number().optional(),
-  "limit": zod.number().optional(),
-  "totalPages": zod.number().optional()
 })
+export const disponibilidadeProfessorControllerFindAllResponse = zod.array(disponibilidadeProfessorControllerFindAllResponseItem)
 
 /**
  * Busca uma disponibilidade específica pelo ID
@@ -149,6 +139,27 @@ export const disponibilidadeProfessorControllerRemoveParams = zod.object({
   "id": zod.string().describe('ID da disponibilidade')
 })
 
+export const disponibilidadeProfessorControllerRemoveResponse = zod.object({
+  "id": zod.string().describe('ID único da disponibilidade'),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
+  "horaInicio": zod.string().describe('Horário de início (formato HH:mm)'),
+  "horaFim": zod.string().describe('Horário de fim (formato HH:mm)'),
+  "status": zod.enum(['DISPONIVEL', 'INDISPONIVEL']).describe('Status da disponibilidade'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização'),
+  "usuarioProfessor": zod.object({
+  "id": zod.string().describe('ID do professor'),
+  "nome": zod.string().describe('Nome do professor'),
+  "email": zod.string().describe('Email do professor')
+}).describe('Dados do professor'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período'),
+  "semestre": zod.number().describe('Semestre do período'),
+  "status": zod.string().describe('Status do período letivo')
+}).describe('Dados do período letivo')
+})
+
 /**
  * Lista todas as disponibilidades de um professor específico
  * @summary Listar disponibilidades por professor
@@ -157,18 +168,35 @@ export const disponibilidadeProfessorControllerFindByProfessorParams = zod.objec
   "professorId": zod.string().describe('ID do professor')
 })
 
-export const disponibilidadeProfessorControllerFindByProfessorQueryLimitMax = 100;
-
-
 export const disponibilidadeProfessorControllerFindByProfessorQueryParams = zod.object({
   "periodoLetivoId": zod.string().optional().describe('ID do período letivo para filtrar'),
   "diaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).optional().describe('Dia da semana para filtrar'),
   "status": zod.enum(['DISPONIVEL', 'INDISPONIVEL']).optional().describe('Status da disponibilidade para filtrar'),
   "orderBy": zod.enum(['diaDaSemana', 'horaInicio', 'horaFim', 'dataCriacao']).optional().describe('Campo para ordenação'),
-  "orderDirection": zod.enum(['asc', 'desc']).optional().describe('Direção da ordenação'),
-  "page": zod.number().min(1).optional().describe('Página para paginação (começa em 1)'),
-  "limit": zod.number().min(1).max(disponibilidadeProfessorControllerFindByProfessorQueryLimitMax).optional().describe('Quantidade de itens por página')
+  "orderDirection": zod.enum(['asc', 'desc']).optional().describe('Direção da ordenação')
 })
+
+export const disponibilidadeProfessorControllerFindByProfessorResponseItem = zod.object({
+  "id": zod.string().describe('ID único da disponibilidade'),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
+  "horaInicio": zod.string().describe('Horário de início (formato HH:mm)'),
+  "horaFim": zod.string().describe('Horário de fim (formato HH:mm)'),
+  "status": zod.enum(['DISPONIVEL', 'INDISPONIVEL']).describe('Status da disponibilidade'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização'),
+  "usuarioProfessor": zod.object({
+  "id": zod.string().describe('ID do professor'),
+  "nome": zod.string().describe('Nome do professor'),
+  "email": zod.string().describe('Email do professor')
+}).describe('Dados do professor'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período'),
+  "semestre": zod.number().describe('Semestre do período'),
+  "status": zod.string().describe('Status do período letivo')
+}).describe('Dados do período letivo')
+})
+export const disponibilidadeProfessorControllerFindByProfessorResponse = zod.array(disponibilidadeProfessorControllerFindByProfessorResponseItem)
 
 /**
  * Lista todas as disponibilidades de um período letivo específico
@@ -178,19 +206,36 @@ export const disponibilidadeProfessorControllerFindByPeriodoParams = zod.object(
   "periodoId": zod.string().describe('ID do período letivo')
 })
 
-export const disponibilidadeProfessorControllerFindByPeriodoQueryLimitMax = 100;
-
-
 export const disponibilidadeProfessorControllerFindByPeriodoQueryParams = zod.object({
   "professorId": zod.string().optional().describe('ID do professor para filtrar'),
   "periodoLetivoId": zod.string().optional().describe('ID do período letivo para filtrar'),
   "diaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).optional().describe('Dia da semana para filtrar'),
   "status": zod.enum(['DISPONIVEL', 'INDISPONIVEL']).optional().describe('Status da disponibilidade para filtrar'),
   "orderBy": zod.enum(['diaDaSemana', 'horaInicio', 'horaFim', 'dataCriacao']).optional().describe('Campo para ordenação'),
-  "orderDirection": zod.enum(['asc', 'desc']).optional().describe('Direção da ordenação'),
-  "page": zod.number().min(1).optional().describe('Página para paginação (começa em 1)'),
-  "limit": zod.number().min(1).max(disponibilidadeProfessorControllerFindByPeriodoQueryLimitMax).optional().describe('Quantidade de itens por página')
+  "orderDirection": zod.enum(['asc', 'desc']).optional().describe('Direção da ordenação')
 })
+
+export const disponibilidadeProfessorControllerFindByPeriodoResponseItem = zod.object({
+  "id": zod.string().describe('ID único da disponibilidade'),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
+  "horaInicio": zod.string().describe('Horário de início (formato HH:mm)'),
+  "horaFim": zod.string().describe('Horário de fim (formato HH:mm)'),
+  "status": zod.enum(['DISPONIVEL', 'INDISPONIVEL']).describe('Status da disponibilidade'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização'),
+  "usuarioProfessor": zod.object({
+  "id": zod.string().describe('ID do professor'),
+  "nome": zod.string().describe('Nome do professor'),
+  "email": zod.string().describe('Email do professor')
+}).describe('Dados do professor'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período'),
+  "semestre": zod.number().describe('Semestre do período'),
+  "status": zod.string().describe('Status do período letivo')
+}).describe('Dados do período letivo')
+})
+export const disponibilidadeProfessorControllerFindByPeriodoResponse = zod.array(disponibilidadeProfessorControllerFindByPeriodoResponseItem)
 
 /**
  * Lista disponibilidades de um professor em um período letivo específico

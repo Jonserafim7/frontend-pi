@@ -50,15 +50,15 @@ export function SkeletonTable({ columns, rows }: SkeletonTableProps) {
             </TableHeader>
             <TableBody>
               {Array.from({ length: rows }).map((_, rowIndex) => (
-                <TableRow 
+                <TableRow
                   key={rowIndex}
                   className={cn(
                     "hover:bg-muted/50 transition-colors",
-                    rowIndex % 2 === 0 ? "bg-background" : "bg-muted/20"
+                    rowIndex % 2 === 0 ? "bg-background" : "bg-muted/20",
                   )}
                 >
                   {Array.from({ length: columns }).map((_, colIndex) => (
-                    <TableCell 
+                    <TableCell
                       key={colIndex}
                       className="px-8 py-3"
                     >

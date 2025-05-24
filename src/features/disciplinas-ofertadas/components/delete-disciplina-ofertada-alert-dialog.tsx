@@ -27,7 +27,7 @@ interface DeleteDisciplinaOfertadaAlertDialogProps {
 
 /**
  * Componente de diálogo para confirmação de exclusão de disciplina ofertada
- * 
+ *
  * @param disciplinaOfertada - A disciplina ofertada a ser excluída
  * @param isOpen - Estado que controla a visibilidade do diálogo
  * @param onOpenChange - Função para alterar o estado de visibilidade
@@ -38,16 +38,19 @@ export function DeleteDisciplinaOfertadaAlertDialog({
   onOpenChange,
 }: DeleteDisciplinaOfertadaAlertDialogProps) {
   const queryClient = useQueryClient()
-  const { mutateAsync: removeDisciplinaOfertada } = useDisciplinasOfertadasControllerRemove()
+  const { mutateAsync: removeDisciplinaOfertada } =
+    useDisciplinasOfertadasControllerRemove()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "REMOVER"
   const { toast } = useToast()
 
   // Detalhes formatados da disciplina ofertada para exibição
-  const disciplinaDisplay = disciplinaOfertada.disciplina?.nome || "Disciplina não identificada"
-  const periodoDisplay = disciplinaOfertada.periodoLetivo ? 
-    `${disciplinaOfertada.periodoLetivo.ano}/${disciplinaOfertada.periodoLetivo.semestre}` : 
-    "Período não identificado"
+  const disciplinaDisplay =
+    disciplinaOfertada.disciplina?.nome || "Disciplina não identificada"
+  const periodoDisplay =
+    disciplinaOfertada.periodoLetivo ?
+      `${disciplinaOfertada.periodoLetivo.ano}/${disciplinaOfertada.periodoLetivo.semestre}`
+    : "Período não identificado"
 
   // Função para lidar com a exclusão da disciplina ofertada
   const handleDelete = () => {
@@ -70,7 +73,8 @@ export function DeleteDisciplinaOfertadaAlertDialog({
           onOpenChange(false)
           toast({
             title: "Erro ao remover",
-            description: "Não foi possível remover a disciplina ofertada. Verifique se ela não possui turmas associadas.",
+            description:
+              "Não foi possível remover a disciplina ofertada. Verifique se ela não possui turmas associadas.",
             variant: "destructive",
           })
         },
@@ -99,11 +103,12 @@ export function DeleteDisciplinaOfertadaAlertDialog({
           </div>
           <AlertDialogDescription>
             Esta ação não pode ser desfeita. Isso irá permanentemente excluir a
-            oferta de <strong>{disciplinaDisplay}</strong> do período <strong>{periodoDisplay}</strong> e
-            remover seus dados do servidor.
+            oferta de <strong>{disciplinaDisplay}</strong> do período{" "}
+            <strong>{periodoDisplay}</strong> e remover seus dados do servidor.
             {disciplinaOfertada.quantidadeTurmas > 0 && (
-              <span className="mt-2 block text-destructive">
-                Atenção: Esta oferta possui {disciplinaOfertada.quantidadeTurmas} turma(s) associada(s) que também serão excluídas.
+              <span className="text-destructive mt-2 block">
+                Atenção: Esta oferta possui {disciplinaOfertada.quantidadeTurmas}{" "}
+                turma(s) associada(s) que também serão excluídas.
               </span>
             )}
           </AlertDialogDescription>

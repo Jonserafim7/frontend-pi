@@ -9,4 +9,4 @@
 /**
  * Detalhes da disciplina ofertada
  */
-export type DisciplinaOfertadaResponseDtoDisciplina = { [key: string]: unknown };
+export type DisciplinaOfertadaResponseDtoDisciplina = { [key: string]: unknown }
