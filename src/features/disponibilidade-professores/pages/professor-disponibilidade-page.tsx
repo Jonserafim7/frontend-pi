@@ -1,13 +1,8 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Plus, Clock } from "lucide-react"
+import { Clock } from "lucide-react"
 import { ResumoHorariosCards } from "../components/resumo-horarios-cards"
 import { HeaderIconContainer } from "@/components/icon-container"
-import { CreateDisponibilidadeFormDialog } from "../components/create-disponibilidade-form-dialog"
-import { DisponibilidadesDataTable } from "../components/data-table/disponibilidades-data-table"
+
 import { DisponibilidadeGrid } from "../components/grid"
-import { SkeletonTable } from "@/components/skeleton-table"
-import { disponibilidadeColumns } from "../components/data-table/disponibilidade-columns"
 import {
   useDisponibilidadeProfessorControllerFindByProfessor,
   getDisponibilidadeProfessorControllerFindByProfessorQueryKey,
@@ -15,14 +10,12 @@ import {
 import { usePeriodosLetivosControllerFindPeriodoAtivo } from "@/api-generated/client/períodos-letivos/períodos-letivos"
 import type { DisponibilidadeResponseDto } from "@/api-generated/model"
 import { useAuth } from "@/features/auth/contexts/auth-context"
-import { useSlotsValidos } from "../hooks/use-slots-validos"
 
 /**
  * Página principal de disponibilidade do professor
  */
 export function ProfessorDisponibilidadePage() {
   const { user } = useAuth()
-  const [showDialog, setShowDialog] = useState(false)
   const { data: periodoAtivo, isLoading: isLoadingPeriodo } =
     usePeriodosLetivosControllerFindPeriodoAtivo()
   const { data: disponibilidades, isLoading } =
@@ -38,9 +31,6 @@ export function ProfessorDisponibilidadePage() {
         },
       },
     )
-
-  // Buscar slots válidos
-  const { data: slotsValidos } = useSlotsValidos(periodoAtivo?.id)
 
   if (!user || !user.id) {
     return (
@@ -94,23 +84,18 @@ export function ProfessorDisponibilidadePage() {
     <>
       <div className="container mx-auto space-y-8 p-12">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <HeaderIconContainer Icon={Clock} />
-            <div className="flex flex-col gap-1">
-              <h1 className="text-2xl font-bold">Minhas Disponibilidades</h1>
-              <p className="text-muted-foreground">
-                Gerencie seus horários de disponibilidade para o período{" "}
-                <span className="font-semibold">
-                  {periodoAtivo.ano}.{periodoAtivo.semestre}
-                </span>
-              </p>
-            </div>
+        <div className="flex items-center gap-3">
+          <HeaderIconContainer Icon={Clock} />
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl font-bold">Minhas Disponibilidades</h1>
+            <p className="text-muted-foreground">
+              Configure seus horários de disponibilidade para o período{" "}
+              <span className="font-semibold">
+                {periodoAtivo.ano}.{periodoAtivo.semestre}
+              </span>{" "}
+              usando o grid interativo abaixo
+            </p>
           </div>
-          <Button onClick={() => setShowDialog(true)}>
-            <Plus />
-            Nova Disponibilidade
-          </Button>
         </div>
 
         {/* Cards de Resumo */}
@@ -124,33 +109,10 @@ export function ProfessorDisponibilidadePage() {
         <DisponibilidadeGrid
           professorId={user.id}
           periodoId={periodoAtivo.id}
-          slotsValidos={slotsValidos}
           disponibilidades={disponibilidades || []}
           isLoading={isLoading}
         />
-
-        {/* Data Table */}
-        {isLoading ?
-          <SkeletonTable
-            columns={disponibilidadeColumns.length}
-            rows={5}
-          />
-        : <DisponibilidadesDataTable
-            data={disponibilidades || []}
-            onEdit={() => {}}
-            onDelete={() => {}}
-            isLoading={isLoading}
-          />
-        }
       </div>
-
-      {/* Dialog de Criação/Edição */}
-      <CreateDisponibilidadeFormDialog
-        isOpen={showDialog}
-        onOpenChange={setShowDialog}
-        professorId={user.id}
-        periodoLetivoId={periodoAtivo.id}
-      />
     </>
   )
 }

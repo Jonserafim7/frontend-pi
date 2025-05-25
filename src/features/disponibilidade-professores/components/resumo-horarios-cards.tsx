@@ -1,6 +1,6 @@
 import React from "react"
 import { Card } from "@/components/ui/card"
-import { CheckCircle, Clock, Calendar } from "lucide-react"
+import { CheckCircle, XCircle, BarChart3, TrendingUp } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -15,7 +15,8 @@ interface CardData {
   label: string
   value: number
   description: string
-  variant: "success" | "destructive" | "info"
+  variant: "success" | "destructive" | "info" | "warning"
+  suffix?: string
 }
 
 interface SummaryCardProps {
@@ -47,13 +48,21 @@ const cardVariants = {
     ringClasses: "ring-blue-200/50 dark:ring-blue-700/30",
     progressClasses: "bg-blue-500/80 dark:bg-blue-500/60",
   },
+  warning: {
+    cardClasses: "",
+    iconClasses: "text-amber-600 dark:text-amber-400",
+    valueClasses: "text-amber-700 dark:text-amber-300",
+    bgClasses: "bg-amber-100/80 dark:bg-amber-900/30",
+    ringClasses: "ring-amber-200/50 dark:ring-amber-700/30",
+    progressClasses: "bg-amber-500/80 dark:bg-amber-500/60",
+  },
 }
 
 /**
  * Componente individual para cada card de resumo com design moderno e compacto
  */
 const SummaryCard: React.FC<SummaryCardProps> = ({ data }) => {
-  const { icon: Icon, label, value, description, variant } = data
+  const { icon: Icon, label, value, description, variant, suffix } = data
   const styles = cardVariants[variant]
 
   return (
@@ -90,6 +99,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data }) => {
               )}
             >
               {value.toLocaleString()}
+              {suffix && <span className="text-lg">{suffix}</span>}
             </div>
           </div>
         </div>
@@ -114,6 +124,10 @@ export const ResumoHorariosCards: React.FC<ResumoHorariosCardsProps> = ({
   indisponiveisCount,
   totalCount,
 }) => {
+  // Calcular porcentagem de disponibilidade
+  const disponibilidadePercentual =
+    totalCount > 0 ? Math.round((disponiveisCount / totalCount) * 100) : 0
+
   const cardsData: CardData[] = [
     {
       icon: CheckCircle,
@@ -123,23 +137,34 @@ export const ResumoHorariosCards: React.FC<ResumoHorariosCardsProps> = ({
       variant: "success",
     },
     {
-      icon: Clock,
+      icon: XCircle,
       label: "Indisponíveis",
       value: indisponiveisCount,
       description: "Horários bloqueados",
       variant: "destructive",
     },
     {
-      icon: Calendar,
+      icon: BarChart3,
       label: "Total",
       value: totalCount,
       description: "Horários cadastrados",
       variant: "info",
     },
+    {
+      icon: TrendingUp,
+      label: "Disponibilidade",
+      value: disponibilidadePercentual,
+      description: "Percentual de disponibilidade",
+      variant:
+        disponibilidadePercentual >= 70 ? "success"
+        : disponibilidadePercentual >= 40 ? "warning"
+        : "destructive",
+      suffix: "%",
+    },
   ]
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {cardsData.map((cardData) => (
         <SummaryCard
           key={cardData.label}
