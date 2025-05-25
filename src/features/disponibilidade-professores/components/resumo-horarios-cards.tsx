@@ -32,8 +32,7 @@ const cardVariants = {
     progressClasses: "bg-teal-500/80 dark:bg-teal-500/60",
   },
   destructive: {
-    cardClasses:
-      "bg-gradient-to-br from-rose-50/90 to-rose-50/80 border-rose-200/60 hover:border-rose-300/80 dark:from-rose-800/30 dark:to-rose-950/20 dark:border-rose-800/40 dark:hover:border-rose-700/60",
+    cardClasses: "",
     iconClasses: "text-rose-600 dark:text-rose-400",
     valueClasses: "text-rose-700 dark:text-rose-300",
     bgClasses: "bg-rose-100/80 dark:bg-rose-900/30",
@@ -41,8 +40,7 @@ const cardVariants = {
     progressClasses: "bg-rose-500/80 dark:bg-rose-500/60",
   },
   info: {
-    cardClasses:
-      "bg-gradient-to-br from-blue-50/90 to-indigo-50/80 border-blue-200/60 hover:border-blue-300/80 dark:from-blue-800/30 dark:to-indigo-950/20 dark:border-blue-800/40 dark:hover:border-blue-700/60",
+    cardClasses: "",
     iconClasses: "text-blue-600 dark:text-blue-400",
     valueClasses: "text-blue-700 dark:text-blue-300",
     bgClasses: "bg-blue-100/80 dark:bg-blue-900/30",

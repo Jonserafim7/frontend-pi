@@ -5,6 +5,7 @@ import { ResumoHorariosCards } from "../components/resumo-horarios-cards"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { CreateDisponibilidadeFormDialog } from "../components/create-disponibilidade-form-dialog"
 import { DisponibilidadesDataTable } from "../components/data-table/disponibilidades-data-table"
+import { DisponibilidadeGrid } from "../components/grid"
 import { SkeletonTable } from "@/components/skeleton-table"
 import { disponibilidadeColumns } from "../components/data-table/disponibilidade-columns"
 import {
@@ -14,6 +15,7 @@ import {
 import { usePeriodosLetivosControllerFindPeriodoAtivo } from "@/api-generated/client/períodos-letivos/períodos-letivos"
 import type { DisponibilidadeResponseDto } from "@/api-generated/model"
 import { useAuth } from "@/features/auth/contexts/auth-context"
+import { useSlotsValidos } from "../hooks/use-slots-validos"
 
 /**
  * Página principal de disponibilidade do professor
@@ -36,6 +38,9 @@ export function ProfessorDisponibilidadePage() {
         },
       },
     )
+
+  // Buscar slots válidos
+  const { data: slotsValidos } = useSlotsValidos(periodoAtivo?.id)
 
   if (!user || !user.id) {
     return (
@@ -113,6 +118,15 @@ export function ProfessorDisponibilidadePage() {
           disponiveisCount={disponiveisCount}
           indisponiveisCount={indisponiveisCount}
           totalCount={totalCount}
+        />
+
+        {/* Grid de Disponibilidades */}
+        <DisponibilidadeGrid
+          professorId={user.id}
+          periodoId={periodoAtivo.id}
+          slotsValidos={slotsValidos}
+          disponibilidades={disponibilidades || []}
+          isLoading={isLoading}
         />
 
         {/* Data Table */}

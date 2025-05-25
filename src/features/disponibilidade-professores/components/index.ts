@@ -8,3 +8,4 @@ export { DisponibilidadesDataTable } from "./data-table/disponibilidades-data-ta
 export { disponibilidadeColumns } from "./data-table/disponibilidade-columns"
 export { DisponibilidadeActionRowDropdownMenu } from "./data-table/disponibilidade-action-row-dropdown-menu"
 export { ResumoHorariosCards } from "./resumo-horarios-cards"
+export { DisponibilidadeGrid } from "./grid"
