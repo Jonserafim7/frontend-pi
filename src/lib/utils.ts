@@ -13,9 +13,11 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function useIsRouteActive(path: string): boolean {
   const location = useLocation()
-  
+
   // Verifica se o caminho atual começa com o caminho fornecido
   // Isso permite que subrotas também sejam consideradas ativas
-  return location.pathname === path || 
-         (path !== '/' && location.pathname.startsWith(`${path}/`))
+  return (
+    location.pathname === path ||
+    (path !== "/" && location.pathname.startsWith(`${path}/`))
+  )
 }

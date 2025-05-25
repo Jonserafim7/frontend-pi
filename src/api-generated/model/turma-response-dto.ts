@@ -6,6 +6,8 @@
  * OpenAPI spec version: 1.0
  */
 import type { DisciplinaOfertadaResponseDto } from './disciplina-ofertada-response-dto';
+import type { TurmaResponseDtoIdUsuarioProfessor } from './turma-response-dto-id-usuario-professor';
+import type { UsuarioResponseDto } from './usuario-response-dto';
 
 export interface TurmaResponseDto {
   /** ID da turma */
@@ -16,6 +18,10 @@ export interface TurmaResponseDto {
   idDisciplinaOfertada: string;
   /** Detalhes da disciplina ofertada */
   disciplinaOfertada?: DisciplinaOfertadaResponseDto;
+  /** ID do professor atribuído à turma */
+  idUsuarioProfessor?: TurmaResponseDtoIdUsuarioProfessor;
+  /** Detalhes do professor atribuído */
+  professorAlocado?: UsuarioResponseDto;
   /** Data de criação da turma */
   dataCriacao: string;
   /** Data da última atualização da turma */

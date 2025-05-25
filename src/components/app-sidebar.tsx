@@ -12,6 +12,7 @@ import {
   Calendar,
   CalendarDays,
   Clock,
+  Users,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import {
@@ -151,7 +152,6 @@ export function AppSidebar() {
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
@@ -164,7 +164,6 @@ export function AppSidebar() {
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
@@ -209,6 +208,18 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip="Disciplinas"
+                      isActive={isPathActive("/coordenador/disciplinas")}
+                    >
+                      <Link to="/coordenador/disciplinas">
+                        <BookText />
+                        <span>Disciplinas</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
                     tooltip="Matrizes Curriculares"
@@ -217,19 +228,6 @@ export function AppSidebar() {
                     <Link to="/coordenador/matrizes-curriculares">
                       <BookOpenCheckIcon />
                       <span>Matrizes Curriculares</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip="Disciplinas"
-                    isActive={isPathActive("/coordenador/disciplinas")}
-                  >
-                    <Link to="/coordenador/disciplinas">
-                      <BookText />
-                      <span>Disciplinas</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -246,7 +244,18 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Turmas"
+                    isActive={isPathActive("/coordenador/turmas")}
+                  >
+                    <Link to="/coordenador/turmas">
+                      <Users />
+                      <span>Turmas</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -259,7 +268,6 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -269,19 +277,6 @@ export function AppSidebar() {
                     <Link to="/usuarios">
                       <UsersIcon />
                       <span>Professores</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip="Horários"
-                    isActive={isPathActive("/horarios")}
-                  >
-                    <Link to="/horarios">
-                      <CalendarIcon />
-                      <span>Horários</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -305,32 +300,6 @@ export function AppSidebar() {
                     <Link to="/professor/disponibilidades">
                       <Clock />
                       <span>Disponibilidades</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip="Minhas Disciplinas"
-                    isActive={isPathActive("/minhas-disciplinas")}
-                  >
-                    <Link to="/minhas-disciplinas">
-                      <GraduationCapIcon />
-                      <span>Minhas Disciplinas</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip="Meu Horário"
-                    isActive={isPathActive("/meu-horario")}
-                  >
-                    <Link to="/meu-horario">
-                      <CalendarIcon />
-                      <span>Meu Horário</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

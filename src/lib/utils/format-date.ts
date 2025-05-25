@@ -1,5 +1,5 @@
-import { format, isValid } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { format, isValid } from "date-fns"
+import { ptBR } from "date-fns/locale"
 
 /**
  * Formata uma data para exibição no formato 'dd/MM/yyyy'.
@@ -8,21 +8,23 @@ import { ptBR } from 'date-fns/locale';
  * @param date A data a ser formatada (string, número ou objeto Date).
  * @returns A data formatada ou '-'.
  */
-export const formatDateToDisplay = (date: string | number | Date | undefined | null): string => {
+export const formatDateToDisplay = (
+  date: string | number | Date | undefined | null,
+): string => {
   if (date === null || date === undefined) {
-    return '-';
+    return "-"
   }
 
-  const dateObj = new Date(date);
+  const dateObj = new Date(date)
 
   if (!isValid(dateObj)) {
-    return '-';
+    return "-"
   }
 
   try {
-    return format(dateObj, 'dd/MM/yyyy', { locale: ptBR });
+    return format(dateObj, "dd/MM/yyyy", { locale: ptBR })
   } catch (error) {
-    console.error('Erro ao formatar data:', error);
-    return '-'; // Retorna um placeholder em caso de erro inesperado na formatação
+    console.error("Erro ao formatar data:", error)
+    return "-" // Retorna um placeholder em caso de erro inesperado na formatação
   }
-};
+}

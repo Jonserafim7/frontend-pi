@@ -30,15 +30,15 @@ export function useToast() {
    * @param options Opções do toast
    */
   const showToast = (options: ToastOptions): ToastType => {
-    const { 
-      title, 
-      description, 
-      variant = "default", 
+    const {
+      title,
+      description,
+      variant = "default",
       duration,
       action,
       onDismiss,
       onAutoClose,
-      id 
+      id,
     } = options
 
     const toastOptions = {
@@ -47,7 +47,7 @@ export function useToast() {
       action,
       onDismiss,
       onAutoClose,
-      id
+      id,
     }
 
     // Mapeia as variantes para os tipos do sonner
@@ -68,6 +68,6 @@ export function useToast() {
   return {
     dismiss: toast.dismiss,
     // API compatível com o formato do shadcn/ui toast
-    toast: showToast
+    toast: showToast,
   }
 }

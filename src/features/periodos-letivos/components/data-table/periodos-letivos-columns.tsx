@@ -4,6 +4,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { PeriodosLetivosActionRowDropdownMenu } from "./periodos-letivos-action-row-dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { formatDateToDisplay } from "@/lib/utils/format-date"
+import { cn } from "@/lib/utils"
 
 /**
  * @typedef PeriodoLetivoColumns
@@ -12,36 +13,21 @@ import { formatDateToDisplay } from "@/lib/utils/format-date"
 export const periodosLetivosColumns: ColumnDef<PeriodoLetivoResponseDto>[] = [
   {
     accessorKey: "ano",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="Ano"
-      />
-    ),
+    header: "Ano",
     cell: ({ row }) => <div>{row.getValue("ano")}</div>,
     enableSorting: true,
     enableHiding: true,
   },
   {
     accessorKey: "semestre",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="Semestre"
-      />
-    ),
+    header: "Semestre",
     cell: ({ row }) => <div>{row.getValue("semestre")}</div>,
     enableSorting: true,
     enableHiding: true,
   },
   {
     accessorKey: "dataInicio",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="Data de Início"
-      />
-    ),
+    header: "Data de Início",
     cell: ({ row }) => {
       const dataInicio = row.getValue("dataInicio") as string | Date | null
       return <div>{dataInicio ? formatDateToDisplay(dataInicio) : "-"}</div>
@@ -51,12 +37,7 @@ export const periodosLetivosColumns: ColumnDef<PeriodoLetivoResponseDto>[] = [
   },
   {
     accessorKey: "dataFim",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="Data de Fim"
-      />
-    ),
+    header: "Data de Fim",
     cell: ({ row }) => {
       const dataFim = row.getValue("dataFim") as string | Date | null
       return <div>{dataFim ? formatDateToDisplay(dataFim) : "-"}</div>
@@ -66,16 +47,17 @@ export const periodosLetivosColumns: ColumnDef<PeriodoLetivoResponseDto>[] = [
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="Status"
-      />
-    ),
+    header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status") as string
       return (
-        <Badge variant={status === "ATIVO" ? "default" : "destructive"}>
+        <Badge
+          variant={status === "ATIVO" ? "default" : "destructive"}
+          className={cn(
+            "text-xs",
+            status === "ATIVO" ? "bg-teal-600" : "bg-rose-600",
+          )}
+        >
           {status === "ATIVO" ? "Ativo" : "Inativo"}
         </Badge>
       )

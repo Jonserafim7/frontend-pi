@@ -57,6 +57,17 @@ export const turmasControllerFindAllResponseItem = zod.object({
   "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
   "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
 }).optional().describe('Detalhes da disciplina ofertada'),
+  "idUsuarioProfessor": zod.object({
+
+}).optional().describe('ID do professor atribuído à turma'),
+  "professorAlocado": zod.object({
+  "id": zod.string().describe('ID único do usuário'),
+  "nome": zod.string().describe('Nome completo do usuário'),
+  "email": zod.string().describe('Endereço de e-mail do usuário'),
+  "papel": zod.enum(['ADMIN', 'DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do usuário'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do usuário')
+}).optional().describe('Detalhes do professor atribuído'),
   "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
   "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
 })
@@ -99,6 +110,17 @@ export const turmasControllerFindByDisciplinaOfertadaResponseItem = zod.object({
   "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
   "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
 }).optional().describe('Detalhes da disciplina ofertada'),
+  "idUsuarioProfessor": zod.object({
+
+}).optional().describe('ID do professor atribuído à turma'),
+  "professorAlocado": zod.object({
+  "id": zod.string().describe('ID único do usuário'),
+  "nome": zod.string().describe('Nome completo do usuário'),
+  "email": zod.string().describe('Endereço de e-mail do usuário'),
+  "papel": zod.enum(['ADMIN', 'DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do usuário'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do usuário')
+}).optional().describe('Detalhes do professor atribuído'),
   "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
   "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
 })
@@ -141,6 +163,17 @@ export const turmasControllerFindByProfessorResponseItem = zod.object({
   "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
   "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
 }).optional().describe('Detalhes da disciplina ofertada'),
+  "idUsuarioProfessor": zod.object({
+
+}).optional().describe('ID do professor atribuído à turma'),
+  "professorAlocado": zod.object({
+  "id": zod.string().describe('ID único do usuário'),
+  "nome": zod.string().describe('Nome completo do usuário'),
+  "email": zod.string().describe('Endereço de e-mail do usuário'),
+  "papel": zod.enum(['ADMIN', 'DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do usuário'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do usuário')
+}).optional().describe('Detalhes do professor atribuído'),
   "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
   "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
 })
@@ -183,6 +216,17 @@ export const turmasControllerFindOneResponse = zod.object({
   "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
   "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
 }).optional().describe('Detalhes da disciplina ofertada'),
+  "idUsuarioProfessor": zod.object({
+
+}).optional().describe('ID do professor atribuído à turma'),
+  "professorAlocado": zod.object({
+  "id": zod.string().describe('ID único do usuário'),
+  "nome": zod.string().describe('Nome completo do usuário'),
+  "email": zod.string().describe('Endereço de e-mail do usuário'),
+  "papel": zod.enum(['ADMIN', 'DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do usuário'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do usuário')
+}).optional().describe('Detalhes do professor atribuído'),
   "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
   "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
 })
@@ -229,6 +273,17 @@ export const turmasControllerUpdateResponse = zod.object({
   "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
   "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
 }).optional().describe('Detalhes da disciplina ofertada'),
+  "idUsuarioProfessor": zod.object({
+
+}).optional().describe('ID do professor atribuído à turma'),
+  "professorAlocado": zod.object({
+  "id": zod.string().describe('ID único do usuário'),
+  "nome": zod.string().describe('Nome completo do usuário'),
+  "email": zod.string().describe('Endereço de e-mail do usuário'),
+  "papel": zod.enum(['ADMIN', 'DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do usuário'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do usuário')
+}).optional().describe('Detalhes do professor atribuído'),
   "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
   "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
 })
@@ -281,6 +336,17 @@ export const turmasControllerAtribuirProfessorResponse = zod.object({
   "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
   "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
 }).optional().describe('Detalhes da disciplina ofertada'),
+  "idUsuarioProfessor": zod.object({
+
+}).optional().describe('ID do professor atribuído à turma'),
+  "professorAlocado": zod.object({
+  "id": zod.string().describe('ID único do usuário'),
+  "nome": zod.string().describe('Nome completo do usuário'),
+  "email": zod.string().describe('Endereço de e-mail do usuário'),
+  "papel": zod.enum(['ADMIN', 'DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do usuário'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do usuário')
+}).optional().describe('Detalhes do professor atribuído'),
   "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
   "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
 })
@@ -322,6 +388,17 @@ export const turmasControllerRemoverProfessorResponse = zod.object({
   "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
   "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
 }).optional().describe('Detalhes da disciplina ofertada'),
+  "idUsuarioProfessor": zod.object({
+
+}).optional().describe('ID do professor atribuído à turma'),
+  "professorAlocado": zod.object({
+  "id": zod.string().describe('ID único do usuário'),
+  "nome": zod.string().describe('Nome completo do usuário'),
+  "email": zod.string().describe('Endereço de e-mail do usuário'),
+  "papel": zod.enum(['ADMIN', 'DIRETOR', 'COORDENADOR', 'PROFESSOR']).describe('Papel do usuário no sistema'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do usuário'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do usuário')
+}).optional().describe('Detalhes do professor atribuído'),
   "dataCriacao": zod.string().datetime({}).describe('Data de criação da turma'),
   "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização da turma')
 })

@@ -1,6 +1,6 @@
-import type { AxiosRequestConfig, AxiosError } from 'axios'
-import axios from 'axios' // For CancelToken
-import apiClient from './api-client' // Your existing custom Axios instance
+import type { AxiosRequestConfig, AxiosError } from "axios"
+import axios from "axios" // For CancelToken
+import apiClient from "./api-client" // Your existing custom Axios instance
 
 /**
  * Custom Axios instance function for Orval.
@@ -28,7 +28,7 @@ export const orvalCustomInstance = <T>(
   // Attach the cancel method to the promise, which can be used by React Query
   // @ts-expect-error - This is a common pattern for cancellable promises
   promise.cancel = () => {
-    source.cancel('Query was cancelled by Orval client.')
+    source.cancel("Query was cancelled by Orval client.")
   }
 
   return promise

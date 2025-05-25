@@ -8,23 +8,23 @@
 
 export interface PeriodoLetivoDto {
   /** ID do período letivo (UUID) */
-  id: string;
+  id: string
   /** Ano do período letivo */
-  ano: number;
+  ano: number
   /** Semestre do período letivo */
-  semestre: number;
+  semestre: number
   /**
    * Data de início do período letivo
    * @nullable
    */
-  dataInicio: string | null;
+  dataInicio: string | null
   /**
    * Data de fim do período letivo
    * @nullable
    */
-  dataFim: string | null;
+  dataFim: string | null
   /** Data de criação do período letivo */
-  createdAt: string;
+  createdAt: string
   /** Data da última atualização do período letivo */
-  updatedAt: string;
+  updatedAt: string
 }

@@ -41,7 +41,8 @@ export function DeleteMatrizCurricularAlertDialog({
   const queryClient = useQueryClient()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "EXCLUIR"
-  const { mutate: deleteMatrizCurricular, isPending: isDeleting } = useMatrizesCurricularesControllerRemove()
+  const { mutate: deleteMatrizCurricular, isPending: isDeleting } =
+    useMatrizesCurricularesControllerRemove()
 
   /**
    * Manipula a operação de exclusão da matriz curricular
@@ -62,7 +63,8 @@ export function DeleteMatrizCurricularAlertDialog({
         },
         onError: (error) => {
           const errorMessage =
-            error?.message || "A matriz curricular pode estar em uso por outras entidades do sistema."
+            error?.message ||
+            "A matriz curricular pode estar em uso por outras entidades do sistema."
           toast({
             title: "Erro ao excluir matriz curricular",
             description: errorMessage,
@@ -85,8 +87,9 @@ export function DeleteMatrizCurricularAlertDialog({
             <AlertDialogTitle>Excluir matriz curricular</AlertDialogTitle>
           </div>
           <AlertDialogDescription>
-            Tem certeza que deseja excluir a matriz curricular <strong>{matrizCurricularName}</strong>?
-            Esta ação não pode ser desfeita.
+            Tem certeza que deseja excluir a matriz curricular{" "}
+            <strong>{matrizCurricularName}</strong>? Esta ação não pode ser
+            desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Input
@@ -109,14 +112,12 @@ export function DeleteMatrizCurricularAlertDialog({
               }),
             )}
           >
-            {isDeleting ? (
+            {isDeleting ?
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Excluindo...
               </>
-            ) : (
-              "Excluir"
-            )}
+            : "Excluir"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

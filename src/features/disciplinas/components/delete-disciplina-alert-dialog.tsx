@@ -87,7 +87,8 @@ export function DeleteDisciplinaAlertDialog({
           </div>
           <AlertDialogDescription>
             Esta ação não pode ser desfeita. Isso irá permanentemente excluir a
-            disciplina <strong>{disciplina.nome}</strong> e remover seus dados do nosso servidor.
+            disciplina <strong>{disciplina.nome}</strong> e remover seus dados do
+            nosso servidor.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Input

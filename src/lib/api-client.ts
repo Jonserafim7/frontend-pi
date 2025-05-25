@@ -19,25 +19,25 @@ apiClient.interceptors.request.use(
     const token = localStorage.getItem(AUTH_TOKEN_KEY)
 
     // Debug logs para requisições
-    console.log("🌐 [API Client] Request interceptor:", {
-      method: config.method,
-      url: config.url,
-      baseURL: config.baseURL,
-      data: config.data,
-      headers: config.headers,
-      hasToken: !!token,
-    })
+    // console.log("🌐 [API Client] Request interceptor:", {
+    //   method: config.method,
+    //   url: config.url,
+    //   baseURL: config.baseURL,
+    //   data: config.data,
+    //   headers: config.headers,
+    //   hasToken: !!token,
+    // })
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
-      console.log("🔑 [API Client] Token adicionado ao header")
+      // console.log("🔑 [API Client] Token adicionado ao header")
     } else {
-      console.log("⚠️ [API Client] Nenhum token encontrado")
+      // console.log("⚠️ [API Client] Nenhum token encontrado")
     }
     return config
   },
   (error) => {
-    console.error("❌ [API Client] Request interceptor error:", error)
+    // console.error("❌ [API Client] Request interceptor error:", error)
     return Promise.reject(error)
   },
 )
@@ -49,28 +49,28 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     // Debug logs para respostas bem-sucedidas
-    console.log("✅ [API Client] Response interceptor success:", {
-      status: response.status,
-      statusText: response.statusText,
-      url: response.config.url,
-      method: response.config.method,
-      data: response.data,
-    })
+    // console.log("✅ [API Client] Response interceptor success:", {
+    //   status: response.status,
+    //   statusText: response.statusText,
+    //   url: response.config.url,
+    //   method: response.config.method,
+    //   data: response.data,
+    // })
 
     // Qualquer código de status que esteja dentro do range de 2xx faz com que esta função seja acionada
     return response
   },
   (error) => {
     // Debug logs para respostas com erro
-    console.error("❌ [API Client] Response interceptor error:", {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      url: error.config?.url,
-      method: error.config?.method,
-      data: error.response?.data,
-      message: error.message,
-      fullError: error,
-    })
+    // console.error("❌ [API Client] Response interceptor error:", {
+    //   status: error.response?.status,
+    //   statusText: error.response?.statusText,
+    //   url: error.config?.url,
+    //   method: error.config?.method,
+    //   data: error.response?.data,
+    //   message: error.message,
+    //   fullError: error,
+    // })
 
     // Qualquer código de status que caia fora do range de 2xx faz com que esta função seja acionada
     if (error.response && error.response.status === 401) {
@@ -88,11 +88,11 @@ apiClient.interceptors.response.use(
 
         // Redireciona para a página de login
         window.location.href = "/login"
-        console.error(
-          "Token expirado ou inválido. Usuário foi deslogado automaticamente.",
-        )
+        // console.error(
+        //   "Token expirado ou inválido. Usuário foi deslogado automaticamente.",
+        // )
       } else {
-        console.error("Falha de autenticação: Credenciais inválidas.")
+        // console.error("Falha de autenticação: Credenciais inválidas.")
       }
     }
     return Promise.reject(error)

@@ -28,14 +28,11 @@ export const disciplinaColumns: ColumnDef<DisciplinaResponseDto>[] = [
   },
   {
     id: "actions",
+    header: "Ações",
     cell: ({ row }) => {
       const disciplina = row.original
 
-      return (
-        <div className="flex justify-end">
-          <DisciplinaActionRowDropdownMenu disciplina={disciplina} />
-        </div>
-      )
+      return <DisciplinaActionRowDropdownMenu disciplina={disciplina} />
     },
   },
 ]

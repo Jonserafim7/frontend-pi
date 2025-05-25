@@ -5,12 +5,12 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { DisponibilidadeResponseDto } from './disponibilidade-response-dto';
+import type { DisponibilidadeResponseDto } from "./disponibilidade-response-dto"
 
 export type DisponibilidadeProfessorControllerFindAll200 = {
-  data?: DisponibilidadeResponseDto[];
-  total?: number;
-  page?: number;
-  limit?: number;
-  totalPages?: number;
-};
+  data?: DisponibilidadeResponseDto[]
+  total?: number
+  page?: number
+  limit?: number
+  totalPages?: number
+}

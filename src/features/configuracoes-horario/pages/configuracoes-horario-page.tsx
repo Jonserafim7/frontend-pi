@@ -1,11 +1,25 @@
-import { CalendarCog, Clock, Sun, Sunset, Moon, Settings2, GraduationCap } from "lucide-react"
+import {
+  CalendarCog,
+  Clock,
+  Sun,
+  Sunset,
+  Moon,
+  Settings2,
+  GraduationCap,
+} from "lucide-react"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { DuracaoAulasForm } from "../components/duracao-aulas-form"
 import { QuantidadeAulasForm } from "../components/quantidade-aulas-form"
 import { HorarioInicioTurnoForm } from "../components/horario-inicio-turno-form"
 import { TurnoHorariosDetalhes } from "../components/turno-horarios-detalhes"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 /**
  * Página para gerenciar as configurações globais de horário.
@@ -13,7 +27,7 @@ import { Separator } from "@/components/ui/separator"
  */
 export function ConfiguracoesHorarioPage() {
   return (
-    <div className="container mx-auto py-8 px-4 lg:px-8 space-y-8">
+    <div className="container mx-auto space-y-8 px-4 py-8 lg:px-8">
       {/* Cabeçalho da página */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -30,13 +44,13 @@ export function ConfiguracoesHorarioPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Área de configurações gerais - ocupa 5/12 em telas grandes */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="space-y-6 lg:col-span-5">
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <Settings2 className="h-5 w-5 text-primary" />
+                <Settings2 className="text-primary h-5 w-5" />
                 <CardTitle>Configurações Gerais</CardTitle>
               </div>
               <CardDescription>
@@ -45,8 +59,8 @@ export function ConfiguracoesHorarioPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="rounded-lg border p-4">
-                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                  <GraduationCap className="h-4 w-4 text-primary" />
+                <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold">
+                  <GraduationCap className="text-primary h-4 w-4" />
                   Duração e Quantidade de Aulas
                 </h3>
                 <div className="space-y-4">
@@ -57,11 +71,11 @@ export function ConfiguracoesHorarioPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-primary" />
+                <Clock className="text-primary h-5 w-5" />
                 <CardTitle>Horários de Início dos Turnos</CardTitle>
               </div>
               <CardDescription>
@@ -69,24 +83,24 @@ export function ConfiguracoesHorarioPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-lg border p-4 flex flex-col gap-4">
-                <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-col gap-4 rounded-lg border p-4">
+                <div className="mb-1 flex items-center gap-2">
                   <Sun className="h-4 w-4 text-amber-500" />
                   <h4 className="font-medium">Turno da Manhã</h4>
                 </div>
                 <HorarioInicioTurnoForm turno="manha" />
               </div>
-              
-              <div className="rounded-lg border p-4 flex flex-col gap-4">
-                <div className="flex items-center gap-2 mb-1">
+
+              <div className="flex flex-col gap-4 rounded-lg border p-4">
+                <div className="mb-1 flex items-center gap-2">
                   <Sunset className="h-4 w-4 text-orange-500" />
                   <h4 className="font-medium">Turno da Tarde</h4>
                 </div>
                 <HorarioInicioTurnoForm turno="tarde" />
               </div>
-              
-              <div className="rounded-lg border p-4 flex flex-col gap-4">
-                <div className="flex items-center gap-2 mb-1">
+
+              <div className="flex flex-col gap-4 rounded-lg border p-4">
+                <div className="mb-1 flex items-center gap-2">
                   <Moon className="h-4 w-4 text-indigo-500" />
                   <h4 className="font-medium">Turno da Noite</h4>
                 </div>
@@ -95,13 +109,13 @@ export function ConfiguracoesHorarioPage() {
             </CardContent>
           </Card>
         </div>
-        
+
         {/* Área de visualização dos horários - ocupa 7/12 em telas grandes */}
         <div className="lg:col-span-7">
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <CalendarCog className="h-5 w-5 text-primary" />
+                <CalendarCog className="text-primary h-5 w-5" />
                 <CardTitle>Visualização dos Horários</CardTitle>
               </div>
               <CardDescription>
@@ -109,17 +123,29 @@ export function ConfiguracoesHorarioPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="manha" className="w-full">
+              <Tabs
+                defaultValue="manha"
+                className="w-full"
+              >
                 <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="manha" className="flex items-center gap-1">
+                  <TabsTrigger
+                    value="manha"
+                    className="flex items-center gap-1"
+                  >
                     <Sun className="h-4 w-4" />
                     <span>Manhã</span>
                   </TabsTrigger>
-                  <TabsTrigger value="tarde" className="flex items-center gap-1">
+                  <TabsTrigger
+                    value="tarde"
+                    className="flex items-center gap-1"
+                  >
                     <Sunset className="h-4 w-4" />
                     <span>Tarde</span>
                   </TabsTrigger>
-                  <TabsTrigger value="noite" className="flex items-center gap-1">
+                  <TabsTrigger
+                    value="noite"
+                    className="flex items-center gap-1"
+                  >
                     <Moon className="h-4 w-4" />
                     <span>Noite</span>
                   </TabsTrigger>

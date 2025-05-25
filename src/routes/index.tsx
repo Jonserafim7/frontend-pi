@@ -23,6 +23,7 @@ import {
   ProfessorDisponibilidadePage,
   CoordenadorDisponibilidadePage,
 } from "@/features/disponibilidade-professores/pages"
+import { TurmasListPage } from "@/features/turmas/pages/turmas-list-page"
 
 // Placeholders genéricos para cada tipo de usuário
 const CoordenadorDashboard = () => <div>Dashboard do Coordenador (em breve)</div>
@@ -145,7 +146,6 @@ export function AppRoutes() {
                 }
               />
             </Route>
-
             <Route path="disciplinas">
               <Route
                 index
@@ -158,31 +158,47 @@ export function AppRoutes() {
                 }
               />
             </Route>
-
             <Route path="disciplinas-ofertadas">
+              {" "}
               <Route
                 index
                 element={
                   <RequireAuth
                     allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
                   >
-                    <DisciplinasOfertadasListPage />
+                    {" "}
+                    <DisciplinasOfertadasListPage />{" "}
                   </RequireAuth>
                 }
-              />
-            </Route>
-
+              />{" "}
+            </Route>{" "}
+            <Route path="turmas">
+              {" "}
+              <Route
+                index
+                element={
+                  <RequireAuth
+                    allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
+                  >
+                    {" "}
+                    <TurmasListPage />{" "}
+                  </RequireAuth>
+                }
+              />{" "}
+            </Route>{" "}
             <Route path="disponibilidades">
+              {" "}
               <Route
                 index
                 element={
                   <RequireAuth
                     allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
                   >
-                    <CoordenadorDisponibilidadePage />
+                    {" "}
+                    <CoordenadorDisponibilidadePage />{" "}
                   </RequireAuth>
                 }
-              />
+              />{" "}
             </Route>
           </Route>
 

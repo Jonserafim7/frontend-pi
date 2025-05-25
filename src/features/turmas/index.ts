@@ -1,12 +1,8 @@
 // Components
-export { TurmaCard } from "./components/turma-card"
-export { CreateTurmaModal } from "./components/create-turma-modal"
-export { EditTurmaModal } from "./components/edit-turma-modal"
-export { AtribuirProfessorModal } from "./components/atribuir-professor-modal"
-export { DeleteTurmaModal } from "./components/delete-turma-modal"
+export { TurmaDataTable } from "./components/data-table/turma-data-table"
+export { CreateEditTurmaFormDialog } from "./components/create-edit-turma-form-dialog"
+export { DeleteTurmaAlertDialog } from "./components/delete-turma-alert-dialog"
+export { AtribuirProfessorDialog } from "./components/atribuir-professor-dialog"
 
 // Pages
 export { TurmasListPage } from "./pages/turmas-list-page"
-
-// Hooks
-export * from "./hooks/use-turmas"

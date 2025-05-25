@@ -1,5 +1,6 @@
 import { MoreHorizontal, Pencil, Trash2, Book } from "lucide-react"
 import { useState } from "react"
+import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -21,7 +22,7 @@ interface DisciplinaOfertadaActionRowDropdownMenuProps {
 
 /**
  * Componente de menu dropdown para ações em cada linha da tabela de disciplinas ofertadas
- * 
+ *
  * @param disciplinaOfertada - A disciplina ofertada a ser manipulada
  * @param onViewTurmas - Função opcional para visualizar turmas da disciplina
  */
@@ -30,6 +31,7 @@ export function DisciplinaOfertadaActionRowDropdownMenu({
   onViewTurmas,
 }: DisciplinaOfertadaActionRowDropdownMenuProps) {
   const { toast } = useToast()
+  const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -50,21 +52,44 @@ export function DisciplinaOfertadaActionRowDropdownMenu({
     if (onViewTurmas) {
       onViewTurmas()
     } else {
-      // Caso contrário, exibir mensagem informativa
-      toast({
-        title: "Ver turmas",
-        description: `Visualizando turmas da disciplina ${disciplinaOfertada.disciplina?.nome}`,
-      })
-      // TODO: Em uma implementação futura, navegar para a página de turmas
+      // Navegar para a página de turmas com filtro aplicado
+      const disciplinaNome = disciplinaOfertada.disciplina?.nome || ""
+      const disciplinaCodigo = disciplinaOfertada.disciplina?.codigo || ""
+
+      // Usar o nome da disciplina como filtro (mais específico)
+      const filtro = disciplinaNome || disciplinaCodigo
+
+      if (filtro) {
+        navigate(`/coordenador/turmas?filtro=${encodeURIComponent(filtro)}`)
+
+        toast({
+          title: "Redirecionando...",
+          description: `Visualizando turmas da disciplina ${disciplinaNome}`,
+        })
+      } else {
+        // Fallback caso não tenha nome da disciplina
+        navigate("/coordenador/turmas")
+
+        toast({
+          title: "Ver turmas",
+          description: "Redirecionando para a página de turmas",
+        })
+      }
     }
     setIsOpen(false)
   }
 
   return (
     <>
-      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenu
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      >
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button
+            variant="ghost"
+            className="h-8 w-8 p-0"
+          >
             <span className="sr-only">Abrir menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
@@ -81,8 +106,8 @@ export function DisciplinaOfertadaActionRowDropdownMenu({
             Ver turmas
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            className="text-destructive focus:text-destructive" 
+          <DropdownMenuItem
+            className="text-destructive focus:text-destructive"
             onClick={handleDelete}
           >
             <Trash2 className="mr-2 h-4 w-4" />
