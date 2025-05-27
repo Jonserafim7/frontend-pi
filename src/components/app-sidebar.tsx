@@ -2,7 +2,6 @@ import { Link } from "react-router"
 import {
   BookOpenCheck as BookOpenCheckIcon,
   CalendarCog,
-  CalendarIcon,
   GraduationCapIcon,
   HelpCircle,
   HomeIcon,
@@ -13,6 +12,7 @@ import {
   CalendarDays,
   Clock,
   Users,
+  CalendarCheck,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import {
@@ -61,7 +61,7 @@ export function AppSidebar() {
     location.pathname === "/professor"
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2">
           <div className="bg-primary flex items-center justify-center rounded-md p-1">
@@ -265,6 +265,18 @@ export function AppSidebar() {
                     <Link to="/coordenador/disponibilidades">
                       <Clock />
                       <span>Disponibilidades</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Alocação de Horários"
+                    isActive={isPathActive("/coordenador/alocacao-horarios")}
+                  >
+                    <Link to="/coordenador/alocacao-horarios">
+                      <CalendarCheck />
+                      <span>Alocação de Horários</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
