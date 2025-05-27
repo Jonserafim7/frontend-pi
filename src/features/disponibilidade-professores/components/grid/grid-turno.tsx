@@ -43,8 +43,8 @@ interface GridTurnoProps {
   readonly?: boolean
 }
 
-// Constantes
-const DIAS_SEMANA = [
+// Constantes específicas do grid de disponibilidade
+const DIAS_SEMANA_GRID = [
   { key: "SEGUNDA", label: "SEG", fullLabel: "Segunda-feira" },
   { key: "TERCA", label: "TER", fullLabel: "Terça-feira" },
   { key: "QUARTA", label: "QUA", fullLabel: "Quarta-feira" },
@@ -199,7 +199,7 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
 
     console.log("🔍 Processando slots do turno:", slots)
 
-    DIAS_SEMANA.forEach((dia) => {
+    DIAS_SEMANA_GRID.forEach((dia) => {
       slots.forEach((slot) => {
         const slotKey = `${dia.key}-${slot.inicio}-${slot.fim}`
 
@@ -253,7 +253,7 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
         horario: `${slot.inicio} - ${slot.fim}`,
         inicio: slot.inicio,
         fim: slot.fim,
-        slots: DIAS_SEMANA.map((dia) =>
+        slots: DIAS_SEMANA_GRID.map((dia) =>
           gridData.find(
             (s) => s.diaDaSemana === dia.key && s.horaInicio === slot.inicio,
           ),
@@ -554,7 +554,7 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
               <div className="text-muted-foreground flex h-10 items-center justify-center text-sm font-medium">
                 Horário
               </div>
-              {DIAS_SEMANA.map((dia) => (
+              {DIAS_SEMANA_GRID.map((dia) => (
                 <div
                   key={dia.key}
                   className="flex h-10 items-center justify-center text-sm font-medium"
@@ -587,10 +587,10 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
                   {timeSlot.slots.map(
                     (slot: SlotData | undefined, index: number) => (
                       <SlotCell
-                        key={`${slot?.diaDaSemana || DIAS_SEMANA[index].key}-${timeSlot.inicio}`}
+                        key={`${slot?.diaDaSemana || DIAS_SEMANA_GRID[index].key}-${timeSlot.inicio}`}
                         slot={
                           slot || {
-                            diaDaSemana: DIAS_SEMANA[index].key,
+                            diaDaSemana: DIAS_SEMANA_GRID[index].key,
                             horaInicio: timeSlot.inicio,
                             horaFim: timeSlot.fim,
                             disponibilidade: null,
@@ -599,7 +599,7 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
                         }
                         onSlotClick={handleSlotClick}
                         isLoading={loadingSlots.has(
-                          `${slot?.diaDaSemana || DIAS_SEMANA[index].key}-${timeSlot.inicio}-${timeSlot.fim}`,
+                          `${slot?.diaDaSemana || DIAS_SEMANA_GRID[index].key}-${timeSlot.inicio}-${timeSlot.fim}`,
                         )}
                         readonly={readonly}
                       />

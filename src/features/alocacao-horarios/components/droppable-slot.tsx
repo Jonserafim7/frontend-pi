@@ -48,14 +48,14 @@ export function DroppableSlot({ slotId, alocacao }: DroppableSlotProps) {
             <div className="flex items-start justify-between">
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex items-center gap-1">
-                  <BookOpen className="h-3 w-3 flex-shrink-0 text-primary" />
-                  <span className="truncate text-sm font-bold text-primary">
+                  <BookOpen className="text-primary h-3 w-3 flex-shrink-0" />
+                  <span className="text-primary truncate text-sm font-bold">
                     {alocacao.turma.codigo}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <User className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
-                  <span className="truncate text-xs text-muted-foreground">
+                  <User className="text-muted-foreground h-3 w-3 flex-shrink-0" />
+                  <span className="text-muted-foreground truncate text-xs">
                     {alocacao.turma.professor}
                   </span>
                 </div>
@@ -65,7 +65,7 @@ export function DroppableSlot({ slotId, alocacao }: DroppableSlotProps) {
 
             <Badge
               variant="secondary"
-              className="self-start bg-primary/10 text-xs text-primary"
+              className="bg-primary/10 text-primary self-start text-xs"
             >
               {alocacao.turma.disciplina.length > 15 ?
                 `${alocacao.turma.disciplina.substring(0, 15)}...`
@@ -81,11 +81,11 @@ export function DroppableSlot({ slotId, alocacao }: DroppableSlotProps) {
                   Soltar aqui
                 </span>
               </div>
-            : <div className="text-center opacity-0 transition-opacity hover:opacity-60">
-                <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg border-2 border-dashed border-border/50">
-                  <div className="h-2 w-2 rounded-full bg-border/50"></div>
+            : <div className="text-center transition-opacity hover:opacity-100">
+                <div className="border-accent-foreground/40 mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg border-2 border-dashed">
+                  <div className="bg-accent-foreground/40 h-2 w-2 rounded-full"></div>
                 </div>
-                <span className="text-xs text-muted-foreground/70">Vazio</span>
+                <span className="text-accent-foreground/40 text-xs">Vazio</span>
               </div>
             }
           </div>
@@ -95,8 +95,8 @@ export function DroppableSlot({ slotId, alocacao }: DroppableSlotProps) {
       {/* Indicador de conflito (se houver) */}
       {isOver && alocacao && (
         <div className="absolute -top-1 -right-1">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-destructive">
-            <AlertCircle className="h-3 w-3 text-destructive-foreground" />
+          <div className="bg-destructive flex h-6 w-6 items-center justify-center rounded-full">
+            <AlertCircle className="text-destructive-foreground h-3 w-3" />
           </div>
         </div>
       )}

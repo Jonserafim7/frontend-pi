@@ -16,17 +16,21 @@ import type {
   AlocacoesHorariosControllerFindManyParams,
 } from "@/api-generated/model"
 import { mapAlocacaoToDisplay, type AlocacaoDisplay } from "../types"
+import { useConfiguracaoHorario } from "./use-configuracoes-horario"
 
 /**
  * Hook para buscar todas as alocações com filtros e mapear para display
  */
 export function useAlocacoes(params?: AlocacoesHorariosControllerFindManyParams) {
   const query = useAlocacoesHorariosControllerFindMany(params)
+  const { data: configuracao } = useConfiguracaoHorario()
 
   const alocacoesDisplay = useMemo(() => {
     if (!query.data) return []
-    return query.data.map(mapAlocacaoToDisplay)
-  }, [query.data])
+    return query.data.map((alocacao) =>
+      mapAlocacaoToDisplay(alocacao, configuracao),
+    )
+  }, [query.data, configuracao])
 
   return {
     ...query,
@@ -39,11 +43,14 @@ export function useAlocacoes(params?: AlocacoesHorariosControllerFindManyParams)
  */
 export function useAlocacoesTurma(idTurma: string) {
   const query = useAlocacoesHorariosControllerFindByTurma(idTurma)
+  const { data: configuracao } = useConfiguracaoHorario()
 
   const alocacoesDisplay = useMemo(() => {
     if (!query.data) return []
-    return query.data.map(mapAlocacaoToDisplay)
-  }, [query.data])
+    return query.data.map((alocacao) =>
+      mapAlocacaoToDisplay(alocacao, configuracao),
+    )
+  }, [query.data, configuracao])
 
   return {
     ...query,

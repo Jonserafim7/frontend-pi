@@ -2,26 +2,12 @@ import type {
   AlocacaoHorarioResponseDto,
   AlocacaoHorarioResponseDtoDiaDaSemana,
   TurmaBasicaDto,
+  ConfiguracaoHorarioDto,
 } from "@/api-generated/model"
-
-// Mapeamento dos dias da semana da API para componentes
-export const DIA_SEMANA_MAP = {
-  SEGUNDA: "SEG",
-  TERCA: "TER",
-  QUARTA: "QUA",
-  QUINTA: "QUI",
-  SEXTA: "SEX",
-  SABADO: "SAB",
-} as const
-
-export const DIA_SEMANA_REVERSE_MAP = {
-  SEG: "SEGUNDA",
-  TER: "TERCA",
-  QUA: "QUARTA",
-  QUI: "QUINTA",
-  SEX: "SEXTA",
-  SAB: "SABADO",
-} as const
+import {
+  DIA_SEMANA_MAP,
+  DIA_SEMANA_REVERSE_MAP,
+} from "@/lib/constants/dias-da-semana.constant"
 
 // Interface para turma compatível com componentes existentes
 export interface TurmaDisplay {
@@ -44,6 +30,49 @@ export interface AlocacaoDisplay {
   horaInicio: string
   horaFim: string
   turno: string
+}
+
+// Função utilitária para determinar turno baseado nas configurações
+export function determinarTurnoPorHorario(
+  horario: string,
+  configuracao?: ConfiguracaoHorarioDto | null,
+): "manha" | "tarde" | "noite" {
+  if (!configuracao) {
+    // Fallback para lógica simples se não há configuração
+    const hora = parseInt(horario.split(":")[0])
+    if (hora < 12) return "manha"
+    if (hora < 18) return "tarde"
+    return "noite"
+  }
+
+  // Converter horário para minutos para comparação
+  const [horas, minutos] = horario.split(":").map(Number)
+  const horarioMinutos = horas * 60 + minutos
+
+  // Converter horários de início dos turnos para minutos
+  const inicioManhaMinutos = configuracao.inicioTurnoManha
+    .split(":")
+    .map(Number)
+    .reduce((h, m) => h * 60 + m)
+
+  const inicioTardeMinutos = configuracao.inicioTurnoTarde
+    .split(":")
+    .map(Number)
+    .reduce((h, m) => h * 60 + m)
+
+  const inicioNoiteMinutos = configuracao.inicioTurnoNoite
+    .split(":")
+    .map(Number)
+    .reduce((h, m) => h * 60 + m)
+
+  // Determinar turno baseado nos horários configurados
+  if (horarioMinutos >= inicioNoiteMinutos) {
+    return "noite"
+  } else if (horarioMinutos >= inicioTardeMinutos) {
+    return "tarde"
+  } else {
+    return "manha"
+  }
 }
 
 // Função para mapear turma da API para display
@@ -84,13 +113,13 @@ export function mapTurmaToDisplay(
 // Função para mapear alocação da API para display
 export function mapAlocacaoToDisplay(
   alocacao: AlocacaoHorarioResponseDto,
+  configuracao?: ConfiguracaoHorarioDto | null,
 ): AlocacaoDisplay {
   const diaSemanaDisplay = DIA_SEMANA_MAP[alocacao.diaDaSemana]
   const turmaDisplay = mapTurmaToDisplay(alocacao.turma)
 
-  // Determinar turno baseado no horário
-  const hora = parseInt(alocacao.horaInicio.split(":")[0])
-  const turno = hora < 12 ? "manha" : "tarde"
+  // Determinar turno baseado nas configurações dinâmicas
+  const turno = determinarTurnoPorHorario(alocacao.horaInicio, configuracao)
 
   return {
     id: alocacao.id,

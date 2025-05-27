@@ -46,7 +46,7 @@ export function TurmasPanel() {
       <Card className="border-border bg-card shadow-lg">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <TrendingUp className="h-5 w-5 text-primary" />
+            <TrendingUp className="text-primary h-5 w-5" />
             Status das Turmas
           </CardTitle>
         </CardHeader>
@@ -72,26 +72,26 @@ export function TurmasPanel() {
               <p className="mt-1 text-xs text-yellow-600">Parciais</p>
             </div>
 
-            <div className="rounded-xl border border-primary/20 bg-primary/10 p-3">
+            <div className="border-primary/20 bg-primary/10 rounded-xl border p-3">
               <div className="flex items-center justify-between">
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary">
-                  <div className="h-2 w-2 rounded-full bg-primary-foreground"></div>
+                <div className="bg-primary flex h-5 w-5 items-center justify-center rounded-full">
+                  <div className="bg-primary-foreground h-2 w-2 rounded-full"></div>
                 </div>
-                <span className="text-2xl font-bold text-primary">
+                <span className="text-primary text-2xl font-bold">
                   {stats.naoAlocadas}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-primary">Pendentes</p>
+              <p className="text-primary mt-1 text-xs">Pendentes</p>
             </div>
 
-            <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-3">
+            <div className="border-destructive/20 bg-destructive/10 rounded-xl border p-3">
               <div className="flex items-center justify-between">
-                <AlertTriangle className="h-5 w-5 text-destructive" />
-                <span className="text-2xl font-bold text-destructive">
+                <AlertTriangle className="text-destructive h-5 w-5" />
+                <span className="text-destructive text-2xl font-bold">
                   {stats.semProfessor}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-destructive">Sem Prof.</p>
+              <p className="text-destructive mt-1 text-xs">Sem Prof.</p>
             </div>
           </div>
         </CardContent>
@@ -101,13 +101,13 @@ export function TurmasPanel() {
       <Card className="border-border bg-card shadow-lg">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Filter className="h-5 w-5 text-muted-foreground" />
+            <Filter className="text-muted-foreground h-5 w-5" />
             Filtros
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="relative">
-            <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
+            <Search className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
             <Input
               placeholder="Buscar por código, disciplina ou professor..."
               value={searchTerm}
@@ -135,7 +135,7 @@ export function TurmasPanel() {
       </Card>
 
       {/* Lista de Turmas */}
-      <Card className="flex-1 border-border bg-card shadow-lg">
+      <Card className="border-border flex-1 shadow-lg">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">Turmas Disponíveis</CardTitle>
@@ -147,31 +147,29 @@ export function TurmasPanel() {
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
-          <ScrollArea className="h-[calc(100vh-500px)] px-6 pb-6">
-            <div className="space-y-3">
-              {isLoading ?
-                <div className="py-8 text-center text-muted-foreground">
-                  <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary" />
-                  <p>Carregando turmas...</p>
-                </div>
-              : <>
-                  {filteredTurmas.map((turma) => (
-                    <DraggableTurma
-                      key={turma.id}
-                      turma={turma}
-                    />
-                  ))}
-                  {filteredTurmas.length === 0 && (
-                    <div className="py-8 text-center text-muted-foreground">
-                      <Search className="mx-auto mb-2 h-8 w-8 opacity-50" />
-                      <p>Nenhuma turma encontrada</p>
-                    </div>
-                  )}
-                </>
-              }
-            </div>
-          </ScrollArea>
+        <CardContent className="flex-1 overflow-y-auto">
+          <div className="space-y-3">
+            {isLoading ?
+              <div className="text-muted-foreground py-8 text-center">
+                <div className="border-border border-t-primary mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-2" />
+                <p>Carregando turmas...</p>
+              </div>
+            : <>
+                {filteredTurmas.map((turma) => (
+                  <DraggableTurma
+                    key={turma.id}
+                    turma={turma}
+                  />
+                ))}
+                {filteredTurmas.length === 0 && (
+                  <div className="text-muted-foreground py-8 text-center">
+                    <Search className="mx-auto mb-2 h-8 w-8 opacity-50" />
+                    <p>Nenhuma turma encontrada</p>
+                  </div>
+                )}
+              </>
+            }
+          </div>
         </CardContent>
       </Card>
     </div>
