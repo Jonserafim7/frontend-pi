@@ -1,0 +1,306 @@
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 262.1 83.3% 57.8%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 262.1 83.3% 57.8%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 263.4 70% 50.4%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Otimizações de Performance para Drag & Drop */
+@layer utilities {
+  /* Classe aplicada ao body durante drag para reduzir re-renders */
+  .is-dragging * {
+    pointer-events: none !important;
+  }
+
+  .is-dragging [data-dnd-draggable="true"] {
+    pointer-events: auto !important;
+  }
+
+  .is-dragging [data-dnd-droppable="true"] {
+    pointer-events: auto !important;
+  }
+
+  /* Otimizações de animação durante drag */
+  .is-dragging * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* Acelerar hardware para elementos que se movem */
+  [data-dnd-draggable="true"],
+  [data-dnd-droppable="true"] {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Overlay durante drag com melhor performance */
+  .dnd-overlay {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Slots droppable otimizados */
+  .droppable-slot {
+    contain: layout style paint;
+    min-height: 64px;
+    max-height: 120px;
+  }
+
+  /* Turmas draggable otimizadas */
+  .draggable-turma {
+    contain: layout style paint;
+    transform: translateZ(0);
+  }
+
+  /* Desabilitar seleção de texto durante drag */
+  .is-dragging {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+  }
+
+  /* Melhorar renderização de shadows e blurs */
+  .dnd-shadow {
+    filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04))
+      drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  }
+
+  /* Grid de horários otimizado */
+  .horarios-grid {
+    contain: layout style;
+    transform: translateZ(0);
+  }
+
+  /* Scroll suave mas performático */
+  .dnd-scroll-container {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Responsividade específica para slots */
+  @media (max-width: 640px) {
+    .droppable-slot {
+      min-height: 56px;
+      max-height: 80px;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 768px) {
+    .droppable-slot {
+      min-height: 64px;
+      max-height: 96px;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .droppable-slot {
+      min-height: 80px;
+      max-height: 120px;
+    }
+  }
+
+  /* Turma badges com overflow controlado */
+  .turma-badge {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  /* Scrollbar customizada para slots */
+  .slot-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(203 213 225) transparent;
+  }
+
+  .slot-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .slot-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .slot-scroll::-webkit-scrollbar-thumb {
+    background-color: rgb(203 213 225);
+    border-radius: 2px;
+  }
+
+  .slot-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(148 163 184);
+  }
+
+  /* Esconder scrollbar quando não necessário */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Truncamento inteligente para textos longos */
+  .text-ellipsis-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .text-ellipsis-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Prevenção de overflow em containers flexbox */
+  .flex-prevent-overflow {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /* Layout de grid responsivo para slots */
+  .grid-slots {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  @media (max-width: 640px) {
+    .grid-slots {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 768px) {
+    .grid-slots {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .grid-slots {
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.75rem;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .grid-slots {
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.75rem;
+    }
+  }
+
+  /* Indicadores de overflow responsivos */
+  .overflow-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    .overflow-indicator {
+      font-size: 9px;
+      padding: 1px 3px;
+    }
+  }
+
+  /* Performance otimizada para elementos pequenos */
+  .micro-element {
+    will-change: auto;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+
+  /* Estados de hover melhorados para touch devices */
+  @media (hover: hover) {
+    .touch-hover:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  @media (hover: none) {
+    .touch-hover:active {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+}

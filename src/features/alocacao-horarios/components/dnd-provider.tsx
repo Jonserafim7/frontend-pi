@@ -14,7 +14,7 @@ import {
   useSensors,
 } from "@dnd-kit/core"
 import { restrictToWindowEdges } from "@dnd-kit/modifiers"
-import { createContext, useContext, useState, useCallback } from "react"
+import { createContext, useContext, useState, useCallback, useMemo } from "react"
 import { DraggedTurmaOverlay } from "./dragged-turma-overlay"
 import { useToast } from "@/hooks/use-toast"
 import { useTurmasAlocacao } from "../hooks/use-turmas-alocacao"
@@ -27,6 +27,8 @@ import {
   mapDiaSemanaToApi,
   type TurmaDisplay,
   type AlocacaoDisplay,
+  createSlotData,
+  canAddTurmaToSlot,
 } from "../types"
 
 interface DndContextType {
@@ -34,7 +36,11 @@ interface DndContextType {
   draggedTurma: TurmaDisplay | null
   alocacoes: AlocacaoDisplay[]
   turmas: TurmaDisplay[]
-  handleDrop: (turmaId: string, slotId: string) => Promise<void>
+  handleDrop: (
+    turmaId: string,
+    slotId: string,
+    maxCapacity?: number,
+  ) => Promise<void>
   handleRemoveAlocacao: (alocacaoId: string) => Promise<void>
   isLoading: boolean
 }
@@ -64,35 +70,50 @@ export function DndProvider({ children }: { children: React.ReactNode }) {
   const isLoading =
     turmasLoading || alocacoesLoading || createLoading || deleteMutation.isPending
 
+  // Configuração de sensores otimizada para performance
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 8, // Reduzir distância para ativação mais rápida
       },
     }),
   )
 
+  // Memoizar função para encontrar turma por ID
+  const findTurmaById = useMemo(() => {
+    const turmaMap = new Map(turmas.map((t) => [t.id, t]))
+    return (id: string) => turmaMap.get(id)
+  }, [turmas])
+
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
       const { active } = event
-      setActiveId(active.id as string)
+      const turmaId = active.id as string
 
-      const turma = turmas.find((t) => t.id === active.id)
+      setActiveId(turmaId)
+
+      const turma = findTurmaById(turmaId)
       setDraggedTurma(turma || null)
 
+      // Feedback visual otimizado
       document.body.style.cursor = "grabbing"
+
+      // Adicionar classe CSS para indicar drag ativo (evita re-renders)
+      document.body.classList.add("is-dragging")
     },
-    [turmas],
+    [findTurmaById],
   )
 
+  // Otimizar drag over - reduzir cálculos
   const handleDragOver = useCallback((event: DragOverEvent) => {
-    // Validação em tempo real durante hover se necessário
+    // Só executar validações essenciais durante drag over
+    // Validações complexas ficam no validateSlot do hook
   }, [])
 
   const handleDrop = useCallback(
-    async (turmaId: string, slotId: string) => {
+    async (turmaId: string, slotId: string, maxCapacity: number = 3) => {
       const [dia, hora, turno] = slotId.split("-")
-      const turma = turmas.find((t) => t.id === turmaId)
+      const turma = findTurmaById(turmaId)
 
       if (!turma) {
         toast({
@@ -112,6 +133,39 @@ export function DndProvider({ children }: { children: React.ReactNode }) {
         return
       }
 
+      // Validar se a turma pode ser adicionada ao slot (múltiplas turmas)
+      const slotData = createSlotData(slotId, alocacoes, maxCapacity)
+      const canAddResult = canAddTurmaToSlot(slotData, turma)
+
+      if (!canAddResult.canAdd) {
+        toast({
+          title: "Alocação não permitida",
+          description:
+            canAddResult.reason ||
+            "Não é possível alocar esta turma neste horário",
+          variant: "destructive",
+        })
+        return
+      }
+
+      // Verificar se a turma já está alocada neste exato slot
+      const existingAlocacao = alocacoes.find(
+        (a) =>
+          a.turmaId === turmaId &&
+          a.diaDaSemana === dia &&
+          a.horaInicio === hora &&
+          a.turno === turno,
+      )
+
+      if (existingAlocacao) {
+        toast({
+          title: "Turma já alocada",
+          description: `${turma.codigo} já está alocada neste horário`,
+          variant: "destructive",
+        })
+        return
+      }
+
       try {
         // Calcular hora fim (50 minutos de aula)
         const horaFim = getHoraFim(hora)
@@ -126,9 +180,16 @@ export function DndProvider({ children }: { children: React.ReactNode }) {
           horaFim,
         })
 
+        // Mensagem de sucesso diferenciada para múltiplas turmas
+        const currentCount = slotData.alocacoes.length + 1
+        const successMessage =
+          currentCount === 1 ?
+            `${turma.codigo} alocada para ${dia} ${hora}`
+          : `${turma.codigo} adicionada ao slot ${dia} ${hora} (${currentCount}/${maxCapacity} turmas)`
+
         toast({
-          title: "Alocação realizada",
-          description: `${turma.codigo} alocada para ${dia} ${hora}`,
+          title: "✅ Alocação realizada",
+          description: successMessage,
         })
       } catch (error: any) {
         console.error("Erro ao criar alocação:", error)
@@ -139,27 +200,39 @@ export function DndProvider({ children }: { children: React.ReactNode }) {
         })
       }
     },
-    [turmas, createWithValidation, toast],
+    [findTurmaById, alocacoes, createWithValidation, toast],
   )
 
   const handleRemoveAlocacao = useCallback(
     async (alocacaoId: string) => {
       try {
         await deleteMutation.mutateAsync({ id: alocacaoId })
+
+        toast({
+          title: "✅ Alocação removida",
+          description: "A alocação foi removida com sucesso",
+        })
       } catch (error) {
         console.error("Erro ao remover alocação:", error)
+        toast({
+          title: "Erro ao remover",
+          description: "Não foi possível remover a alocação",
+          variant: "destructive",
+        })
       }
     },
-    [deleteMutation],
+    [deleteMutation, toast],
   )
 
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
       const { active, over } = event
 
+      // Limpar estado
       setActiveId(null)
       setDraggedTurma(null)
       document.body.style.cursor = ""
+      document.body.classList.remove("is-dragging")
 
       if (!over || !draggedTurma) return
 
@@ -168,7 +241,8 @@ export function DndProvider({ children }: { children: React.ReactNode }) {
     [draggedTurma, handleDrop],
   )
 
-  function getHoraFim(horaInicio: string): string {
+  // Função utilitária memoizada
+  const getHoraFim = useCallback((horaInicio: string): string => {
     const [hora, minuto] = horaInicio.split(":").map(Number)
 
     // Aulas de 50 minutos
@@ -181,17 +255,29 @@ export function DndProvider({ children }: { children: React.ReactNode }) {
     }
 
     return `${novaHora.toString().padStart(2, "0")}:${novoMinuto.toString().padStart(2, "0")}`
-  }
+  }, [])
 
-  const contextValue: DndContextType = {
-    activeId,
-    draggedTurma,
-    alocacoes,
-    turmas,
-    handleDrop,
-    handleRemoveAlocacao,
-    isLoading,
-  }
+  // Memoizar contexto para evitar re-renders desnecessários
+  const contextValue = useMemo(
+    (): DndContextType => ({
+      activeId,
+      draggedTurma,
+      alocacoes,
+      turmas,
+      handleDrop,
+      handleRemoveAlocacao,
+      isLoading,
+    }),
+    [
+      activeId,
+      draggedTurma,
+      alocacoes,
+      turmas,
+      handleDrop,
+      handleRemoveAlocacao,
+      isLoading,
+    ],
+  )
 
   return (
     <DndAlocacaoContext.Provider value={contextValue}>
@@ -204,7 +290,7 @@ export function DndProvider({ children }: { children: React.ReactNode }) {
         modifiers={[restrictToWindowEdges]}
       >
         {children}
-        <DragOverlay>
+        <DragOverlay dropAnimation={null}>
           {activeId && draggedTurma && (
             <DraggedTurmaOverlay turma={draggedTurma} />
           )}

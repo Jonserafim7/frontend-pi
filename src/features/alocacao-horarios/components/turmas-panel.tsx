@@ -9,6 +9,12 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { DraggableTurma } from "./draggable-turma"
 import { useDndAlocacao } from "./dnd-provider"
 import { useTurmasStats } from "../hooks/use-turmas-alocacao"
@@ -20,12 +26,15 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react"
 
 export function TurmasPanel() {
   const { turmas, isLoading } = useDndAlocacao()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 
   const filteredTurmas = turmas.filter((turma) => {
     const matchesSearch =
@@ -41,9 +50,9 @@ export function TurmasPanel() {
   const stats = useTurmasStats(turmas)
 
   return (
-    <div className="flex h-full flex-col space-y-6">
-      {/* Métricas */}
-      <Card className="border-border bg-card shadow-lg">
+    <div className="flex h-full flex-col space-y-4 md:space-y-6">
+      {/* Métricas - Desktop */}
+      <Card className="border-border bg-card hidden shadow-lg md:block">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <TrendingUp className="text-primary h-5 w-5" />
@@ -97,8 +106,46 @@ export function TurmasPanel() {
         </CardContent>
       </Card>
 
-      {/* Filtros */}
-      <Card className="border-border bg-card shadow-lg">
+      {/* Métricas - Mobile (compacto) */}
+      <div className="block md:hidden">
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="min-w-[70px] flex-shrink-0 rounded-lg border border-green-500/20 bg-green-500/10 p-2">
+            <div className="text-center">
+              <div className="text-lg font-bold text-green-600">
+                {stats.completas}
+              </div>
+              <div className="text-xs text-green-600">Completas</div>
+            </div>
+          </div>
+          <div className="min-w-[70px] flex-shrink-0 rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-2">
+            <div className="text-center">
+              <div className="text-lg font-bold text-yellow-600">
+                {stats.parciais}
+              </div>
+              <div className="text-xs text-yellow-600">Parciais</div>
+            </div>
+          </div>
+          <div className="border-primary/20 bg-primary/10 min-w-[70px] flex-shrink-0 rounded-lg border p-2">
+            <div className="text-center">
+              <div className="text-primary text-lg font-bold">
+                {stats.naoAlocadas}
+              </div>
+              <div className="text-primary text-xs">Pendentes</div>
+            </div>
+          </div>
+          <div className="border-destructive/20 bg-destructive/10 min-w-[70px] flex-shrink-0 rounded-lg border p-2">
+            <div className="text-center">
+              <div className="text-destructive text-lg font-bold">
+                {stats.semProfessor}
+              </div>
+              <div className="text-destructive text-xs">Sem Prof.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filtros - Desktop */}
+      <Card className="border-border bg-card hidden shadow-lg md:block">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Filter className="text-muted-foreground h-5 w-5" />
@@ -134,42 +181,109 @@ export function TurmasPanel() {
         </CardContent>
       </Card>
 
+      {/* Filtros - Mobile (colapsível) */}
+      <Card className="border-border bg-card block shadow-lg md:hidden">
+        <Collapsible
+          open={isFiltersOpen}
+          onOpenChange={setIsFiltersOpen}
+        >
+          <CollapsibleTrigger asChild>
+            <CardHeader className="hover:bg-muted/50 cursor-pointer pb-3 transition-colors">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Filter className="text-muted-foreground h-4 w-4" />
+                  Filtros
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  {filterStatus !== "all" && (
+                    <Badge
+                      variant="secondary"
+                      className="text-xs"
+                    >
+                      Filtrado
+                    </Badge>
+                  )}
+                  {isFiltersOpen ?
+                    <ChevronUp className="h-4 w-4" />
+                  : <ChevronDown className="h-4 w-4" />}
+                </div>
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="space-y-3 pt-0">
+              <div className="relative">
+                <Search className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+                <Input
+                  placeholder="Buscar..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border-input bg-background pl-10 text-sm"
+                />
+              </div>
+
+              <Select
+                value={filterStatus}
+                onValueChange={setFilterStatus}
+              >
+                <SelectTrigger className="border-input bg-background text-sm">
+                  <SelectValue placeholder="Filtrar por status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas</SelectItem>
+                  <SelectItem value="completa">✅ Completas</SelectItem>
+                  <SelectItem value="parcial">⏳ Parciais</SelectItem>
+                  <SelectItem value="nao-alocada">📋 Pendentes</SelectItem>
+                  <SelectItem value="sem-professor">⚠️ Sem Prof.</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
+      </Card>
+
       {/* Lista de Turmas */}
       <Card className="border-border flex-1 shadow-lg">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Turmas Disponíveis</CardTitle>
+            <CardTitle className="text-base md:text-lg">
+              Turmas Disponíveis
+            </CardTitle>
             <Badge
               variant="secondary"
-              className="bg-muted text-muted-foreground"
+              className="bg-muted text-muted-foreground text-xs"
             >
-              {filteredTurmas.length} turmas
+              {filteredTurmas.length}
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="flex-1 overflow-y-auto">
-          <div className="space-y-3">
-            {isLoading ?
-              <div className="text-muted-foreground py-8 text-center">
-                <div className="border-border border-t-primary mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-2" />
-                <p>Carregando turmas...</p>
-              </div>
-            : <>
-                {filteredTurmas.map((turma) => (
-                  <DraggableTurma
-                    key={turma.id}
-                    turma={turma}
-                  />
-                ))}
-                {filteredTurmas.length === 0 && (
-                  <div className="text-muted-foreground py-8 text-center">
-                    <Search className="mx-auto mb-2 h-8 w-8 opacity-50" />
-                    <p>Nenhuma turma encontrada</p>
-                  </div>
-                )}
-              </>
-            }
-          </div>
+        <CardContent className="flex-1 p-2 md:p-6">
+          <ScrollArea className="h-full">
+            <div className="space-y-2 pr-2 md:space-y-3">
+              {isLoading ?
+                <div className="text-muted-foreground py-8 text-center">
+                  <div className="border-border border-t-primary mx-auto mb-2 h-6 w-6 animate-spin rounded-full border-2 md:h-8 md:w-8" />
+                  <p className="text-sm">Carregando turmas...</p>
+                </div>
+              : <>
+                  {filteredTurmas.map((turma) => (
+                    <div
+                      key={turma.id}
+                      className="draggable-turma"
+                    >
+                      <DraggableTurma turma={turma} />
+                    </div>
+                  ))}
+                  {filteredTurmas.length === 0 && (
+                    <div className="text-muted-foreground py-8 text-center">
+                      <Search className="mx-auto mb-2 h-6 w-6 opacity-50 md:h-8 md:w-8" />
+                      <p className="text-sm">Nenhuma turma encontrada</p>
+                    </div>
+                  )}
+                </>
+              }
+            </div>
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>

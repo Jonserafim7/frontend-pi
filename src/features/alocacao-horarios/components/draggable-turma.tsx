@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { memo } from "react"
 
 import { type TurmaDisplay } from "../types"
 
@@ -17,7 +18,7 @@ interface DraggableTurmaProps {
   turma: TurmaDisplay
 }
 
-export function DraggableTurma({ turma }: DraggableTurmaProps) {
+export const DraggableTurma = memo(({ turma }: DraggableTurmaProps) => {
   const isDisabled = turma.status === "sem-professor"
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -29,7 +30,9 @@ export function DraggableTurma({ turma }: DraggableTurmaProps) {
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.6 : 1,
+    opacity: isDragging ? 0.3 : 1,
+    // Reduzir animações durante drag para melhor performance
+    transition: isDragging ? "none" : "all 200ms ease-out",
   }
 
   const getStatusConfig = () => {
@@ -100,7 +103,12 @@ export function DraggableTurma({ turma }: DraggableTurmaProps) {
       style={style}
       {...listeners}
       {...attributes}
-      className={`group relative cursor-grab rounded-xl border p-4 transition-all duration-300 active:cursor-grabbing ${statusConfig.bg} ${statusConfig.border} ${isDragging ? "ring-primary/30 scale-105 rotate-2 shadow-2xl ring-4" : "hover:scale-[1.02] hover:shadow-lg"} ${isDisabled ? "cursor-not-allowed opacity-60" : ""} `}
+      data-dnd-draggable="true"
+      className={`group draggable-turma relative cursor-grab rounded-xl border p-4 select-none ${statusConfig.bg} ${statusConfig.border} ${
+        isDragging ?
+          "ring-primary/30 pointer-events-none scale-[0.98] shadow-xl ring-2"
+        : "transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
+      } ${isDisabled ? "cursor-not-allowed opacity-60" : ""} `}
     >
       {/* Header com código e status */}
       <div className="mb-3 flex items-start justify-between">
@@ -113,7 +121,7 @@ export function DraggableTurma({ turma }: DraggableTurmaProps) {
             {turma.aulasAlocadas}/{turma.cargaHorariaSemanal}
           </Badge>
           {!isDisabled && (
-            <div className="opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="opacity-50 transition-opacity group-hover:opacity-100">
               <GripVertical className="text-muted-foreground/70 h-4 w-4" />
             </div>
           )}
@@ -122,35 +130,44 @@ export function DraggableTurma({ turma }: DraggableTurmaProps) {
 
       {/* Disciplina */}
       <div className="mb-3">
-        <p className="text-foreground mb-1 text-sm font-medium">
+        <p className="text-foreground mb-1 truncate text-sm font-medium">
           {turma.disciplina}
         </p>
         <div className="text-muted-foreground flex items-center gap-1 text-xs">
-          <User className="h-3 w-3" />
-          <span>{turma.professor}</span>
+          <User className="h-3 w-3 flex-shrink-0" />
+          <span className="truncate">{turma.professor}</span>
         </div>
       </div>
 
-      {/* Progress bar */}
+      {/* Progress bar - Simplificado para melhor performance */}
       <div className="space-y-2">
         <div className="text-muted-foreground flex justify-between text-xs">
-          <span>Progresso das aulas</span>
+          <span>Progresso</span>
           <span>{Math.round(progressPercentage)}%</span>
         </div>
-        <Progress
-          value={progressPercentage}
-          className="bg-muted h-2"
-        />
+        <div className="bg-muted h-2 overflow-hidden rounded-full">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${
+              turma.status === "completa" ? "bg-green-500"
+              : turma.status === "parcial" ? "bg-yellow-500"
+              : turma.status === "nao-alocada" ? "bg-primary"
+              : "bg-destructive"
+            }`}
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
       </div>
 
-      {/* Indicador de drag */}
+      {/* Indicador visual reduzido durante drag */}
       {isDragging && (
-        <div className="border-primary bg-primary/20 absolute inset-0 flex items-center justify-center rounded-xl border-2 border-dashed">
-          <div className="bg-background/90 text-primary rounded-full px-3 py-1 text-sm font-medium">
-            Arrastando...
+        <div className="bg-primary/10 border-primary/30 absolute inset-0 flex items-center justify-center rounded-xl border-2 border-dashed">
+          <div className="bg-primary/20 text-primary rounded-lg px-2 py-1 text-xs font-medium backdrop-blur-sm">
+            Arrastando
           </div>
         </div>
       )}
     </div>
   )
-}
+})
+
+DraggableTurma.displayName = "DraggableTurma"
