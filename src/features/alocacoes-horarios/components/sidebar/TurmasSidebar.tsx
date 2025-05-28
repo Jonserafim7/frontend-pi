@@ -4,6 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 import { AlertCircle, GraduationCap, Users } from "lucide-react"
 
 // Import API hooks using path aliases
@@ -19,6 +20,10 @@ import type { ComponentWithBaseProps } from "../../types"
 
 // Import the new TurmaCard component
 import { TurmaCard } from "./TurmaCard"
+
+// Import search functionality
+import { useSearch, searchTurmas } from "../../hooks/useSearch"
+import { SearchInput } from "./SearchInput"
 
 interface TurmasSidebarProps extends ComponentWithBaseProps {
   /** ID do período letivo atual para filtrar turmas */
@@ -80,6 +85,22 @@ export const TurmasSidebar: React.FC<TurmasSidebarProps> = ({
     return true
   })
 
+  // Search functionality
+  const {
+    searchValue,
+    debouncedValue,
+    isSearching,
+    filteredResults: turmasFiltered,
+    setSearchValue,
+    clearSearch,
+    totalResults,
+    hasActiveSearch,
+    searchInputRef,
+  } = useSearch(turmasDisponiveis, searchTurmas, {
+    debounceDelay: 300,
+    minSearchLength: 1,
+  })
+
   let errorMessage: string | null = null
   if (error) {
     if (typeof error === "object" && error !== null && "message" in error) {
@@ -94,27 +115,26 @@ export const TurmasSidebar: React.FC<TurmasSidebarProps> = ({
   // Loading state
   if (isLoading) {
     return (
-      <Card className={`w-80 ${className}`}>
+      <Card className={`${compact ? "w-72" : "w-80"} ${className}`}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <GraduationCap className="h-5 w-5" />
             <Skeleton className="h-5 w-32" />
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
-          <ScrollArea className="h-[400px] p-4">
-            <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="space-y-2"
-                >
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="space-y-2"
+              >
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     )
@@ -123,7 +143,7 @@ export const TurmasSidebar: React.FC<TurmasSidebarProps> = ({
   // Error state
   if (errorMessage) {
     return (
-      <Card className={`w-80 ${className}`}>
+      <Card className={`${compact ? "w-72" : "w-80"} ${className}`}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <GraduationCap className="h-5 w-5" />
@@ -143,7 +163,7 @@ export const TurmasSidebar: React.FC<TurmasSidebarProps> = ({
   // Empty state
   if (turmasDisponiveis.length === 0) {
     return (
-      <Card className={`w-80 ${className}`}>
+      <Card className={`${compact ? "w-72" : "w-80"} ${className}`}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <GraduationCap className="h-5 w-5" />
@@ -168,7 +188,7 @@ export const TurmasSidebar: React.FC<TurmasSidebarProps> = ({
   }
 
   return (
-    <Card className={`w-80 ${className}`}>
+    <Card className={`${compact ? "w-72" : "w-80"} ${className}`}>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -179,33 +199,74 @@ export const TurmasSidebar: React.FC<TurmasSidebarProps> = ({
             variant="secondary"
             className="text-xs"
           >
-            {turmasDisponiveis.length}
+            {hasActiveSearch ? totalResults : turmasDisponiveis.length}
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        <ScrollArea className="h-[600px] px-4 pb-4">
-          <div className={`space-y-${compact ? "2" : "3"} group`}>
-            {turmasDisponiveis.map((turma) => {
-              const isDragging = draggingTurma?.id === turma.id
-              const isSelected = selectedTurma?.id === turma.id
 
-              return (
-                <TurmaCard
-                  key={turma.id}
-                  turma={turma}
-                  isDragging={isDragging}
-                  isSelected={isSelected}
-                  compact={compact}
-                  onClick={onTurmaClick}
-                  onDragStart={onTurmaSelect}
-                  onDragEnd={() => {
-                    // Handle drag end if needed
-                  }}
-                  onShowDetails={onTurmaDetails}
-                />
-              )
-            })}
+      <CardContent className="space-y-4">
+        {/* Search Input */}
+        <SearchInput
+          value={searchValue}
+          onChange={setSearchValue}
+          onClear={clearSearch}
+          isSearching={isSearching}
+          resultCount={hasActiveSearch ? totalResults : undefined}
+          placeholder="Buscar turmas..."
+          compact={compact}
+          inputRef={searchInputRef}
+          id="turmas-search"
+        />
+
+        {hasActiveSearch && (
+          <div className="text-muted-foreground text-xs">
+            {totalResults === 0 ?
+              <span>Nenhuma turma encontrada para "{debouncedValue}"</span>
+            : <span>
+                Mostrando {totalResults} de {turmasDisponiveis.length} turmas
+              </span>
+            }
+          </div>
+        )}
+
+        <Separator />
+
+        {/* Turmas List */}
+        <ScrollArea className="h-[500px]">
+          <div className={`space-y-${compact ? "2" : "3"} group pr-4`}>
+            {turmasFiltered.length === 0 && hasActiveSearch ?
+              <div className="flex items-center justify-center py-8 text-center">
+                <div className="space-y-2">
+                  <Users className="text-muted-foreground mx-auto h-8 w-8" />
+                  <p className="text-muted-foreground text-sm">
+                    Nenhuma turma encontrada
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    Tente usar termos diferentes
+                  </p>
+                </div>
+              </div>
+            : turmasFiltered.map((turma) => {
+                const isDragging = draggingTurma?.id === turma.id
+                const isSelected = selectedTurma?.id === turma.id
+
+                return (
+                  <TurmaCard
+                    key={turma.id}
+                    turma={turma}
+                    isDragging={isDragging}
+                    isSelected={isSelected}
+                    compact={compact}
+                    onClick={onTurmaClick}
+                    onDragStart={onTurmaSelect}
+                    onDragEnd={() => {
+                      // Handle drag end if needed
+                    }}
+                    onShowDetails={onTurmaDetails}
+                  />
+                )
+              })
+            }
           </div>
         </ScrollArea>
       </CardContent>

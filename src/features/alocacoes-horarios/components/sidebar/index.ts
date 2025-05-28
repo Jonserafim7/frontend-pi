@@ -2,9 +2,16 @@
 export { TurmasSidebar } from "./TurmasSidebar"
 export { TurmaCard } from "./TurmaCard"
 export { FiltrosSidebar, type FiltrosState } from "./FiltrosSidebar"
+export { SearchInput } from "./SearchInput"
 
 // Re-export commonly used types
 export type { TurmaResponseDto } from "@/api-generated/model/turma-response-dto"
 export type { PeriodoLetivoResponseDto } from "@/api-generated/model/periodo-letivo-response-dto"
 export type { CursoResponseDto } from "@/api-generated/model/curso-response-dto"
 export type { UsuarioResponseDto } from "@/api-generated/model/usuario-response-dto"
+
+// Re-export default exports for convenience
+export { default as TurmasSidebarDefault } from "./TurmasSidebar"
+export { default as TurmaCardDefault } from "./TurmaCard"
+export { default as FiltrosSidebarDefault } from "./FiltrosSidebar"
+export { default as SearchInputDefault } from "./SearchInput"

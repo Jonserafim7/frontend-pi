@@ -6,6 +6,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -21,6 +23,9 @@ import {
   User,
   X,
   RefreshCw,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
 } from "lucide-react"
 
 // Import API hooks using path aliases
@@ -47,6 +52,8 @@ export interface FiltrosState {
   periodoLetivoId?: string
   cursoId?: string
   professorId?: string
+  turno?: string[]
+  statusAlocacao?: string[]
 }
 
 interface FiltrosSidebarProps extends ComponentWithBaseProps {
@@ -136,16 +143,58 @@ export const FiltrosSidebar: React.FC<FiltrosSidebarProps> = ({
     })
   }
 
+  const handleTurnoChange = (turno: string, checked: boolean) => {
+    const currentTurnos = filtros.turno || []
+    let newTurnos: string[]
+
+    if (checked) {
+      newTurnos = [...currentTurnos, turno]
+    } else {
+      newTurnos = currentTurnos.filter((t) => t !== turno)
+    }
+
+    onFiltrosChange({
+      ...filtros,
+      turno: newTurnos.length > 0 ? newTurnos : undefined,
+    })
+  }
+
+  const handleStatusAlocacaoChange = (status: string, checked: boolean) => {
+    const currentStatus = filtros.statusAlocacao || []
+    let newStatus: string[]
+
+    if (checked) {
+      newStatus = [...currentStatus, status]
+    } else {
+      newStatus = currentStatus.filter((s) => s !== status)
+    }
+
+    onFiltrosChange({
+      ...filtros,
+      statusAlocacao: newStatus.length > 0 ? newStatus : undefined,
+    })
+  }
+
   const handleClearFilters = () => {
     onFiltrosChange({})
   }
 
   const hasActiveFilters = Boolean(
-    filtros.periodoLetivoId || filtros.cursoId || filtros.professorId,
+    filtros.periodoLetivoId ||
+      filtros.cursoId ||
+      filtros.professorId ||
+      (filtros.turno && filtros.turno.length > 0) ||
+      (filtros.statusAlocacao && filtros.statusAlocacao.length > 0),
   )
 
   const isLoading = isLoadingPeriodos || isLoadingCursos || isLoadingProfessores
   const hasErrors = errorPeriodos || errorCursos || errorProfessores
+
+  // Validation helper
+  const isValidFilterState = () => {
+    // Período letivo é obrigatório para mostrar resultados
+    return Boolean(filtros.periodoLetivoId)
+  }
 
   // Get active filter labels
   const getActiveFilterLabels = () => {
@@ -174,10 +223,47 @@ export const FiltrosSidebar: React.FC<FiltrosSidebarProps> = ({
       }
     }
 
+    if (filtros.turno && filtros.turno.length > 0) {
+      labels.push(`Turno: ${filtros.turno.length}`)
+    }
+
+    if (filtros.statusAlocacao && filtros.statusAlocacao.length > 0) {
+      labels.push(`Status: ${filtros.statusAlocacao.length}`)
+    }
+
     return labels
   }
 
   const activeFilterLabels = getActiveFilterLabels()
+
+  // Turno options
+  const turnoOptions = [
+    { value: "MATUTINO", label: "Matutino", icon: "☀️" },
+    { value: "VESPERTINO", label: "Vespertino", icon: "🌅" },
+    { value: "NOTURNO", label: "Noturno", icon: "🌙" },
+  ]
+
+  // Status de alocação options
+  const statusAlocacaoOptions = [
+    {
+      value: "ALOCADA",
+      label: "Alocadas",
+      icon: CheckCircle,
+      color: "text-green-600",
+    },
+    {
+      value: "NAO_ALOCADA",
+      label: "Não Alocadas",
+      icon: AlertTriangle,
+      color: "text-orange-600",
+    },
+    {
+      value: "CONFLITO",
+      label: "Com Conflitos",
+      icon: AlertCircle,
+      color: "text-red-600",
+    },
+  ]
 
   return (
     <Card className={`${compact ? "w-72" : "w-80"} ${className}`}>
@@ -190,7 +276,7 @@ export const FiltrosSidebar: React.FC<FiltrosSidebarProps> = ({
           <div className="flex items-center gap-2">
             {showResultCount && typeof resultCount === "number" && (
               <Badge
-                variant="secondary"
+                variant={isValidFilterState() ? "secondary" : "destructive"}
                 className="text-xs"
               >
                 {resultCount}
@@ -209,6 +295,19 @@ export const FiltrosSidebar: React.FC<FiltrosSidebarProps> = ({
             )}
           </div>
         </CardTitle>
+
+        {/* Validation warning */}
+        {!isValidFilterState() && !isLoading && (
+          <Alert
+            variant="default"
+            className="mt-2"
+          >
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              Selecione um período letivo para filtrar turmas
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Active filters display */}
         {activeFilterLabels.length > 0 && (
@@ -230,7 +329,7 @@ export const FiltrosSidebar: React.FC<FiltrosSidebarProps> = ({
         {/* Loading state */}
         {isLoading && (
           <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
+            {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
                 className="space-y-2"
@@ -255,18 +354,20 @@ export const FiltrosSidebar: React.FC<FiltrosSidebarProps> = ({
         {/* Filters */}
         {!isLoading && !hasErrors && (
           <div className="space-y-4">
-            {/* Período Letivo Filter */}
+            {/* Período Letivo Filter - Required */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Calendar className="text-muted-foreground h-4 w-4" />
-                <label className="text-sm font-medium">Período Letivo</label>
+                <label className="text-sm font-medium">
+                  Período Letivo <span className="text-red-500">*</span>
+                </label>
               </div>
               <Select
                 value={filtros.periodoLetivoId || "all"}
                 onValueChange={handlePeriodoChange}
               >
                 <SelectTrigger className={compact ? "h-8 text-xs" : "h-9"}>
-                  <SelectValue placeholder="Todos os períodos" />
+                  <SelectValue placeholder="Selecione o período" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os períodos</SelectItem>
@@ -362,6 +463,82 @@ export const FiltrosSidebar: React.FC<FiltrosSidebarProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <Separator />
+
+            {/* Turno Filter - Checkboxes */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Clock className="text-muted-foreground h-4 w-4" />
+                <label className="text-sm font-medium">Turno</label>
+              </div>
+              <div className="space-y-2">
+                {turnoOptions.map((turno) => (
+                  <div
+                    key={turno.value}
+                    className="flex items-center space-x-2"
+                  >
+                    <Checkbox
+                      id={`turno-${turno.value}`}
+                      checked={filtros.turno?.includes(turno.value) || false}
+                      onCheckedChange={(checked) =>
+                        handleTurnoChange(turno.value, checked as boolean)
+                      }
+                      className={compact ? "h-3 w-3" : "h-4 w-4"}
+                    />
+                    <Label
+                      htmlFor={`turno-${turno.value}`}
+                      className={`flex items-center gap-2 ${compact ? "text-xs" : "text-sm"} cursor-pointer`}
+                    >
+                      <span>{turno.icon}</span>
+                      {turno.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Status de Alocação Filter - Checkboxes */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="text-muted-foreground h-4 w-4" />
+                <label className="text-sm font-medium">Status</label>
+              </div>
+              <div className="space-y-2">
+                {statusAlocacaoOptions.map((status) => {
+                  const IconComponent = status.icon
+                  return (
+                    <div
+                      key={status.value}
+                      className="flex items-center space-x-2"
+                    >
+                      <Checkbox
+                        id={`status-${status.value}`}
+                        checked={
+                          filtros.statusAlocacao?.includes(status.value) || false
+                        }
+                        onCheckedChange={(checked) =>
+                          handleStatusAlocacaoChange(
+                            status.value,
+                            checked as boolean,
+                          )
+                        }
+                        className={compact ? "h-3 w-3" : "h-4 w-4"}
+                      />
+                      <Label
+                        htmlFor={`status-${status.value}`}
+                        className={`flex items-center gap-2 ${compact ? "text-xs" : "text-sm"} cursor-pointer`}
+                      >
+                        <IconComponent className={`h-3 w-3 ${status.color}`} />
+                        {status.label}
+                      </Label>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
 
             {/* Clear filters button */}
