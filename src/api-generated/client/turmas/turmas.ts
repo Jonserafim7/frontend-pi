@@ -36,7 +36,7 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * @summary Criar uma nova turma (Coordenador)
+ * @summary Criar uma nova turma (Admin, Coordenador)
  */
 export const turmasControllerCreate = (
     createTurmaDto: BodyType<CreateTurmaDto>,
@@ -84,7 +84,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TurmasControllerCreateMutationError = ErrorType<void>
 
     /**
- * @summary Criar uma nova turma (Coordenador)
+ * @summary Criar uma nova turma (Admin, Coordenador)
  */
 export const useTurmasControllerCreate = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerCreate>>, TError,{data: BodyType<CreateTurmaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
@@ -100,7 +100,7 @@ export const useTurmasControllerCreate = <TError = ErrorType<void>,
       return useMutation(mutationOptions );
     }
     /**
- * @summary Listar turmas com filtros (Coordenador, Diretor)
+ * @summary Listar turmas com filtros (Admin, Coordenador, Diretor)
  */
 export const turmasControllerFindAll = (
     params?: TurmasControllerFindAllParams,
@@ -144,7 +144,7 @@ export type TurmasControllerFindAllQueryError = ErrorType<unknown>
 
 
 /**
- * @summary Listar turmas com filtros (Coordenador, Diretor)
+ * @summary Listar turmas com filtros (Admin, Coordenador, Diretor)
  */
 
 export function useTurmasControllerFindAll<TData = Awaited<ReturnType<typeof turmasControllerFindAll>>, TError = ErrorType<unknown>>(
@@ -164,7 +164,7 @@ export function useTurmasControllerFindAll<TData = Awaited<ReturnType<typeof tur
 
 
 /**
- * @summary Listar turmas de uma disciplina ofertada (Coordenador, Diretor)
+ * @summary Listar turmas de uma disciplina ofertada (Admin, Coordenador, Diretor)
  */
 export const turmasControllerFindByDisciplinaOfertada = (
     idDisciplinaOfertada: string,
@@ -207,7 +207,7 @@ export type TurmasControllerFindByDisciplinaOfertadaQueryError = ErrorType<unkno
 
 
 /**
- * @summary Listar turmas de uma disciplina ofertada (Coordenador, Diretor)
+ * @summary Listar turmas de uma disciplina ofertada (Admin, Coordenador, Diretor)
  */
 
 export function useTurmasControllerFindByDisciplinaOfertada<TData = Awaited<ReturnType<typeof turmasControllerFindByDisciplinaOfertada>>, TError = ErrorType<unknown>>(
@@ -227,7 +227,7 @@ export function useTurmasControllerFindByDisciplinaOfertada<TData = Awaited<Retu
 
 
 /**
- * @summary Listar turmas de um professor (Coordenador, Diretor, Professor)
+ * @summary Listar turmas de um professor (Admin, Coordenador, Diretor, Professor)
  */
 export const turmasControllerFindByProfessor = (
     idProfessor: string,
@@ -270,7 +270,7 @@ export type TurmasControllerFindByProfessorQueryError = ErrorType<unknown>
 
 
 /**
- * @summary Listar turmas de um professor (Coordenador, Diretor, Professor)
+ * @summary Listar turmas de um professor (Admin, Coordenador, Diretor, Professor)
  */
 
 export function useTurmasControllerFindByProfessor<TData = Awaited<ReturnType<typeof turmasControllerFindByProfessor>>, TError = ErrorType<unknown>>(
@@ -290,7 +290,7 @@ export function useTurmasControllerFindByProfessor<TData = Awaited<ReturnType<ty
 
 
 /**
- * @summary Obter detalhes de uma turma específica
+ * @summary Obter detalhes de uma turma específica (Admin, Coordenador, Diretor, Professor)
  */
 export const turmasControllerFindOne = (
     id: string,
@@ -333,7 +333,7 @@ export type TurmasControllerFindOneQueryError = ErrorType<void>
 
 
 /**
- * @summary Obter detalhes de uma turma específica
+ * @summary Obter detalhes de uma turma específica (Admin, Coordenador, Diretor, Professor)
  */
 
 export function useTurmasControllerFindOne<TData = Awaited<ReturnType<typeof turmasControllerFindOne>>, TError = ErrorType<void>>(
@@ -353,7 +353,7 @@ export function useTurmasControllerFindOne<TData = Awaited<ReturnType<typeof tur
 
 
 /**
- * @summary Atualizar dados de uma turma (Coordenador)
+ * @summary Atualizar dados de uma turma (Admin, Coordenador)
  */
 export const turmasControllerUpdate = (
     id: string,
@@ -401,7 +401,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TurmasControllerUpdateMutationError = ErrorType<void>
 
     /**
- * @summary Atualizar dados de uma turma (Coordenador)
+ * @summary Atualizar dados de uma turma (Admin, Coordenador)
  */
 export const useTurmasControllerUpdate = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerUpdate>>, TError,{id: string;data: BodyType<UpdateTurmaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
@@ -417,7 +417,7 @@ export const useTurmasControllerUpdate = <TError = ErrorType<void>,
       return useMutation(mutationOptions );
     }
     /**
- * @summary Deletar uma turma (Coordenador)
+ * @summary Deletar uma turma (Admin, Coordenador)
  */
 export const turmasControllerRemove = (
     id: string,
@@ -462,7 +462,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TurmasControllerRemoveMutationError = ErrorType<unknown>
 
     /**
- * @summary Deletar uma turma (Coordenador)
+ * @summary Deletar uma turma (Admin, Coordenador)
  */
 export const useTurmasControllerRemove = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
@@ -478,7 +478,7 @@ export const useTurmasControllerRemove = <TError = ErrorType<unknown>,
       return useMutation(mutationOptions );
     }
     /**
- * @summary Atribuir professor à turma (Coordenador)
+ * @summary Atribuir professor à turma (Admin, Coordenador)
  */
 export const turmasControllerAtribuirProfessor = (
     id: string,
@@ -526,7 +526,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TurmasControllerAtribuirProfessorMutationError = ErrorType<unknown>
 
     /**
- * @summary Atribuir professor à turma (Coordenador)
+ * @summary Atribuir professor à turma (Admin, Coordenador)
  */
 export const useTurmasControllerAtribuirProfessor = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerAtribuirProfessor>>, TError,{id: string;data: BodyType<AtribuirProfessorDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
@@ -542,7 +542,7 @@ export const useTurmasControllerAtribuirProfessor = <TError = ErrorType<unknown>
       return useMutation(mutationOptions );
     }
     /**
- * @summary Remover professor da turma (Coordenador)
+ * @summary Remover professor da turma (Admin, Coordenador)
  */
 export const turmasControllerRemoverProfessor = (
     id: string,
@@ -587,7 +587,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TurmasControllerRemoverProfessorMutationError = ErrorType<unknown>
 
     /**
- * @summary Remover professor da turma (Coordenador)
+ * @summary Remover professor da turma (Admin, Coordenador)
  */
 export const useTurmasControllerRemoverProfessor = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof turmasControllerRemoverProfessor>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}

@@ -35,7 +35,7 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * @summary Criar uma nova oferta de disciplina (Coordenador)
+ * @summary Criar uma nova oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerCreate = (
     createDisciplinaOfertadaDto: BodyType<CreateDisciplinaOfertadaDto>,
@@ -83,7 +83,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type DisciplinasOfertadasControllerCreateMutationError = ErrorType<void>
 
     /**
- * @summary Criar uma nova oferta de disciplina (Coordenador)
+ * @summary Criar uma nova oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const useDisciplinasOfertadasControllerCreate = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>, TError,{data: BodyType<CreateDisciplinaOfertadaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
@@ -99,7 +99,7 @@ export const useDisciplinasOfertadasControllerCreate = <TError = ErrorType<void>
       return useMutation(mutationOptions );
     }
     /**
- * @summary Listar disciplinas ofertadas (Coordenador, Diretor)
+ * @summary Listar disciplinas ofertadas (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerFindAll = (
     params?: DisciplinasOfertadasControllerFindAllParams,
@@ -143,7 +143,7 @@ export type DisciplinasOfertadasControllerFindAllQueryError = ErrorType<void>
 
 
 /**
- * @summary Listar disciplinas ofertadas (Coordenador, Diretor)
+ * @summary Listar disciplinas ofertadas (Admin, Diretor, Coordenador)
  */
 
 export function useDisciplinasOfertadasControllerFindAll<TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>, TError = ErrorType<void>>(
@@ -163,7 +163,7 @@ export function useDisciplinasOfertadasControllerFindAll<TData = Awaited<ReturnT
 
 
 /**
- * @summary Obter detalhes de uma oferta de disciplina específica (Coordenador, Diretor)
+ * @summary Obter detalhes de uma oferta de disciplina específica (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerFindOne = (
     id: string,
@@ -206,7 +206,7 @@ export type DisciplinasOfertadasControllerFindOneQueryError = ErrorType<void>
 
 
 /**
- * @summary Obter detalhes de uma oferta de disciplina específica (Coordenador, Diretor)
+ * @summary Obter detalhes de uma oferta de disciplina específica (Admin, Diretor, Coordenador)
  */
 
 export function useDisciplinasOfertadasControllerFindOne<TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>, TError = ErrorType<void>>(
@@ -226,7 +226,7 @@ export function useDisciplinasOfertadasControllerFindOne<TData = Awaited<ReturnT
 
 
 /**
- * @summary Atualizar dados de uma oferta de disciplina (Coordenador)
+ * @summary Atualizar dados de uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerUpdate = (
     id: string,
@@ -274,7 +274,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type DisciplinasOfertadasControllerUpdateMutationError = ErrorType<void>
 
     /**
- * @summary Atualizar dados de uma oferta de disciplina (Coordenador)
+ * @summary Atualizar dados de uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const useDisciplinasOfertadasControllerUpdate = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisciplinaOfertadaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
@@ -290,7 +290,7 @@ export const useDisciplinasOfertadasControllerUpdate = <TError = ErrorType<void>
       return useMutation(mutationOptions );
     }
     /**
- * @summary Cancelar uma oferta de disciplina (Coordenador)
+ * @summary Cancelar uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerRemove = (
     id: string,
@@ -335,7 +335,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type DisciplinasOfertadasControllerRemoveMutationError = ErrorType<void>
 
     /**
- * @summary Cancelar uma oferta de disciplina (Coordenador)
+ * @summary Cancelar uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const useDisciplinasOfertadasControllerRemove = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
