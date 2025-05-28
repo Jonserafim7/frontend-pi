@@ -3,19 +3,35 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Calendar, Filter, Download, RefreshCw } from "lucide-react"
+import { Plus, Calendar, Download, RefreshCw } from "lucide-react"
 
-import { HorarioGrid } from "../components/grid"
+// Import components from index
+import {
+  HorarioGrid,
+  TurmasSidebar,
+  FiltrosSidebar,
+  type FiltrosState,
+} from "../components"
+
+// Import types
 import type { AlocacaoHorarioResponseDto } from "../types"
+import type { TurmaResponseDto } from "@/api-generated/model/turma-response-dto"
 
 /**
  * Main page for schedule allocation management
  * Provides interface for coordinators to manage class schedules
  */
 export const AlocacaoHorariosPage: React.FC = () => {
-  // TODO: Replace with actual state management
-  const [selectedPeriodoLetivo, setSelectedPeriodoLetivo] = useState<string>("")
-  const [selectedCurso, setSelectedCurso] = useState<string>("")
+  // Filter state management
+  const [filtros, setFiltros] = useState<FiltrosState>({})
+
+  // Selected turma for drag and drop
+  const [selectedTurma, setSelectedTurma] = useState<TurmaResponseDto | null>(
+    null,
+  )
+  const [draggingTurma, setDraggingTurma] = useState<TurmaResponseDto | null>(
+    null,
+  )
 
   // Event handlers for grid operations
   const handleAlocacaoCreate = (alocacao: AlocacaoHorarioResponseDto) => {
@@ -46,6 +62,43 @@ export const AlocacaoHorariosPage: React.FC = () => {
   const handleRefresh = () => {
     console.log("Atualizar dados")
     // TODO: Implement refresh functionality
+  }
+
+  // Sidebar event handlers
+  const handleTurmaSelect = (turma: TurmaResponseDto) => {
+    setSelectedTurma(turma)
+    setDraggingTurma(turma)
+  }
+
+  const handleTurmaClick = (turma: TurmaResponseDto) => {
+    console.log("Turma clicada:", turma)
+    // TODO: Show turma details or perform action
+  }
+
+  const handleTurmaDetails = (turma: TurmaResponseDto) => {
+    console.log("Ver detalhes da turma:", turma)
+    // TODO: Open turma details modal
+  }
+
+  const handleFiltrosChange = (novosFiltros: FiltrosState) => {
+    setFiltros(novosFiltros)
+  }
+
+  // Get display values for header
+  const getCurrentPeriodo = () => {
+    if (filtros.periodoLetivoId) {
+      // TODO: Get actual período from API
+      return "2024.1"
+    }
+    return "Todos os períodos"
+  }
+
+  const getCurrentCurso = () => {
+    if (filtros.cursoId) {
+      // TODO: Get actual curso from API
+      return "ADS"
+    }
+    return "Todos os cursos"
   }
 
   return (
@@ -81,7 +134,7 @@ export const AlocacaoHorariosPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Filters and Status */}
+      {/* Current Filters Display */}
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -89,8 +142,7 @@ export const AlocacaoHorariosPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <Calendar className="text-muted-foreground h-4 w-4" />
               <span className="text-sm font-medium">Período:</span>
-              {/* TODO: Replace with actual period selector */}
-              <Badge variant="outline">2024.1</Badge>
+              <Badge variant="outline">{getCurrentPeriodo()}</Badge>
             </div>
 
             <Separator
@@ -100,11 +152,21 @@ export const AlocacaoHorariosPage: React.FC = () => {
 
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Curso:</span>
-              {/* TODO: Replace with actual course selector */}
-              <Badge variant="outline">
-                Análise e Desenvolvimento de Sistemas
-              </Badge>
+              <Badge variant="outline">{getCurrentCurso()}</Badge>
             </div>
+
+            {filtros.professorId && (
+              <>
+                <Separator
+                  orientation="vertical"
+                  className="h-6"
+                />
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Professor:</span>
+                  <Badge variant="outline">Filtrado</Badge>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-4">
@@ -125,82 +187,40 @@ export const AlocacaoHorariosPage: React.FC = () => {
         </div>
       </Card>
 
-      {/* Main Content Layout */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
-          <Card className="p-4">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Turmas Disponíveis</h3>
-                <Badge variant="secondary">5</Badge>
-              </div>
-
-              <div className="space-y-2">
-                {/* TODO: Replace with actual turmas list */}
-                {[
-                  { id: "1", codigo: "ADS101", disciplina: "Programação I" },
-                  { id: "2", codigo: "ADS102", disciplina: "Matemática" },
-                  { id: "3", codigo: "ADS103", disciplina: "Algoritmos" },
-                  { id: "4", codigo: "ADS104", disciplina: "BD I" },
-                  { id: "5", codigo: "ADS105", disciplina: "Redes" },
-                ].map((turma) => (
-                  <Card
-                    key={turma.id}
-                    className="cursor-grab p-3 transition-shadow hover:shadow-md"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Badge
-                          variant="outline"
-                          className="text-xs"
-                        >
-                          {turma.codigo}
-                        </Badge>
-                      </div>
-                      <p className="text-sm font-medium">{turma.disciplina}</p>
-                      <p className="text-muted-foreground text-xs">
-                        Arraste para alocar
-                      </p>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-
-              <Separator />
-
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Filtros</h4>
-                {/* TODO: Add filter components */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start"
-                >
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filtrar por professor
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start"
-                >
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filtrar por disciplina
-                </Button>
-              </div>
-            </div>
-          </Card>
+      {/* Main Content Layout with Sidebars */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        {/* Filters Sidebar */}
+        <div className="xl:col-span-2">
+          <FiltrosSidebar
+            filtros={filtros}
+            onFiltrosChange={handleFiltrosChange}
+            showResultCount
+            resultCount={8} // TODO: Calculate actual count
+            compact
+          />
         </div>
 
         {/* Main Grid */}
-        <div className="lg:col-span-3">
+        <div className="xl:col-span-7">
           <HorarioGrid
-            periodoLetivoId={selectedPeriodoLetivo || "default"}
-            cursoId={selectedCurso}
+            periodoLetivoId={filtros.periodoLetivoId || ""}
+            cursoId={filtros.cursoId}
             onAlocacaoCreate={handleAlocacaoCreate}
             onAlocacaoUpdate={handleAlocacaoUpdate}
             onAlocacaoDelete={handleAlocacaoDelete}
+          />
+        </div>
+
+        {/* Turmas Sidebar */}
+        <div className="xl:col-span-3">
+          <TurmasSidebar
+            periodoLetivoId={filtros.periodoLetivoId}
+            cursoId={filtros.cursoId}
+            onTurmaSelect={handleTurmaSelect}
+            onTurmaClick={handleTurmaClick}
+            onTurmaDetails={handleTurmaDetails}
+            selectedTurma={selectedTurma}
+            draggingTurma={draggingTurma}
           />
         </div>
       </div>
@@ -214,7 +234,8 @@ export const AlocacaoHorariosPage: React.FC = () => {
           <div className="space-y-1">
             <h4 className="text-sm font-medium">Como usar</h4>
             <p className="text-muted-foreground text-sm">
-              Arraste turmas da sidebar para os slots de horário desejados. Clique
+              Use os filtros à esquerda para encontrar turmas específicas. Arraste
+              turmas da sidebar direita para os slots de horário desejados. Clique
               duplo em uma alocação para editá-la. O sistema detecta
               automaticamente conflitos de horário.
             </p>
