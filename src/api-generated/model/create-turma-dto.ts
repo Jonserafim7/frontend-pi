@@ -8,7 +8,7 @@
 
 export interface CreateTurmaDto {
   /** ID da disciplina ofertada à qual esta turma pertence. */
-  idDisciplinaOfertada: string;
+  idDisciplinaOfertada: string
   /** Código/identificador da turma (ex: T1, T2, A, B). */
-  codigoDaTurma: string;
+  codigoDaTurma: string
 }

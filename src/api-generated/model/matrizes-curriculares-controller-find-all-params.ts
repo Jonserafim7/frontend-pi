@@ -7,8 +7,8 @@
  */
 
 export type MatrizesCurricularesControllerFindAllParams = {
-/**
- * ID do curso para filtrar matrizes curriculares
- */
-idCurso?: string;
-};
+  /**
+   * ID do curso para filtrar matrizes curriculares
+   */
+  idCurso?: string
+}

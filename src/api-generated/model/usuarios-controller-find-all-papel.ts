@@ -6,13 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 
-export type UsuariosControllerFindAllPapel = typeof UsuariosControllerFindAllPapel[keyof typeof UsuariosControllerFindAllPapel];
-
+export type UsuariosControllerFindAllPapel =
+  (typeof UsuariosControllerFindAllPapel)[keyof typeof UsuariosControllerFindAllPapel]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsuariosControllerFindAllPapel = {
-  ADMIN: 'ADMIN',
-  DIRETOR: 'DIRETOR',
-  COORDENADOR: 'COORDENADOR',
-  PROFESSOR: 'PROFESSOR',
-} as const;
+  ADMIN: "ADMIN",
+  DIRETOR: "DIRETOR",
+  COORDENADOR: "COORDENADOR",
+  PROFESSOR: "PROFESSOR",
+} as const

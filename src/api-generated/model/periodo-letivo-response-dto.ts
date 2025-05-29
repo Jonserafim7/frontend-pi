@@ -5,23 +5,23 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { PeriodoLetivoResponseDtoStatus } from './periodo-letivo-response-dto-status';
+import type { PeriodoLetivoResponseDtoStatus } from "./periodo-letivo-response-dto-status"
 
 export interface PeriodoLetivoResponseDto {
   /** ID único do período letivo */
-  id: string;
+  id: string
   /** Ano do período letivo */
-  ano: number;
+  ano: number
   /** Semestre do período letivo (1 ou 2) */
-  semestre: number;
+  semestre: number
   /** Status atual do período letivo */
-  status: PeriodoLetivoResponseDtoStatus;
+  status: PeriodoLetivoResponseDtoStatus
   /** Data de início do período letivo */
-  dataInicio: string;
+  dataInicio: string
   /** Data de fim do período letivo */
-  dataFim: string;
+  dataFim: string
   /** Data de criação do registro */
-  dataCriacao: string;
+  dataCriacao: string
   /** Data da última atualização do registro */
-  dataAtualizacao: string;
+  dataAtualizacao: string
 }

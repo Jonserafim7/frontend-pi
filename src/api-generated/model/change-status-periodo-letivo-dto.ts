@@ -5,9 +5,9 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { ChangeStatusPeriodoLetivoDtoStatus } from './change-status-periodo-letivo-dto-status';
+import type { ChangeStatusPeriodoLetivoDtoStatus } from "./change-status-periodo-letivo-dto-status"
 
 export interface ChangeStatusPeriodoLetivoDto {
   /** Novo status do período letivo */
-  status: ChangeStatusPeriodoLetivoDtoStatus;
+  status: ChangeStatusPeriodoLetivoDtoStatus
 }

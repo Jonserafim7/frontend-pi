@@ -5,7 +5,7 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { UpdatePeriodoLetivoDtoStatus } from './update-periodo-letivo-dto-status';
+import type { UpdatePeriodoLetivoDtoStatus } from "./update-periodo-letivo-dto-status"
 
 export interface UpdatePeriodoLetivoDto {
   /**
@@ -13,17 +13,17 @@ export interface UpdatePeriodoLetivoDto {
    * @minimum 2000
    * @maximum 2100
    */
-  ano?: number;
+  ano?: number
   /**
    * Semestre do período letivo (1 ou 2)
    * @minimum 1
    * @maximum 2
    */
-  semestre?: number;
+  semestre?: number
   /** Status inicial do período letivo */
-  status?: UpdatePeriodoLetivoDtoStatus;
+  status?: UpdatePeriodoLetivoDtoStatus
   /** Data de início do período letivo no formato YYYY-MM-DD */
-  dataInicio?: string;
+  dataInicio?: string
   /** Data de fim do período letivo no formato YYYY-MM-DD */
-  dataFim?: string;
+  dataFim?: string
 }

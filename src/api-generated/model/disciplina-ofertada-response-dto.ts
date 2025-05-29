@@ -5,27 +5,27 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { DisciplinaResponseDto } from './disciplina-response-dto';
-import type { PeriodoLetivoResponseDto } from './periodo-letivo-response-dto';
+import type { DisciplinaResponseDto } from "./disciplina-response-dto"
+import type { PeriodoLetivoResponseDto } from "./periodo-letivo-response-dto"
 
 export interface DisciplinaOfertadaResponseDto {
   /** ID da disciplina que será ofertada (UUID) */
-  idDisciplina: string;
+  idDisciplina: string
   /** ID do período letivo em que a disciplina será ofertada (UUID) */
-  idPeriodoLetivo: string;
+  idPeriodoLetivo: string
   /**
    * Quantidade de turmas para esta disciplina ofertada
    * @minimum 1
    */
-  quantidadeTurmas: number;
+  quantidadeTurmas: number
   /** ID da oferta da disciplina (UUID) */
-  id: string;
+  id: string
   /** Detalhes da disciplina ofertada */
-  disciplina: DisciplinaResponseDto;
+  disciplina: DisciplinaResponseDto
   /** Detalhes do período letivo da oferta */
-  periodoLetivo: PeriodoLetivoResponseDto;
+  periodoLetivo: PeriodoLetivoResponseDto
   /** Data de criação da oferta da disciplina */
-  createdAt: string;
+  createdAt: string
   /** Data da última atualização da oferta da disciplina */
-  updatedAt: string;
+  updatedAt: string
 }

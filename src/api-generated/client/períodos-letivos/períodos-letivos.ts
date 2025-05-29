@@ -5,477 +5,887 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query"
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query"
 
 import type {
   ChangeStatusPeriodoLetivoDto,
   CreatePeriodoLetivoDto,
   PeriodoLetivoResponseDto,
   PeriodosLetivosControllerFindAllParams,
-  UpdatePeriodoLetivoDto
-} from '../../model';
+  UpdatePeriodoLetivoDto,
+} from "../../model"
 
-import { orvalCustomInstance } from '../../../lib/orval-axios-instance';
-import type { ErrorType , BodyType } from '../../../lib/orval-axios-instance';
+import { orvalCustomInstance } from "../../../lib/orval-axios-instance"
+import type { ErrorType, BodyType } from "../../../lib/orval-axios-instance"
 
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
  * @summary Cria um novo período letivo
  */
 export const periodosLetivosControllerCreate = (
-    createPeriodoLetivoDto: BodyType<CreatePeriodoLetivoDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  createPeriodoLetivoDto: BodyType<CreatePeriodoLetivoDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<PeriodoLetivoResponseDto>(
-      {url: `/periodos-letivos`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createPeriodoLetivoDto, signal
+  return orvalCustomInstance<PeriodoLetivoResponseDto>(
+    {
+      url: `/periodos-letivos`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createPeriodoLetivoDto,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getPeriodosLetivosControllerCreateMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof periodosLetivosControllerCreate>>,
+    TError,
+    { data: BodyType<CreatePeriodoLetivoDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof periodosLetivosControllerCreate>>,
+  TError,
+  { data: BodyType<CreatePeriodoLetivoDto> },
+  TContext
+> => {
+  const mutationKey = ["periodosLetivosControllerCreate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getPeriodosLetivosControllerCreateMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerCreate>>, TError,{data: BodyType<CreatePeriodoLetivoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerCreate>>, TError,{data: BodyType<CreatePeriodoLetivoDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof periodosLetivosControllerCreate>>,
+    { data: BodyType<CreatePeriodoLetivoDto> }
+  > = (props) => {
+    const { data } = props ?? {}
 
-const mutationKey = ['periodosLetivosControllerCreate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return periodosLetivosControllerCreate(data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type PeriodosLetivosControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof periodosLetivosControllerCreate>>
+>
+export type PeriodosLetivosControllerCreateMutationBody =
+  BodyType<CreatePeriodoLetivoDto>
+export type PeriodosLetivosControllerCreateMutationError = ErrorType<void>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof periodosLetivosControllerCreate>>, {data: BodyType<CreatePeriodoLetivoDto>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  periodosLetivosControllerCreate(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PeriodosLetivosControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof periodosLetivosControllerCreate>>>
-    export type PeriodosLetivosControllerCreateMutationBody = BodyType<CreatePeriodoLetivoDto>
-    export type PeriodosLetivosControllerCreateMutationError = ErrorType<void>
-
-    /**
+/**
  * @summary Cria um novo período letivo
  */
-export const usePeriodosLetivosControllerCreate = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerCreate>>, TError,{data: BodyType<CreatePeriodoLetivoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof periodosLetivosControllerCreate>>,
-        TError,
-        {data: BodyType<CreatePeriodoLetivoDto>},
-        TContext
-      > => {
+export const usePeriodosLetivosControllerCreate = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof periodosLetivosControllerCreate>>,
+      TError,
+      { data: BodyType<CreatePeriodoLetivoDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof periodosLetivosControllerCreate>>,
+  TError,
+  { data: BodyType<CreatePeriodoLetivoDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getPeriodosLetivosControllerCreateMutationOptions(options)
 
-      const mutationOptions = getPeriodosLetivosControllerCreateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * @summary Lista todos os períodos letivos com filtros opcionais
  */
 export const periodosLetivosControllerFindAll = (
-    params?: PeriodosLetivosControllerFindAllParams,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  params?: PeriodosLetivosControllerFindAllParams,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<PeriodoLetivoResponseDto[]>(
-      {url: `/periodos-letivos`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-  
-
-export const getPeriodosLetivosControllerFindAllQueryKey = (params?: PeriodosLetivosControllerFindAllParams,) => {
-    return ['periodos-letivos', ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getPeriodosLetivosControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>, TError = ErrorType<unknown>>(params?: PeriodosLetivosControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getPeriodosLetivosControllerFindAllQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>> = ({ signal }) => periodosLetivosControllerFindAll(params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<PeriodoLetivoResponseDto[]>(
+    { url: `/periodos-letivos`, method: "GET", params, signal },
+    options,
+  )
 }
 
-export type PeriodosLetivosControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>>
+export const getPeriodosLetivosControllerFindAllQueryKey = (
+  params?: PeriodosLetivosControllerFindAllParams,
+) => {
+  return ["periodos-letivos", ...(params ? [params] : [])] as const
+}
+
+export const getPeriodosLetivosControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: PeriodosLetivosControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getPeriodosLetivosControllerFindAllQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>
+  > = ({ signal }) =>
+    periodosLetivosControllerFindAll(params, requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PeriodosLetivosControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>
+>
 export type PeriodosLetivosControllerFindAllQueryError = ErrorType<unknown>
 
-
+export function usePeriodosLetivosControllerFindAll<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | PeriodosLetivosControllerFindAllParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function usePeriodosLetivosControllerFindAll<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: PeriodosLetivosControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePeriodosLetivosControllerFindAll<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: PeriodosLetivosControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Lista todos os períodos letivos com filtros opcionais
  */
 
-export function usePeriodosLetivosControllerFindAll<TData = Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>, TError = ErrorType<unknown>>(
- params?: PeriodosLetivosControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function usePeriodosLetivosControllerFindAll<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: PeriodosLetivosControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getPeriodosLetivosControllerFindAllQueryOptions(
+    params,
+    options,
+  )
 
-  const queryOptions = getPeriodosLetivosControllerFindAllQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Busca o período letivo ativo atual
  */
 export const periodosLetivosControllerFindPeriodoAtivo = (
-    
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<PeriodoLetivoResponseDto>(
-      {url: `/periodos-letivos/ativo`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getPeriodosLetivosControllerFindPeriodoAtivoQueryKey = () => {
-    return ['periodos-letivos','ativo'] as const;
-    }
-
-    
-export const getPeriodosLetivosControllerFindPeriodoAtivoQueryOptions = <TData = Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getPeriodosLetivosControllerFindPeriodoAtivoQueryKey();
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>> = ({ signal }) => periodosLetivosControllerFindPeriodoAtivo(requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<PeriodoLetivoResponseDto>(
+    { url: `/periodos-letivos/ativo`, method: "GET", signal },
+    options,
+  )
 }
 
-export type PeriodosLetivosControllerFindPeriodoAtivoQueryResult = NonNullable<Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>>
+export const getPeriodosLetivosControllerFindPeriodoAtivoQueryKey = () => {
+  return ["periodos-letivos", "ativo"] as const
+}
+
+export const getPeriodosLetivosControllerFindPeriodoAtivoQueryOptions = <
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getPeriodosLetivosControllerFindPeriodoAtivoQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>
+  > = ({ signal }) =>
+    periodosLetivosControllerFindPeriodoAtivo(requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PeriodosLetivosControllerFindPeriodoAtivoQueryResult = NonNullable<
+  Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>
+>
 export type PeriodosLetivosControllerFindPeriodoAtivoQueryError = ErrorType<void>
 
-
+export function usePeriodosLetivosControllerFindPeriodoAtivo<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+  TError = ErrorType<void>,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+          TError,
+          Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function usePeriodosLetivosControllerFindPeriodoAtivo<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+          TError,
+          Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePeriodosLetivosControllerFindPeriodoAtivo<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Busca o período letivo ativo atual
  */
 
-export function usePeriodosLetivosControllerFindPeriodoAtivo<TData = Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>, TError = ErrorType<void>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function usePeriodosLetivosControllerFindPeriodoAtivo<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindPeriodoAtivo>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getPeriodosLetivosControllerFindPeriodoAtivoQueryOptions(options)
 
-  const queryOptions = getPeriodosLetivosControllerFindPeriodoAtivoQueryOptions(options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Busca um período letivo pelo ID
  */
 export const periodosLetivosControllerFindOne = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<PeriodoLetivoResponseDto>(
-      {url: `/periodos-letivos/${id}`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getPeriodosLetivosControllerFindOneQueryKey = (id: string,) => {
-    return ['periodos-letivos',id] as const;
-    }
-
-    
-export const getPeriodosLetivosControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>, TError = ErrorType<void>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getPeriodosLetivosControllerFindOneQueryKey(id);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>> = ({ signal }) => periodosLetivosControllerFindOne(id, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<PeriodoLetivoResponseDto>(
+    { url: `/periodos-letivos/${id}`, method: "GET", signal },
+    options,
+  )
 }
 
-export type PeriodosLetivosControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>>
+export const getPeriodosLetivosControllerFindOneQueryKey = (id: string) => {
+  return ["periodos-letivos", id] as const
+}
+
+export const getPeriodosLetivosControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getPeriodosLetivosControllerFindOneQueryKey(id)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>
+  > = ({ signal }) => periodosLetivosControllerFindOne(id, requestOptions, signal)
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PeriodosLetivosControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>
+>
 export type PeriodosLetivosControllerFindOneQueryError = ErrorType<void>
 
-
+export function usePeriodosLetivosControllerFindOne<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function usePeriodosLetivosControllerFindOne<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePeriodosLetivosControllerFindOne<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Busca um período letivo pelo ID
  */
 
-export function usePeriodosLetivosControllerFindOne<TData = Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>, TError = ErrorType<void>>(
- id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function usePeriodosLetivosControllerFindOne<
+  TData = Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof periodosLetivosControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getPeriodosLetivosControllerFindOneQueryOptions(
+    id,
+    options,
+  )
 
-  const queryOptions = getPeriodosLetivosControllerFindOneQueryOptions(id,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Atualiza um período letivo existente
  */
 export const periodosLetivosControllerUpdate = (
-    id: string,
-    updatePeriodoLetivoDto: BodyType<UpdatePeriodoLetivoDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<PeriodoLetivoResponseDto>(
-      {url: `/periodos-letivos/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updatePeriodoLetivoDto
+  id: string,
+  updatePeriodoLetivoDto: BodyType<UpdatePeriodoLetivoDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<PeriodoLetivoResponseDto>(
+    {
+      url: `/periodos-letivos/${id}`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: updatePeriodoLetivoDto,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getPeriodosLetivosControllerUpdateMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>,
+    TError,
+    { id: string; data: BodyType<UpdatePeriodoLetivoDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdatePeriodoLetivoDto> },
+  TContext
+> => {
+  const mutationKey = ["periodosLetivosControllerUpdate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getPeriodosLetivosControllerUpdateMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>, TError,{id: string;data: BodyType<UpdatePeriodoLetivoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>, TError,{id: string;data: BodyType<UpdatePeriodoLetivoDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>,
+    { id: string; data: BodyType<UpdatePeriodoLetivoDto> }
+  > = (props) => {
+    const { id, data } = props ?? {}
 
-const mutationKey = ['periodosLetivosControllerUpdate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return periodosLetivosControllerUpdate(id, data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type PeriodosLetivosControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>
+>
+export type PeriodosLetivosControllerUpdateMutationBody =
+  BodyType<UpdatePeriodoLetivoDto>
+export type PeriodosLetivosControllerUpdateMutationError = ErrorType<void>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>, {id: string;data: BodyType<UpdatePeriodoLetivoDto>}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  periodosLetivosControllerUpdate(id,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PeriodosLetivosControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>>
-    export type PeriodosLetivosControllerUpdateMutationBody = BodyType<UpdatePeriodoLetivoDto>
-    export type PeriodosLetivosControllerUpdateMutationError = ErrorType<void>
-
-    /**
+/**
  * @summary Atualiza um período letivo existente
  */
-export const usePeriodosLetivosControllerUpdate = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>, TError,{id: string;data: BodyType<UpdatePeriodoLetivoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>,
-        TError,
-        {id: string;data: BodyType<UpdatePeriodoLetivoDto>},
-        TContext
-      > => {
+export const usePeriodosLetivosControllerUpdate = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>,
+      TError,
+      { id: string; data: BodyType<UpdatePeriodoLetivoDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof periodosLetivosControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdatePeriodoLetivoDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getPeriodosLetivosControllerUpdateMutationOptions(options)
 
-      const mutationOptions = getPeriodosLetivosControllerUpdateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * @summary Remove um período letivo
  */
 export const periodosLetivosControllerRemove = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<PeriodoLetivoResponseDto>(
-      {url: `/periodos-letivos/${id}`, method: 'DELETE'
-    },
-      options);
-    }
-  
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<PeriodoLetivoResponseDto>(
+    { url: `/periodos-letivos/${id}`, method: "DELETE" },
+    options,
+  )
+}
 
+export const getPeriodosLetivosControllerRemoveMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof periodosLetivosControllerRemove>>,
+    TError,
+    { id: string },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof periodosLetivosControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["periodosLetivosControllerRemove"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getPeriodosLetivosControllerRemoveMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerRemove>>, TError,{id: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof periodosLetivosControllerRemove>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {}
 
-const mutationKey = ['periodosLetivosControllerRemove'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return periodosLetivosControllerRemove(id, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type PeriodosLetivosControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof periodosLetivosControllerRemove>>
+>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof periodosLetivosControllerRemove>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+export type PeriodosLetivosControllerRemoveMutationError = ErrorType<void>
 
-          return  periodosLetivosControllerRemove(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PeriodosLetivosControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof periodosLetivosControllerRemove>>>
-    
-    export type PeriodosLetivosControllerRemoveMutationError = ErrorType<void>
-
-    /**
+/**
  * @summary Remove um período letivo
  */
-export const usePeriodosLetivosControllerRemove = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof periodosLetivosControllerRemove>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
+export const usePeriodosLetivosControllerRemove = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof periodosLetivosControllerRemove>>,
+      TError,
+      { id: string },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof periodosLetivosControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationOptions =
+    getPeriodosLetivosControllerRemoveMutationOptions(options)
 
-      const mutationOptions = getPeriodosLetivosControllerRemoveMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * @summary Altera o status de um período letivo
  */
 export const periodosLetivosControllerChangeStatus = (
-    id: string,
-    changeStatusPeriodoLetivoDto: BodyType<ChangeStatusPeriodoLetivoDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<PeriodoLetivoResponseDto>(
-      {url: `/periodos-letivos/${id}/status`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: changeStatusPeriodoLetivoDto
+  id: string,
+  changeStatusPeriodoLetivoDto: BodyType<ChangeStatusPeriodoLetivoDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<PeriodoLetivoResponseDto>(
+    {
+      url: `/periodos-letivos/${id}/status`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: changeStatusPeriodoLetivoDto,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getPeriodosLetivosControllerChangeStatusMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>,
+    TError,
+    { id: string; data: BodyType<ChangeStatusPeriodoLetivoDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>,
+  TError,
+  { id: string; data: BodyType<ChangeStatusPeriodoLetivoDto> },
+  TContext
+> => {
+  const mutationKey = ["periodosLetivosControllerChangeStatus"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getPeriodosLetivosControllerChangeStatusMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>, TError,{id: string;data: BodyType<ChangeStatusPeriodoLetivoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>, TError,{id: string;data: BodyType<ChangeStatusPeriodoLetivoDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>,
+    { id: string; data: BodyType<ChangeStatusPeriodoLetivoDto> }
+  > = (props) => {
+    const { id, data } = props ?? {}
 
-const mutationKey = ['periodosLetivosControllerChangeStatus'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return periodosLetivosControllerChangeStatus(id, data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type PeriodosLetivosControllerChangeStatusMutationResult = NonNullable<
+  Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>
+>
+export type PeriodosLetivosControllerChangeStatusMutationBody =
+  BodyType<ChangeStatusPeriodoLetivoDto>
+export type PeriodosLetivosControllerChangeStatusMutationError = ErrorType<void>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>, {id: string;data: BodyType<ChangeStatusPeriodoLetivoDto>}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  periodosLetivosControllerChangeStatus(id,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PeriodosLetivosControllerChangeStatusMutationResult = NonNullable<Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>>
-    export type PeriodosLetivosControllerChangeStatusMutationBody = BodyType<ChangeStatusPeriodoLetivoDto>
-    export type PeriodosLetivosControllerChangeStatusMutationError = ErrorType<void>
-
-    /**
+/**
  * @summary Altera o status de um período letivo
  */
-export const usePeriodosLetivosControllerChangeStatus = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>, TError,{id: string;data: BodyType<ChangeStatusPeriodoLetivoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>,
-        TError,
-        {id: string;data: BodyType<ChangeStatusPeriodoLetivoDto>},
-        TContext
-      > => {
+export const usePeriodosLetivosControllerChangeStatus = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>,
+      TError,
+      { id: string; data: BodyType<ChangeStatusPeriodoLetivoDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof periodosLetivosControllerChangeStatus>>,
+  TError,
+  { id: string; data: BodyType<ChangeStatusPeriodoLetivoDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getPeriodosLetivosControllerChangeStatusMutationOptions(options)
 
-      const mutationOptions = getPeriodosLetivosControllerChangeStatusMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    
+  return useMutation(mutationOptions, queryClient)
+}

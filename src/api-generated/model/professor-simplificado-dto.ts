@@ -8,9 +8,9 @@
 
 export interface ProfessorSimplificadoDto {
   /** ID do professor */
-  id: string;
+  id: string
   /** Nome do professor */
-  nome: string;
+  nome: string
   /** Email do professor */
-  email: string;
+  email: string
 }

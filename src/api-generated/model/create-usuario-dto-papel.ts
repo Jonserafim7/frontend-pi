@@ -9,13 +9,13 @@
 /**
  * Papel do usuário no sistema
  */
-export type CreateUsuarioDtoPapel = typeof CreateUsuarioDtoPapel[keyof typeof CreateUsuarioDtoPapel];
-
+export type CreateUsuarioDtoPapel =
+  (typeof CreateUsuarioDtoPapel)[keyof typeof CreateUsuarioDtoPapel]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateUsuarioDtoPapel = {
-  ADMIN: 'ADMIN',
-  DIRETOR: 'DIRETOR',
-  COORDENADOR: 'COORDENADOR',
-  PROFESSOR: 'PROFESSOR',
-} as const;
+  ADMIN: "ADMIN",
+  DIRETOR: "DIRETOR",
+  COORDENADOR: "COORDENADOR",
+  PROFESSOR: "PROFESSOR",
+} as const

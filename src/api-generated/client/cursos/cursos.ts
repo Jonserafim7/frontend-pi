@@ -5,347 +5,613 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query"
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query"
 
 import type {
   CreateCursoDto,
   CursoResponseDto,
-  UpdateCursoDto
-} from '../../model';
+  UpdateCursoDto,
+} from "../../model"
 
-import { orvalCustomInstance } from '../../../lib/orval-axios-instance';
-import type { ErrorType , BodyType } from '../../../lib/orval-axios-instance';
+import { orvalCustomInstance } from "../../../lib/orval-axios-instance"
+import type { ErrorType, BodyType } from "../../../lib/orval-axios-instance"
 
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
  * @summary Criar um novo curso
  */
 export const cursosControllerCreate = (
-    createCursoDto: BodyType<CreateCursoDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  createCursoDto: BodyType<CreateCursoDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<CursoResponseDto>(
-      {url: `/cursos`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createCursoDto, signal
+  return orvalCustomInstance<CursoResponseDto>(
+    {
+      url: `/cursos`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createCursoDto,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getCursosControllerCreateMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof cursosControllerCreate>>,
+    TError,
+    { data: BodyType<CreateCursoDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof cursosControllerCreate>>,
+  TError,
+  { data: BodyType<CreateCursoDto> },
+  TContext
+> => {
+  const mutationKey = ["cursosControllerCreate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getCursosControllerCreateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cursosControllerCreate>>, TError,{data: BodyType<CreateCursoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof cursosControllerCreate>>, TError,{data: BodyType<CreateCursoDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof cursosControllerCreate>>,
+    { data: BodyType<CreateCursoDto> }
+  > = (props) => {
+    const { data } = props ?? {}
 
-const mutationKey = ['cursosControllerCreate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return cursosControllerCreate(data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type CursosControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof cursosControllerCreate>>
+>
+export type CursosControllerCreateMutationBody = BodyType<CreateCursoDto>
+export type CursosControllerCreateMutationError = ErrorType<unknown>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cursosControllerCreate>>, {data: BodyType<CreateCursoDto>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  cursosControllerCreate(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CursosControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof cursosControllerCreate>>>
-    export type CursosControllerCreateMutationBody = BodyType<CreateCursoDto>
-    export type CursosControllerCreateMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Criar um novo curso
  */
-export const useCursosControllerCreate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cursosControllerCreate>>, TError,{data: BodyType<CreateCursoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof cursosControllerCreate>>,
-        TError,
-        {data: BodyType<CreateCursoDto>},
-        TContext
-      > => {
+export const useCursosControllerCreate = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof cursosControllerCreate>>,
+      TError,
+      { data: BodyType<CreateCursoDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof cursosControllerCreate>>,
+  TError,
+  { data: BodyType<CreateCursoDto> },
+  TContext
+> => {
+  const mutationOptions = getCursosControllerCreateMutationOptions(options)
 
-      const mutationOptions = getCursosControllerCreateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * @summary Listar todos os cursos
  */
 export const cursosControllerFindAll = (
-    
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<CursoResponseDto[]>(
-      {url: `/cursos`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getCursosControllerFindAllQueryKey = () => {
-    return ['cursos'] as const;
-    }
-
-    
-export const getCursosControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof cursosControllerFindAll>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof cursosControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getCursosControllerFindAllQueryKey();
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof cursosControllerFindAll>>> = ({ signal }) => cursosControllerFindAll(requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof cursosControllerFindAll>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<CursoResponseDto[]>(
+    { url: `/cursos`, method: "GET", signal },
+    options,
+  )
 }
 
-export type CursosControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof cursosControllerFindAll>>>
+export const getCursosControllerFindAllQueryKey = () => {
+  return ["cursos"] as const
+}
+
+export const getCursosControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof cursosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof cursosControllerFindAll>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getCursosControllerFindAllQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof cursosControllerFindAll>>
+  > = ({ signal }) => cursosControllerFindAll(requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof cursosControllerFindAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CursosControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof cursosControllerFindAll>>
+>
 export type CursosControllerFindAllQueryError = ErrorType<unknown>
 
-
+export function useCursosControllerFindAll<
+  TData = Awaited<ReturnType<typeof cursosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof cursosControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof cursosControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useCursosControllerFindAll<
+  TData = Awaited<ReturnType<typeof cursosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof cursosControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof cursosControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCursosControllerFindAll<
+  TData = Awaited<ReturnType<typeof cursosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Listar todos os cursos
  */
 
-export function useCursosControllerFindAll<TData = Awaited<ReturnType<typeof cursosControllerFindAll>>, TError = ErrorType<unknown>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof cursosControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
+export function useCursosControllerFindAll<
+  TData = Awaited<ReturnType<typeof cursosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
   const queryOptions = getCursosControllerFindAllQueryOptions(options)
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey
 
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Buscar um curso pelo ID
  */
 export const cursosControllerFindOne = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<CursoResponseDto>(
-      {url: `/cursos/${id}`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getCursosControllerFindOneQueryKey = (id: string,) => {
-    return ['cursos',id] as const;
-    }
-
-    
-export const getCursosControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof cursosControllerFindOne>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof cursosControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getCursosControllerFindOneQueryKey(id);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof cursosControllerFindOne>>> = ({ signal }) => cursosControllerFindOne(id, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof cursosControllerFindOne>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<CursoResponseDto>(
+    { url: `/cursos/${id}`, method: "GET", signal },
+    options,
+  )
 }
 
-export type CursosControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof cursosControllerFindOne>>>
+export const getCursosControllerFindOneQueryKey = (id: string) => {
+  return ["cursos", id] as const
+}
+
+export const getCursosControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof cursosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getCursosControllerFindOneQueryKey(id)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof cursosControllerFindOne>>
+  > = ({ signal }) => cursosControllerFindOne(id, requestOptions, signal)
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof cursosControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CursosControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof cursosControllerFindOne>>
+>
 export type CursosControllerFindOneQueryError = ErrorType<unknown>
 
-
+export function useCursosControllerFindOne<
+  TData = Awaited<ReturnType<typeof cursosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof cursosControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof cursosControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useCursosControllerFindOne<
+  TData = Awaited<ReturnType<typeof cursosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof cursosControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof cursosControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCursosControllerFindOne<
+  TData = Awaited<ReturnType<typeof cursosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Buscar um curso pelo ID
  */
 
-export function useCursosControllerFindOne<TData = Awaited<ReturnType<typeof cursosControllerFindOne>>, TError = ErrorType<unknown>>(
- id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof cursosControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useCursosControllerFindOne<
+  TData = Awaited<ReturnType<typeof cursosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getCursosControllerFindOneQueryOptions(id, options)
 
-  const queryOptions = getCursosControllerFindOneQueryOptions(id,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Atualizar um curso
  */
 export const cursosControllerUpdate = (
-    id: string,
-    updateCursoDto: BodyType<UpdateCursoDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<CursoResponseDto>(
-      {url: `/cursos/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateCursoDto
+  id: string,
+  updateCursoDto: BodyType<UpdateCursoDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<CursoResponseDto>(
+    {
+      url: `/cursos/${id}`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: updateCursoDto,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getCursosControllerUpdateMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof cursosControllerUpdate>>,
+    TError,
+    { id: string; data: BodyType<UpdateCursoDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof cursosControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateCursoDto> },
+  TContext
+> => {
+  const mutationKey = ["cursosControllerUpdate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getCursosControllerUpdateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cursosControllerUpdate>>, TError,{id: string;data: BodyType<UpdateCursoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof cursosControllerUpdate>>, TError,{id: string;data: BodyType<UpdateCursoDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof cursosControllerUpdate>>,
+    { id: string; data: BodyType<UpdateCursoDto> }
+  > = (props) => {
+    const { id, data } = props ?? {}
 
-const mutationKey = ['cursosControllerUpdate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return cursosControllerUpdate(id, data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type CursosControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof cursosControllerUpdate>>
+>
+export type CursosControllerUpdateMutationBody = BodyType<UpdateCursoDto>
+export type CursosControllerUpdateMutationError = ErrorType<unknown>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cursosControllerUpdate>>, {id: string;data: BodyType<UpdateCursoDto>}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  cursosControllerUpdate(id,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CursosControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof cursosControllerUpdate>>>
-    export type CursosControllerUpdateMutationBody = BodyType<UpdateCursoDto>
-    export type CursosControllerUpdateMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Atualizar um curso
  */
-export const useCursosControllerUpdate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cursosControllerUpdate>>, TError,{id: string;data: BodyType<UpdateCursoDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof cursosControllerUpdate>>,
-        TError,
-        {id: string;data: BodyType<UpdateCursoDto>},
-        TContext
-      > => {
+export const useCursosControllerUpdate = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof cursosControllerUpdate>>,
+      TError,
+      { id: string; data: BodyType<UpdateCursoDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof cursosControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateCursoDto> },
+  TContext
+> => {
+  const mutationOptions = getCursosControllerUpdateMutationOptions(options)
 
-      const mutationOptions = getCursosControllerUpdateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * @summary Remover um curso
  */
 export const cursosControllerRemove = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<CursoResponseDto>(
-      {url: `/cursos/${id}`, method: 'DELETE'
-    },
-      options);
-    }
-  
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<CursoResponseDto>(
+    { url: `/cursos/${id}`, method: "DELETE" },
+    options,
+  )
+}
 
+export const getCursosControllerRemoveMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof cursosControllerRemove>>,
+    TError,
+    { id: string },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof cursosControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["cursosControllerRemove"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getCursosControllerRemoveMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cursosControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof cursosControllerRemove>>, TError,{id: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof cursosControllerRemove>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {}
 
-const mutationKey = ['cursosControllerRemove'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return cursosControllerRemove(id, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type CursosControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof cursosControllerRemove>>
+>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cursosControllerRemove>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+export type CursosControllerRemoveMutationError = ErrorType<unknown>
 
-          return  cursosControllerRemove(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CursosControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof cursosControllerRemove>>>
-    
-    export type CursosControllerRemoveMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Remover um curso
  */
-export const useCursosControllerRemove = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cursosControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof cursosControllerRemove>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
+export const useCursosControllerRemove = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof cursosControllerRemove>>,
+      TError,
+      { id: string },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof cursosControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationOptions = getCursosControllerRemoveMutationOptions(options)
 
-      const mutationOptions = getCursosControllerRemoveMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    
+  return useMutation(mutationOptions, queryClient)
+}

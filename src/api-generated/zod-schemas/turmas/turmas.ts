@@ -11,7 +11,7 @@ import {
 
 
 /**
- * @summary Criar uma nova turma (Coordenador)
+ * @summary Criar uma nova turma (Admin, Coordenador)
  */
 export const turmasControllerCreateBody = zod.object({
   "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada à qual esta turma pertence.'),
@@ -19,7 +19,7 @@ export const turmasControllerCreateBody = zod.object({
 })
 
 /**
- * @summary Listar turmas com filtros (Coordenador, Diretor)
+ * @summary Listar turmas com filtros (Admin, Coordenador, Diretor)
  */
 export const turmasControllerFindAllQueryParams = zod.object({
   "idDisciplinaOfertada": zod.string().optional().describe('ID da disciplina ofertada para filtrar'),
@@ -74,7 +74,7 @@ export const turmasControllerFindAllResponseItem = zod.object({
 export const turmasControllerFindAllResponse = zod.array(turmasControllerFindAllResponseItem)
 
 /**
- * @summary Listar turmas de uma disciplina ofertada (Coordenador, Diretor)
+ * @summary Listar turmas de uma disciplina ofertada (Admin, Coordenador, Diretor)
  */
 export const turmasControllerFindByDisciplinaOfertadaParams = zod.object({
   "idDisciplinaOfertada": zod.string().describe('ID da disciplina ofertada')
@@ -127,7 +127,7 @@ export const turmasControllerFindByDisciplinaOfertadaResponseItem = zod.object({
 export const turmasControllerFindByDisciplinaOfertadaResponse = zod.array(turmasControllerFindByDisciplinaOfertadaResponseItem)
 
 /**
- * @summary Listar turmas de um professor (Coordenador, Diretor, Professor)
+ * @summary Listar turmas de um professor (Admin, Coordenador, Diretor, Professor)
  */
 export const turmasControllerFindByProfessorParams = zod.object({
   "idProfessor": zod.string().describe('ID do professor')
@@ -180,7 +180,7 @@ export const turmasControllerFindByProfessorResponseItem = zod.object({
 export const turmasControllerFindByProfessorResponse = zod.array(turmasControllerFindByProfessorResponseItem)
 
 /**
- * @summary Obter detalhes de uma turma específica
+ * @summary Obter detalhes de uma turma específica (Admin, Coordenador, Diretor, Professor)
  */
 export const turmasControllerFindOneParams = zod.object({
   "id": zod.string().describe('ID da turma (UUID)')
@@ -232,7 +232,7 @@ export const turmasControllerFindOneResponse = zod.object({
 })
 
 /**
- * @summary Atualizar dados de uma turma (Coordenador)
+ * @summary Atualizar dados de uma turma (Admin, Coordenador)
  */
 export const turmasControllerUpdateParams = zod.object({
   "id": zod.string().describe('ID da turma')
@@ -289,14 +289,14 @@ export const turmasControllerUpdateResponse = zod.object({
 })
 
 /**
- * @summary Deletar uma turma (Coordenador)
+ * @summary Deletar uma turma (Admin, Coordenador)
  */
 export const turmasControllerRemoveParams = zod.object({
   "id": zod.string().describe('ID da turma')
 })
 
 /**
- * @summary Atribuir professor à turma (Coordenador)
+ * @summary Atribuir professor à turma (Admin, Coordenador)
  */
 export const turmasControllerAtribuirProfessorParams = zod.object({
   "id": zod.string().describe('ID da turma')
@@ -352,7 +352,7 @@ export const turmasControllerAtribuirProfessorResponse = zod.object({
 })
 
 /**
- * @summary Remover professor da turma (Coordenador)
+ * @summary Remover professor da turma (Admin, Coordenador)
  */
 export const turmasControllerRemoverProfessorParams = zod.object({
   "id": zod.string().describe('ID da turma')

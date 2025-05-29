@@ -8,9 +8,9 @@
 
 export interface UpdateDisciplinaDto {
   /** Nome da disciplina */
-  nome?: string;
+  nome?: string
   /** Código único da disciplina */
-  codigo?: string;
+  codigo?: string
   /** Carga horária total da disciplina em horas */
-  cargaHoraria?: number;
+  cargaHoraria?: number
 }

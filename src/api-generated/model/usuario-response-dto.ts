@@ -5,19 +5,19 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { UsuarioResponseDtoPapel } from './usuario-response-dto-papel';
+import type { UsuarioResponseDtoPapel } from "./usuario-response-dto-papel"
 
 export interface UsuarioResponseDto {
   /** ID único do usuário */
-  id: string;
+  id: string
   /** Nome completo do usuário */
-  nome: string;
+  nome: string
   /** Endereço de e-mail do usuário */
-  email: string;
+  email: string
   /** Papel do usuário no sistema */
-  papel: UsuarioResponseDtoPapel;
+  papel: UsuarioResponseDtoPapel
   /** Data de criação do usuário */
-  dataCriacao: string;
+  dataCriacao: string
   /** Data da última atualização do usuário */
-  dataAtualizacao: string;
+  dataAtualizacao: string
 }

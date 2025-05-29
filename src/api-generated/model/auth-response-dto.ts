@@ -5,11 +5,11 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { UsuarioResponseDto } from './usuario-response-dto';
+import type { UsuarioResponseDto } from "./usuario-response-dto"
 
 export interface AuthResponseDto {
   /** Token de acesso JWT */
-  accessToken: string;
+  accessToken: string
   /** Dados do usuário autenticado */
-  usuario: UsuarioResponseDto;
+  usuario: UsuarioResponseDto
 }

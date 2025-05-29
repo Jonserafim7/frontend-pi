@@ -5,26 +5,26 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { CreateDisponibilidadeDtoDiaDaSemana } from './create-disponibilidade-dto-dia-da-semana';
-import type { CreateDisponibilidadeDtoStatus } from './create-disponibilidade-dto-status';
+import type { CreateDisponibilidadeDtoDiaDaSemana } from "./create-disponibilidade-dto-dia-da-semana"
+import type { CreateDisponibilidadeDtoStatus } from "./create-disponibilidade-dto-status"
 
 export interface CreateDisponibilidadeDto {
   /** ID do usuário professor */
-  idUsuarioProfessor: string;
+  idUsuarioProfessor: string
   /** ID do período letivo */
-  idPeriodoLetivo: string;
+  idPeriodoLetivo: string
   /** Dia da semana */
-  diaDaSemana: CreateDisponibilidadeDtoDiaDaSemana;
+  diaDaSemana: CreateDisponibilidadeDtoDiaDaSemana
   /**
    * Horário de início (formato HH:mm)
    * @pattern ^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$
    */
-  horaInicio: string;
+  horaInicio: string
   /**
    * Horário de fim (formato HH:mm)
    * @pattern ^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$
    */
-  horaFim: string;
+  horaFim: string
   /** Status da disponibilidade */
-  status: CreateDisponibilidadeDtoStatus;
+  status: CreateDisponibilidadeDtoStatus
 }

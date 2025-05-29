@@ -5,18 +5,18 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { CreateUsuarioDtoPapel } from './create-usuario-dto-papel';
+import type { CreateUsuarioDtoPapel } from "./create-usuario-dto-papel"
 
 export interface CreateUsuarioDto {
   /** Nome completo do usuário */
-  nome: string;
+  nome: string
   /** Endereço de e-mail do usuário (será usado para login) */
-  email: string;
+  email: string
   /**
    * Senha do usuário (mínimo de 8 caracteres)
    * @minLength 8
    */
-  senha: string;
+  senha: string
   /** Papel do usuário no sistema */
-  papel: CreateUsuarioDtoPapel;
+  papel: CreateUsuarioDtoPapel
 }

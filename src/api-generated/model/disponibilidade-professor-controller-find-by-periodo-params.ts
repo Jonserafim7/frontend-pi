@@ -5,34 +5,34 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { DisponibilidadeProfessorControllerFindByPeriodoDiaSemana } from './disponibilidade-professor-controller-find-by-periodo-dia-semana';
-import type { DisponibilidadeProfessorControllerFindByPeriodoStatus } from './disponibilidade-professor-controller-find-by-periodo-status';
-import type { DisponibilidadeProfessorControllerFindByPeriodoOrderBy } from './disponibilidade-professor-controller-find-by-periodo-order-by';
-import type { DisponibilidadeProfessorControllerFindByPeriodoOrderDirection } from './disponibilidade-professor-controller-find-by-periodo-order-direction';
+import type { DisponibilidadeProfessorControllerFindByPeriodoDiaSemana } from "./disponibilidade-professor-controller-find-by-periodo-dia-semana"
+import type { DisponibilidadeProfessorControllerFindByPeriodoStatus } from "./disponibilidade-professor-controller-find-by-periodo-status"
+import type { DisponibilidadeProfessorControllerFindByPeriodoOrderBy } from "./disponibilidade-professor-controller-find-by-periodo-order-by"
+import type { DisponibilidadeProfessorControllerFindByPeriodoOrderDirection } from "./disponibilidade-professor-controller-find-by-periodo-order-direction"
 
 export type DisponibilidadeProfessorControllerFindByPeriodoParams = {
-/**
- * ID do professor para filtrar
- */
-professorId?: string;
-/**
- * ID do período letivo para filtrar
- */
-periodoLetivoId?: string;
-/**
- * Dia da semana para filtrar
- */
-diaSemana?: DisponibilidadeProfessorControllerFindByPeriodoDiaSemana;
-/**
- * Status da disponibilidade para filtrar
- */
-status?: DisponibilidadeProfessorControllerFindByPeriodoStatus;
-/**
- * Campo para ordenação
- */
-orderBy?: DisponibilidadeProfessorControllerFindByPeriodoOrderBy;
-/**
- * Direção da ordenação
- */
-orderDirection?: DisponibilidadeProfessorControllerFindByPeriodoOrderDirection;
-};
+  /**
+   * ID do professor para filtrar
+   */
+  professorId?: string
+  /**
+   * ID do período letivo para filtrar
+   */
+  periodoLetivoId?: string
+  /**
+   * Dia da semana para filtrar
+   */
+  diaSemana?: DisponibilidadeProfessorControllerFindByPeriodoDiaSemana
+  /**
+   * Status da disponibilidade para filtrar
+   */
+  status?: DisponibilidadeProfessorControllerFindByPeriodoStatus
+  /**
+   * Campo para ordenação
+   */
+  orderBy?: DisponibilidadeProfessorControllerFindByPeriodoOrderBy
+  /**
+   * Direção da ordenação
+   */
+  orderDirection?: DisponibilidadeProfessorControllerFindByPeriodoOrderDirection
+}

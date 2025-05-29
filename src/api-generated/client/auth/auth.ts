@@ -5,158 +5,213 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation
-} from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query"
 import type {
   MutationFunction,
+  QueryClient,
   UseMutationOptions,
-  UseMutationResult
-} from '@tanstack/react-query';
+  UseMutationResult,
+} from "@tanstack/react-query"
 
 import type {
   AuthResponseDto,
   CreateUsuarioDto,
   SignInDto,
-  UsuarioResponseDto
-} from '../../model';
+  UsuarioResponseDto,
+} from "../../model"
 
-import { orvalCustomInstance } from '../../../lib/orval-axios-instance';
-import type { ErrorType , BodyType } from '../../../lib/orval-axios-instance';
+import { orvalCustomInstance } from "../../../lib/orval-axios-instance"
+import type { ErrorType, BodyType } from "../../../lib/orval-axios-instance"
 
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
  * Realiza o login do usuário com e-mail e senha.
  * @summary Autentica um usuário e retorna um token JWT
  */
 export const authControllerSignIn = (
-    signInDto: BodyType<SignInDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  signInDto: BodyType<SignInDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<AuthResponseDto>(
-      {url: `/auth/login`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: signInDto, signal
+  return orvalCustomInstance<AuthResponseDto>(
+    {
+      url: `/auth/login`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: signInDto,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getAuthControllerSignInMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof authControllerSignIn>>,
+    TError,
+    { data: BodyType<SignInDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authControllerSignIn>>,
+  TError,
+  { data: BodyType<SignInDto> },
+  TContext
+> => {
+  const mutationKey = ["authControllerSignIn"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getAuthControllerSignInMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerSignIn>>, TError,{data: BodyType<SignInDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerSignIn>>, TError,{data: BodyType<SignInDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authControllerSignIn>>,
+    { data: BodyType<SignInDto> }
+  > = (props) => {
+    const { data } = props ?? {}
 
-const mutationKey = ['authControllerSignIn'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return authControllerSignIn(data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type AuthControllerSignInMutationResult = NonNullable<
+  Awaited<ReturnType<typeof authControllerSignIn>>
+>
+export type AuthControllerSignInMutationBody = BodyType<SignInDto>
+export type AuthControllerSignInMutationError = ErrorType<void>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerSignIn>>, {data: BodyType<SignInDto>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  authControllerSignIn(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AuthControllerSignInMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerSignIn>>>
-    export type AuthControllerSignInMutationBody = BodyType<SignInDto>
-    export type AuthControllerSignInMutationError = ErrorType<void>
-
-    /**
+/**
  * @summary Autentica um usuário e retorna um token JWT
  */
-export const useAuthControllerSignIn = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerSignIn>>, TError,{data: BodyType<SignInDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerSignIn>>,
-        TError,
-        {data: BodyType<SignInDto>},
-        TContext
-      > => {
+export const useAuthControllerSignIn = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authControllerSignIn>>,
+      TError,
+      { data: BodyType<SignInDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof authControllerSignIn>>,
+  TError,
+  { data: BodyType<SignInDto> },
+  TContext
+> => {
+  const mutationOptions = getAuthControllerSignInMutationOptions(options)
 
-      const mutationOptions = getAuthControllerSignInMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * Cria uma nova conta de usuário. O usuário criado não é logado automaticamente.
  * @summary Registra um novo usuário no sistema
  */
 export const authControllerSignUp = (
-    createUsuarioDto: BodyType<CreateUsuarioDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  createUsuarioDto: BodyType<CreateUsuarioDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<UsuarioResponseDto>(
-      {url: `/auth/registrar`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createUsuarioDto, signal
+  return orvalCustomInstance<UsuarioResponseDto>(
+    {
+      url: `/auth/registrar`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createUsuarioDto,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getAuthControllerSignUpMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof authControllerSignUp>>,
+    TError,
+    { data: BodyType<CreateUsuarioDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authControllerSignUp>>,
+  TError,
+  { data: BodyType<CreateUsuarioDto> },
+  TContext
+> => {
+  const mutationKey = ["authControllerSignUp"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getAuthControllerSignUpMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerSignUp>>, TError,{data: BodyType<CreateUsuarioDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerSignUp>>, TError,{data: BodyType<CreateUsuarioDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authControllerSignUp>>,
+    { data: BodyType<CreateUsuarioDto> }
+  > = (props) => {
+    const { data } = props ?? {}
 
-const mutationKey = ['authControllerSignUp'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return authControllerSignUp(data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type AuthControllerSignUpMutationResult = NonNullable<
+  Awaited<ReturnType<typeof authControllerSignUp>>
+>
+export type AuthControllerSignUpMutationBody = BodyType<CreateUsuarioDto>
+export type AuthControllerSignUpMutationError = ErrorType<void>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerSignUp>>, {data: BodyType<CreateUsuarioDto>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  authControllerSignUp(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AuthControllerSignUpMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerSignUp>>>
-    export type AuthControllerSignUpMutationBody = BodyType<CreateUsuarioDto>
-    export type AuthControllerSignUpMutationError = ErrorType<void>
-
-    /**
+/**
  * @summary Registra um novo usuário no sistema
  */
-export const useAuthControllerSignUp = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerSignUp>>, TError,{data: BodyType<CreateUsuarioDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerSignUp>>,
-        TError,
-        {data: BodyType<CreateUsuarioDto>},
-        TContext
-      > => {
+export const useAuthControllerSignUp = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authControllerSignUp>>,
+      TError,
+      { data: BodyType<CreateUsuarioDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof authControllerSignUp>>,
+  TError,
+  { data: BodyType<CreateUsuarioDto> },
+  TContext
+> => {
+  const mutationOptions = getAuthControllerSignUpMutationOptions(options)
 
-      const mutationOptions = getAuthControllerSignUpMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    
+  return useMutation(mutationOptions, queryClient)
+}

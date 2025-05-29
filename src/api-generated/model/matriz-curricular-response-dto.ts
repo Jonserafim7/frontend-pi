@@ -5,21 +5,21 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { DisciplinaResponseDto } from './disciplina-response-dto';
+import type { DisciplinaResponseDto } from "./disciplina-response-dto"
 
 export interface MatrizCurricularResponseDto {
   /** ID único da matriz curricular */
-  id: string;
+  id: string
   /** Nome da matriz curricular */
-  nome: string;
+  nome: string
   /** ID do curso ao qual a matriz curricular pertence */
-  idCurso: string;
+  idCurso: string
   /** Nome do curso ao qual a matriz curricular pertence */
-  nomeCurso: string;
+  nomeCurso: string
   /** Data de criação da matriz curricular */
-  createdAt: string;
+  createdAt: string
   /** Data da última atualização da matriz curricular */
-  updatedAt: string;
+  updatedAt: string
   /** Lista de disciplinas da matriz curricular */
-  disciplinas: DisciplinaResponseDto[];
+  disciplinas: DisciplinaResponseDto[]
 }

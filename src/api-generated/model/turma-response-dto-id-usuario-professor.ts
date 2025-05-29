@@ -9,4 +9,4 @@
 /**
  * ID do professor atribuído à turma
  */
-export type TurmaResponseDtoIdUsuarioProfessor = { [key: string]: unknown };
+export type TurmaResponseDtoIdUsuarioProfessor = { [key: string]: unknown }

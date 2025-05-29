@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 
-export type DisponibilidadeProfessorControllerFindByPeriodoOrderDirection = typeof DisponibilidadeProfessorControllerFindByPeriodoOrderDirection[keyof typeof DisponibilidadeProfessorControllerFindByPeriodoOrderDirection];
-
+export type DisponibilidadeProfessorControllerFindByPeriodoOrderDirection =
+  (typeof DisponibilidadeProfessorControllerFindByPeriodoOrderDirection)[keyof typeof DisponibilidadeProfessorControllerFindByPeriodoOrderDirection]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DisponibilidadeProfessorControllerFindByPeriodoOrderDirection = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
+  asc: "asc",
+  desc: "desc",
+} as const

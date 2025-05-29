@@ -8,12 +8,12 @@
 
 export interface CreateDisciplinaOfertadaDto {
   /** ID da disciplina que será ofertada (UUID) */
-  idDisciplina: string;
+  idDisciplina: string
   /** ID do período letivo em que a disciplina será ofertada (UUID) */
-  idPeriodoLetivo: string;
+  idPeriodoLetivo: string
   /**
    * Quantidade de turmas para esta disciplina ofertada
    * @minimum 1
    */
-  quantidadeTurmas: number;
+  quantidadeTurmas: number
 }

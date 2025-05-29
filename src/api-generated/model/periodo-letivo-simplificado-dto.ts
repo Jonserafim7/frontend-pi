@@ -8,11 +8,11 @@
 
 export interface PeriodoLetivoSimplificadoDto {
   /** ID do período letivo */
-  id: string;
+  id: string
   /** Ano do período */
-  ano: number;
+  ano: number
   /** Semestre do período */
-  semestre: number;
+  semestre: number
   /** Status do período letivo */
-  status: string;
+  status: string
 }

@@ -5,19 +5,21 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query"
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query"
 
 import type {
   CreateDisponibilidadeDto,
@@ -26,605 +28,1557 @@ import type {
   DisponibilidadeProfessorControllerFindByProfessorParams,
   DisponibilidadeProfessorControllerGetSlotsValidos200,
   DisponibilidadeResponseDto,
-  UpdateDisponibilidadeDto
-} from '../../model';
+  UpdateDisponibilidadeDto,
+} from "../../model"
 
-import { orvalCustomInstance } from '../../../lib/orval-axios-instance';
-import type { ErrorType , BodyType } from '../../../lib/orval-axios-instance';
+import { orvalCustomInstance } from "../../../lib/orval-axios-instance"
+import type { ErrorType, BodyType } from "../../../lib/orval-axios-instance"
 
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
  * Cria uma nova disponibilidade para um professor. Apenas o próprio professor, admin ou diretor podem criar.
  * @summary Criar nova disponibilidade
  */
 export const disponibilidadeProfessorControllerCreate = (
-    createDisponibilidadeDto: BodyType<CreateDisponibilidadeDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  createDisponibilidadeDto: BodyType<CreateDisponibilidadeDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisponibilidadeResponseDto>(
-      {url: `/disponibilidades`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createDisponibilidadeDto, signal
+  return orvalCustomInstance<DisponibilidadeResponseDto>(
+    {
+      url: `/disponibilidades`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createDisponibilidadeDto,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getDisponibilidadeProfessorControllerCreateMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>,
+    TError,
+    { data: BodyType<CreateDisponibilidadeDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>,
+  TError,
+  { data: BodyType<CreateDisponibilidadeDto> },
+  TContext
+> => {
+  const mutationKey = ["disponibilidadeProfessorControllerCreate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getDisponibilidadeProfessorControllerCreateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>, TError,{data: BodyType<CreateDisponibilidadeDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>, TError,{data: BodyType<CreateDisponibilidadeDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>,
+    { data: BodyType<CreateDisponibilidadeDto> }
+  > = (props) => {
+    const { data } = props ?? {}
 
-const mutationKey = ['disponibilidadeProfessorControllerCreate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return disponibilidadeProfessorControllerCreate(data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type DisponibilidadeProfessorControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>
+>
+export type DisponibilidadeProfessorControllerCreateMutationBody =
+  BodyType<CreateDisponibilidadeDto>
+export type DisponibilidadeProfessorControllerCreateMutationError =
+  ErrorType<unknown>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>, {data: BodyType<CreateDisponibilidadeDto>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  disponibilidadeProfessorControllerCreate(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DisponibilidadeProfessorControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>>
-    export type DisponibilidadeProfessorControllerCreateMutationBody = BodyType<CreateDisponibilidadeDto>
-    export type DisponibilidadeProfessorControllerCreateMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Criar nova disponibilidade
  */
-export const useDisponibilidadeProfessorControllerCreate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>, TError,{data: BodyType<CreateDisponibilidadeDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>,
-        TError,
-        {data: BodyType<CreateDisponibilidadeDto>},
-        TContext
-      > => {
+export const useDisponibilidadeProfessorControllerCreate = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>,
+      TError,
+      { data: BodyType<CreateDisponibilidadeDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerCreate>>,
+  TError,
+  { data: BodyType<CreateDisponibilidadeDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getDisponibilidadeProfessorControllerCreateMutationOptions(options)
 
-      const mutationOptions = getDisponibilidadeProfessorControllerCreateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * Lista disponibilidades com filtros opcionais e paginação. Professores veem apenas suas próprias.
  * @summary Listar disponibilidades
  */
 export const disponibilidadeProfessorControllerFindAll = (
-    params?: DisponibilidadeProfessorControllerFindAllParams,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  params?: DisponibilidadeProfessorControllerFindAllParams,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisponibilidadeResponseDto[]>(
-      {url: `/disponibilidades`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-  
-
-export const getDisponibilidadeProfessorControllerFindAllQueryKey = (params?: DisponibilidadeProfessorControllerFindAllParams,) => {
-    return ['disponibilidades', ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getDisponibilidadeProfessorControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>, TError = ErrorType<unknown>>(params?: DisponibilidadeProfessorControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getDisponibilidadeProfessorControllerFindAllQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>> = ({ signal }) => disponibilidadeProfessorControllerFindAll(params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<DisponibilidadeResponseDto[]>(
+    { url: `/disponibilidades`, method: "GET", params, signal },
+    options,
+  )
 }
 
-export type DisponibilidadeProfessorControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>>
-export type DisponibilidadeProfessorControllerFindAllQueryError = ErrorType<unknown>
+export const getDisponibilidadeProfessorControllerFindAllQueryKey = (
+  params?: DisponibilidadeProfessorControllerFindAllParams,
+) => {
+  return ["disponibilidades", ...(params ? [params] : [])] as const
+}
 
+export const getDisponibilidadeProfessorControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DisponibilidadeProfessorControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ??
+    getDisponibilidadeProfessorControllerFindAllQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>
+  > = ({ signal }) =>
+    disponibilidadeProfessorControllerFindAll(params, requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DisponibilidadeProfessorControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>
+>
+export type DisponibilidadeProfessorControllerFindAllQueryError =
+  ErrorType<unknown>
+
+export function useDisponibilidadeProfessorControllerFindAll<
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | DisponibilidadeProfessorControllerFindAllParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisponibilidadeProfessorControllerFindAll<
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DisponibilidadeProfessorControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisponibilidadeProfessorControllerFindAll<
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DisponibilidadeProfessorControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Listar disponibilidades
  */
 
-export function useDisponibilidadeProfessorControllerFindAll<TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>, TError = ErrorType<unknown>>(
- params?: DisponibilidadeProfessorControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useDisponibilidadeProfessorControllerFindAll<
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DisponibilidadeProfessorControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getDisponibilidadeProfessorControllerFindAllQueryOptions(
+    params,
+    options,
+  )
 
-  const queryOptions = getDisponibilidadeProfessorControllerFindAllQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * Busca uma disponibilidade específica pelo ID
  * @summary Buscar disponibilidade por ID
  */
 export const disponibilidadeProfessorControllerFindOne = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisponibilidadeResponseDto>(
-      {url: `/disponibilidades/${id}`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getDisponibilidadeProfessorControllerFindOneQueryKey = (id: string,) => {
-    return ['disponibilidades',id] as const;
-    }
-
-    
-export const getDisponibilidadeProfessorControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getDisponibilidadeProfessorControllerFindOneQueryKey(id);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>> = ({ signal }) => disponibilidadeProfessorControllerFindOne(id, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<DisponibilidadeResponseDto>(
+    { url: `/disponibilidades/${id}`, method: "GET", signal },
+    options,
+  )
 }
 
-export type DisponibilidadeProfessorControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>>
-export type DisponibilidadeProfessorControllerFindOneQueryError = ErrorType<unknown>
+export const getDisponibilidadeProfessorControllerFindOneQueryKey = (
+  id: string,
+) => {
+  return ["disponibilidades", id] as const
+}
 
+export const getDisponibilidadeProfessorControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ??
+    getDisponibilidadeProfessorControllerFindOneQueryKey(id)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>
+  > = ({ signal }) =>
+    disponibilidadeProfessorControllerFindOne(id, requestOptions, signal)
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DisponibilidadeProfessorControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>
+>
+export type DisponibilidadeProfessorControllerFindOneQueryError =
+  ErrorType<unknown>
+
+export function useDisponibilidadeProfessorControllerFindOne<
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisponibilidadeProfessorControllerFindOne<
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisponibilidadeProfessorControllerFindOne<
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Buscar disponibilidade por ID
  */
 
-export function useDisponibilidadeProfessorControllerFindOne<TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError = ErrorType<unknown>>(
- id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useDisponibilidadeProfessorControllerFindOne<
+  TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getDisponibilidadeProfessorControllerFindOneQueryOptions(
+    id,
+    options,
+  )
 
-  const queryOptions = getDisponibilidadeProfessorControllerFindOneQueryOptions(id,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * Atualiza uma disponibilidade existente. Apenas o próprio professor, admin ou diretor podem atualizar.
  * @summary Atualizar disponibilidade
  */
 export const disponibilidadeProfessorControllerUpdate = (
-    id: string,
-    updateDisponibilidadeDto: BodyType<UpdateDisponibilidadeDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<DisponibilidadeResponseDto>(
-      {url: `/disponibilidades/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: updateDisponibilidadeDto
+  id: string,
+  updateDisponibilidadeDto: BodyType<UpdateDisponibilidadeDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<DisponibilidadeResponseDto>(
+    {
+      url: `/disponibilidades/${id}`,
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      data: updateDisponibilidadeDto,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getDisponibilidadeProfessorControllerUpdateMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>,
+    TError,
+    { id: string; data: BodyType<UpdateDisponibilidadeDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateDisponibilidadeDto> },
+  TContext
+> => {
+  const mutationKey = ["disponibilidadeProfessorControllerUpdate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getDisponibilidadeProfessorControllerUpdateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisponibilidadeDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisponibilidadeDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>,
+    { id: string; data: BodyType<UpdateDisponibilidadeDto> }
+  > = (props) => {
+    const { id, data } = props ?? {}
 
-const mutationKey = ['disponibilidadeProfessorControllerUpdate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return disponibilidadeProfessorControllerUpdate(id, data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type DisponibilidadeProfessorControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>
+>
+export type DisponibilidadeProfessorControllerUpdateMutationBody =
+  BodyType<UpdateDisponibilidadeDto>
+export type DisponibilidadeProfessorControllerUpdateMutationError =
+  ErrorType<unknown>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>, {id: string;data: BodyType<UpdateDisponibilidadeDto>}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  disponibilidadeProfessorControllerUpdate(id,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DisponibilidadeProfessorControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>>
-    export type DisponibilidadeProfessorControllerUpdateMutationBody = BodyType<UpdateDisponibilidadeDto>
-    export type DisponibilidadeProfessorControllerUpdateMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Atualizar disponibilidade
  */
-export const useDisponibilidadeProfessorControllerUpdate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisponibilidadeDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>,
-        TError,
-        {id: string;data: BodyType<UpdateDisponibilidadeDto>},
-        TContext
-      > => {
+export const useDisponibilidadeProfessorControllerUpdate = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>,
+      TError,
+      { id: string; data: BodyType<UpdateDisponibilidadeDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateDisponibilidadeDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getDisponibilidadeProfessorControllerUpdateMutationOptions(options)
 
-      const mutationOptions = getDisponibilidadeProfessorControllerUpdateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * Remove uma disponibilidade existente. Apenas o próprio professor, admin ou diretor podem remover.
  * @summary Remover disponibilidade
  */
 export const disponibilidadeProfessorControllerRemove = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<DisponibilidadeResponseDto>(
-      {url: `/disponibilidades/${id}`, method: 'DELETE'
-    },
-      options);
-    }
-  
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<DisponibilidadeResponseDto>(
+    { url: `/disponibilidades/${id}`, method: "DELETE" },
+    options,
+  )
+}
 
+export const getDisponibilidadeProfessorControllerRemoveMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>,
+    TError,
+    { id: string },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["disponibilidadeProfessorControllerRemove"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getDisponibilidadeProfessorControllerRemoveMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>, TError,{id: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {}
 
-const mutationKey = ['disponibilidadeProfessorControllerRemove'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return disponibilidadeProfessorControllerRemove(id, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type DisponibilidadeProfessorControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>
+>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+export type DisponibilidadeProfessorControllerRemoveMutationError =
+  ErrorType<unknown>
 
-          return  disponibilidadeProfessorControllerRemove(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DisponibilidadeProfessorControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>>
-    
-    export type DisponibilidadeProfessorControllerRemoveMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Remover disponibilidade
  */
-export const useDisponibilidadeProfessorControllerRemove = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
+export const useDisponibilidadeProfessorControllerRemove = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>,
+      TError,
+      { id: string },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof disponibilidadeProfessorControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationOptions =
+    getDisponibilidadeProfessorControllerRemoveMutationOptions(options)
 
-      const mutationOptions = getDisponibilidadeProfessorControllerRemoveMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * Lista todas as disponibilidades de um professor específico
  * @summary Listar disponibilidades por professor
  */
 export const disponibilidadeProfessorControllerFindByProfessor = (
-    professorId: string,
-    params?: DisponibilidadeProfessorControllerFindByProfessorParams,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  professorId: string,
+  params?: DisponibilidadeProfessorControllerFindByProfessorParams,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisponibilidadeResponseDto[]>(
-      {url: `/disponibilidades/professor/${professorId}`, method: 'GET',
-        params, signal
+  return orvalCustomInstance<DisponibilidadeResponseDto[]>(
+    {
+      url: `/disponibilidades/professor/${professorId}`,
+      method: "GET",
+      params,
+      signal,
     },
-      options);
-    }
-  
-
-export const getDisponibilidadeProfessorControllerFindByProfessorQueryKey = (professorId: string,
-    params?: DisponibilidadeProfessorControllerFindByProfessorParams,) => {
-    return ['disponibilidades','professor',professorId, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getDisponibilidadeProfessorControllerFindByProfessorQueryOptions = <TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>, TError = ErrorType<unknown>>(professorId: string,
-    params?: DisponibilidadeProfessorControllerFindByProfessorParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getDisponibilidadeProfessorControllerFindByProfessorQueryKey(professorId,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>> = ({ signal }) => disponibilidadeProfessorControllerFindByProfessor(professorId,params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professorId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>, TError, TData> & { queryKey: QueryKey }
+    options,
+  )
 }
 
-export type DisponibilidadeProfessorControllerFindByProfessorQueryResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>>
-export type DisponibilidadeProfessorControllerFindByProfessorQueryError = ErrorType<unknown>
+export const getDisponibilidadeProfessorControllerFindByProfessorQueryKey = (
+  professorId: string,
+  params?: DisponibilidadeProfessorControllerFindByProfessorParams,
+) => {
+  return [
+    "disponibilidades",
+    "professor",
+    professorId,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getDisponibilidadeProfessorControllerFindByProfessorQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  professorId: string,
+  params?: DisponibilidadeProfessorControllerFindByProfessorParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ??
+    getDisponibilidadeProfessorControllerFindByProfessorQueryKey(
+      professorId,
+      params,
+    )
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>
+  > = ({ signal }) =>
+    disponibilidadeProfessorControllerFindByProfessor(
+      professorId,
+      params,
+      requestOptions,
+      signal,
+    )
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!professorId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DisponibilidadeProfessorControllerFindByProfessorQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>
+  >
+export type DisponibilidadeProfessorControllerFindByProfessorQueryError =
+  ErrorType<unknown>
+
+export function useDisponibilidadeProfessorControllerFindByProfessor<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  professorId: string,
+  params: undefined | DisponibilidadeProfessorControllerFindByProfessorParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisponibilidadeProfessorControllerFindByProfessor<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  professorId: string,
+  params?: DisponibilidadeProfessorControllerFindByProfessorParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisponibilidadeProfessorControllerFindByProfessor<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  professorId: string,
+  params?: DisponibilidadeProfessorControllerFindByProfessorParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Listar disponibilidades por professor
  */
 
-export function useDisponibilidadeProfessorControllerFindByProfessor<TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>, TError = ErrorType<unknown>>(
- professorId: string,
-    params?: DisponibilidadeProfessorControllerFindByProfessorParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useDisponibilidadeProfessorControllerFindByProfessor<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  professorId: string,
+  params?: DisponibilidadeProfessorControllerFindByProfessorParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByProfessor>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getDisponibilidadeProfessorControllerFindByProfessorQueryOptions(
+      professorId,
+      params,
+      options,
+    )
 
-  const queryOptions = getDisponibilidadeProfessorControllerFindByProfessorQueryOptions(professorId,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * Lista todas as disponibilidades de um período letivo específico
  * @summary Listar disponibilidades por período
  */
 export const disponibilidadeProfessorControllerFindByPeriodo = (
-    periodoId: string,
-    params?: DisponibilidadeProfessorControllerFindByPeriodoParams,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  periodoId: string,
+  params?: DisponibilidadeProfessorControllerFindByPeriodoParams,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisponibilidadeResponseDto[]>(
-      {url: `/disponibilidades/periodo/${periodoId}`, method: 'GET',
-        params, signal
+  return orvalCustomInstance<DisponibilidadeResponseDto[]>(
+    {
+      url: `/disponibilidades/periodo/${periodoId}`,
+      method: "GET",
+      params,
+      signal,
     },
-      options);
-    }
-  
-
-export const getDisponibilidadeProfessorControllerFindByPeriodoQueryKey = (periodoId: string,
-    params?: DisponibilidadeProfessorControllerFindByPeriodoParams,) => {
-    return ['disponibilidades','periodo',periodoId, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getDisponibilidadeProfessorControllerFindByPeriodoQueryOptions = <TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>, TError = ErrorType<unknown>>(periodoId: string,
-    params?: DisponibilidadeProfessorControllerFindByPeriodoParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getDisponibilidadeProfessorControllerFindByPeriodoQueryKey(periodoId,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>> = ({ signal }) => disponibilidadeProfessorControllerFindByPeriodo(periodoId,params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(periodoId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>, TError, TData> & { queryKey: QueryKey }
+    options,
+  )
 }
 
-export type DisponibilidadeProfessorControllerFindByPeriodoQueryResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>>
-export type DisponibilidadeProfessorControllerFindByPeriodoQueryError = ErrorType<unknown>
+export const getDisponibilidadeProfessorControllerFindByPeriodoQueryKey = (
+  periodoId: string,
+  params?: DisponibilidadeProfessorControllerFindByPeriodoParams,
+) => {
+  return [
+    "disponibilidades",
+    "periodo",
+    periodoId,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getDisponibilidadeProfessorControllerFindByPeriodoQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  params?: DisponibilidadeProfessorControllerFindByPeriodoParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ??
+    getDisponibilidadeProfessorControllerFindByPeriodoQueryKey(periodoId, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>
+  > = ({ signal }) =>
+    disponibilidadeProfessorControllerFindByPeriodo(
+      periodoId,
+      params,
+      requestOptions,
+      signal,
+    )
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!periodoId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DisponibilidadeProfessorControllerFindByPeriodoQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>
+  >
+export type DisponibilidadeProfessorControllerFindByPeriodoQueryError =
+  ErrorType<unknown>
+
+export function useDisponibilidadeProfessorControllerFindByPeriodo<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  params: undefined | DisponibilidadeProfessorControllerFindByPeriodoParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisponibilidadeProfessorControllerFindByPeriodo<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  params?: DisponibilidadeProfessorControllerFindByPeriodoParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisponibilidadeProfessorControllerFindByPeriodo<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  params?: DisponibilidadeProfessorControllerFindByPeriodoParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Listar disponibilidades por período
  */
 
-export function useDisponibilidadeProfessorControllerFindByPeriodo<TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>, TError = ErrorType<unknown>>(
- periodoId: string,
-    params?: DisponibilidadeProfessorControllerFindByPeriodoParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useDisponibilidadeProfessorControllerFindByPeriodo<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  params?: DisponibilidadeProfessorControllerFindByPeriodoParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerFindByPeriodo>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getDisponibilidadeProfessorControllerFindByPeriodoQueryOptions(
+      periodoId,
+      params,
+      options,
+    )
 
-  const queryOptions = getDisponibilidadeProfessorControllerFindByPeriodoQueryOptions(periodoId,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * Lista disponibilidades de um professor em um período letivo específico
  * @summary Listar disponibilidades por professor e período
  */
 export const disponibilidadeProfessorControllerFindByProfessorAndPeriodo = (
-    professorId: string,
-    periodoId: string,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  professorId: string,
+  periodoId: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisponibilidadeResponseDto[]>(
-      {url: `/disponibilidades/professor/${professorId}/periodo/${periodoId}`, method: 'GET', signal
+  return orvalCustomInstance<DisponibilidadeResponseDto[]>(
+    {
+      url: `/disponibilidades/professor/${professorId}/periodo/${periodoId}`,
+      method: "GET",
+      signal,
     },
-      options);
-    }
-  
-
-export const getDisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryKey = (professorId: string,
-    periodoId: string,) => {
-    return ['disponibilidades','professor',professorId,'periodo',periodoId] as const;
-    }
-
-    
-export const getDisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryOptions = <TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>>, TError = ErrorType<unknown>>(professorId: string,
-    periodoId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getDisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryKey(professorId,periodoId);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>>> = ({ signal }) => disponibilidadeProfessorControllerFindByProfessorAndPeriodo(professorId,periodoId, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professorId && periodoId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>>, TError, TData> & { queryKey: QueryKey }
+    options,
+  )
 }
 
-export type DisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>>>
-export type DisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryError = ErrorType<unknown>
+export const getDisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryKey =
+  (professorId: string, periodoId: string) => {
+    return [
+      "disponibilidades",
+      "professor",
+      professorId,
+      "periodo",
+      periodoId,
+    ] as const
+  }
 
+export const getDisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+      >
+    >,
+    TError = ErrorType<unknown>,
+  >(
+    professorId: string,
+    periodoId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof orvalCustomInstance>
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
 
+    const queryKey =
+      queryOptions?.queryKey ??
+      getDisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryKey(
+        professorId,
+        periodoId,
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+        >
+      >
+    > = ({ signal }) =>
+      disponibilidadeProfessorControllerFindByProfessorAndPeriodo(
+        professorId,
+        periodoId,
+        requestOptions,
+        signal,
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(professorId && periodoId),
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type DisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+      >
+    >
+  >
+export type DisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryError =
+  ErrorType<unknown>
+
+export function useDisponibilidadeProfessorControllerFindByProfessorAndPeriodo<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  professorId: string,
+  periodoId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+            >
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisponibilidadeProfessorControllerFindByProfessorAndPeriodo<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  professorId: string,
+  periodoId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+            >
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisponibilidadeProfessorControllerFindByProfessorAndPeriodo<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  professorId: string,
+  periodoId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Listar disponibilidades por professor e período
  */
 
-export function useDisponibilidadeProfessorControllerFindByProfessorAndPeriodo<TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>>, TError = ErrorType<unknown>>(
- professorId: string,
-    periodoId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useDisponibilidadeProfessorControllerFindByProfessorAndPeriodo<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  professorId: string,
+  periodoId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof disponibilidadeProfessorControllerFindByProfessorAndPeriodo
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getDisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryOptions(
+      professorId,
+      periodoId,
+      options,
+    )
 
-  const queryOptions = getDisponibilidadeProfessorControllerFindByProfessorAndPeriodoQueryOptions(professorId,periodoId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * Retorna os slots de horário válidos configurados para o período letivo
  * @summary Buscar slots válidos
  */
 export const disponibilidadeProfessorControllerGetSlotsValidos = (
-    periodoId: string,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  periodoId: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisponibilidadeProfessorControllerGetSlotsValidos200>(
-      {url: `/disponibilidades/slots-validos/${periodoId}`, method: 'GET', signal
+  return orvalCustomInstance<DisponibilidadeProfessorControllerGetSlotsValidos200>(
+    {
+      url: `/disponibilidades/slots-validos/${periodoId}`,
+      method: "GET",
+      signal,
     },
-      options);
-    }
-  
-
-export const getDisponibilidadeProfessorControllerGetSlotsValidosQueryKey = (periodoId: string,) => {
-    return ['disponibilidades','slots-validos',periodoId] as const;
-    }
-
-    
-export const getDisponibilidadeProfessorControllerGetSlotsValidosQueryOptions = <TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError = ErrorType<unknown>>(periodoId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getDisponibilidadeProfessorControllerGetSlotsValidosQueryKey(periodoId);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>> = ({ signal }) => disponibilidadeProfessorControllerGetSlotsValidos(periodoId, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(periodoId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError, TData> & { queryKey: QueryKey }
+    options,
+  )
 }
 
-export type DisponibilidadeProfessorControllerGetSlotsValidosQueryResult = NonNullable<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>>
-export type DisponibilidadeProfessorControllerGetSlotsValidosQueryError = ErrorType<unknown>
+export const getDisponibilidadeProfessorControllerGetSlotsValidosQueryKey = (
+  periodoId: string,
+) => {
+  return ["disponibilidades", "slots-validos", periodoId] as const
+}
 
+export const getDisponibilidadeProfessorControllerGetSlotsValidosQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ??
+    getDisponibilidadeProfessorControllerGetSlotsValidosQueryKey(periodoId)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>
+  > = ({ signal }) =>
+    disponibilidadeProfessorControllerGetSlotsValidos(
+      periodoId,
+      requestOptions,
+      signal,
+    )
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!periodoId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DisponibilidadeProfessorControllerGetSlotsValidosQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>
+  >
+export type DisponibilidadeProfessorControllerGetSlotsValidosQueryError =
+  ErrorType<unknown>
+
+export function useDisponibilidadeProfessorControllerGetSlotsValidos<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisponibilidadeProfessorControllerGetSlotsValidos<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisponibilidadeProfessorControllerGetSlotsValidos<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Buscar slots válidos
  */
 
-export function useDisponibilidadeProfessorControllerGetSlotsValidos<TData = Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError = ErrorType<unknown>>(
- periodoId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useDisponibilidadeProfessorControllerGetSlotsValidos<
+  TData = Awaited<
+    ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  periodoId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disponibilidadeProfessorControllerGetSlotsValidos>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getDisponibilidadeProfessorControllerGetSlotsValidosQueryOptions(
+      periodoId,
+      options,
+    )
 
-  const queryOptions = getDisponibilidadeProfessorControllerGetSlotsValidosQueryOptions(periodoId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-

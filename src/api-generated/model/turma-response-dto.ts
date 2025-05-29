@@ -5,25 +5,25 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { DisciplinaOfertadaResponseDto } from './disciplina-ofertada-response-dto';
-import type { TurmaResponseDtoIdUsuarioProfessor } from './turma-response-dto-id-usuario-professor';
-import type { UsuarioResponseDto } from './usuario-response-dto';
+import type { DisciplinaOfertadaResponseDto } from "./disciplina-ofertada-response-dto"
+import type { TurmaResponseDtoIdUsuarioProfessor } from "./turma-response-dto-id-usuario-professor"
+import type { UsuarioResponseDto } from "./usuario-response-dto"
 
 export interface TurmaResponseDto {
   /** ID da turma */
-  id: string;
+  id: string
   /** Código/identificador da turma */
-  codigoDaTurma: string;
+  codigoDaTurma: string
   /** ID da disciplina ofertada à qual esta turma pertence. */
-  idDisciplinaOfertada: string;
+  idDisciplinaOfertada: string
   /** Detalhes da disciplina ofertada */
-  disciplinaOfertada?: DisciplinaOfertadaResponseDto;
+  disciplinaOfertada?: DisciplinaOfertadaResponseDto
   /** ID do professor atribuído à turma */
-  idUsuarioProfessor?: TurmaResponseDtoIdUsuarioProfessor;
+  idUsuarioProfessor?: TurmaResponseDtoIdUsuarioProfessor
   /** Detalhes do professor atribuído */
-  professorAlocado?: UsuarioResponseDto;
+  professorAlocado?: UsuarioResponseDto
   /** Data de criação da turma */
-  dataCriacao: string;
+  dataCriacao: string
   /** Data da última atualização da turma */
-  dataAtualizacao: string;
+  dataAtualizacao: string
 }

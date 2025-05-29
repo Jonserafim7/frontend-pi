@@ -5,349 +5,639 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query"
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query"
 
 import type {
   CreateMatrizCurricularDto,
   MatrizCurricularResponseDto,
   MatrizesCurricularesControllerFindAllParams,
-  UpdateMatrizCurricularDto
-} from '../../model';
+  UpdateMatrizCurricularDto,
+} from "../../model"
 
-import { orvalCustomInstance } from '../../../lib/orval-axios-instance';
-import type { ErrorType , BodyType } from '../../../lib/orval-axios-instance';
+import { orvalCustomInstance } from "../../../lib/orval-axios-instance"
+import type { ErrorType, BodyType } from "../../../lib/orval-axios-instance"
 
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
  * @summary Criar nova matriz curricular
  */
 export const matrizesCurricularesControllerCreate = (
-    createMatrizCurricularDto: BodyType<CreateMatrizCurricularDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  createMatrizCurricularDto: BodyType<CreateMatrizCurricularDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<MatrizCurricularResponseDto>(
-      {url: `/matrizes-curriculares`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createMatrizCurricularDto, signal
+  return orvalCustomInstance<MatrizCurricularResponseDto>(
+    {
+      url: `/matrizes-curriculares`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createMatrizCurricularDto,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getMatrizesCurricularesControllerCreateMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>,
+    TError,
+    { data: BodyType<CreateMatrizCurricularDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>,
+  TError,
+  { data: BodyType<CreateMatrizCurricularDto> },
+  TContext
+> => {
+  const mutationKey = ["matrizesCurricularesControllerCreate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getMatrizesCurricularesControllerCreateMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>, TError,{data: BodyType<CreateMatrizCurricularDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>, TError,{data: BodyType<CreateMatrizCurricularDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>,
+    { data: BodyType<CreateMatrizCurricularDto> }
+  > = (props) => {
+    const { data } = props ?? {}
 
-const mutationKey = ['matrizesCurricularesControllerCreate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return matrizesCurricularesControllerCreate(data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type MatrizesCurricularesControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>
+>
+export type MatrizesCurricularesControllerCreateMutationBody =
+  BodyType<CreateMatrizCurricularDto>
+export type MatrizesCurricularesControllerCreateMutationError = ErrorType<void>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>, {data: BodyType<CreateMatrizCurricularDto>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  matrizesCurricularesControllerCreate(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type MatrizesCurricularesControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>>
-    export type MatrizesCurricularesControllerCreateMutationBody = BodyType<CreateMatrizCurricularDto>
-    export type MatrizesCurricularesControllerCreateMutationError = ErrorType<void>
-
-    /**
+/**
  * @summary Criar nova matriz curricular
  */
-export const useMatrizesCurricularesControllerCreate = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>, TError,{data: BodyType<CreateMatrizCurricularDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>,
-        TError,
-        {data: BodyType<CreateMatrizCurricularDto>},
-        TContext
-      > => {
+export const useMatrizesCurricularesControllerCreate = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>,
+      TError,
+      { data: BodyType<CreateMatrizCurricularDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerCreate>>,
+  TError,
+  { data: BodyType<CreateMatrizCurricularDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getMatrizesCurricularesControllerCreateMutationOptions(options)
 
-      const mutationOptions = getMatrizesCurricularesControllerCreateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * @summary Listar todas as matrizes curriculares
  */
 export const matrizesCurricularesControllerFindAll = (
-    params?: MatrizesCurricularesControllerFindAllParams,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  params?: MatrizesCurricularesControllerFindAllParams,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<MatrizCurricularResponseDto[]>(
-      {url: `/matrizes-curriculares`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-  
-
-export const getMatrizesCurricularesControllerFindAllQueryKey = (params?: MatrizesCurricularesControllerFindAllParams,) => {
-    return ['matrizes-curriculares', ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getMatrizesCurricularesControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>, TError = ErrorType<void>>(params?: MatrizesCurricularesControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getMatrizesCurricularesControllerFindAllQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>> = ({ signal }) => matrizesCurricularesControllerFindAll(params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<MatrizCurricularResponseDto[]>(
+    { url: `/matrizes-curriculares`, method: "GET", params, signal },
+    options,
+  )
 }
 
-export type MatrizesCurricularesControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>>
+export const getMatrizesCurricularesControllerFindAllQueryKey = (
+  params?: MatrizesCurricularesControllerFindAllParams,
+) => {
+  return ["matrizes-curriculares", ...(params ? [params] : [])] as const
+}
+
+export const getMatrizesCurricularesControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params?: MatrizesCurricularesControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getMatrizesCurricularesControllerFindAllQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>
+  > = ({ signal }) =>
+    matrizesCurricularesControllerFindAll(params, requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MatrizesCurricularesControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>
+>
 export type MatrizesCurricularesControllerFindAllQueryError = ErrorType<void>
 
-
+export function useMatrizesCurricularesControllerFindAll<
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params: undefined | MatrizesCurricularesControllerFindAllParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useMatrizesCurricularesControllerFindAll<
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params?: MatrizesCurricularesControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMatrizesCurricularesControllerFindAll<
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params?: MatrizesCurricularesControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Listar todas as matrizes curriculares
  */
 
-export function useMatrizesCurricularesControllerFindAll<TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>, TError = ErrorType<void>>(
- params?: MatrizesCurricularesControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useMatrizesCurricularesControllerFindAll<
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params?: MatrizesCurricularesControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getMatrizesCurricularesControllerFindAllQueryOptions(
+    params,
+    options,
+  )
 
-  const queryOptions = getMatrizesCurricularesControllerFindAllQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Buscar matriz curricular por ID
  */
 export const matrizesCurricularesControllerFindOne = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<MatrizCurricularResponseDto>(
-      {url: `/matrizes-curriculares/${id}`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getMatrizesCurricularesControllerFindOneQueryKey = (id: string,) => {
-    return ['matrizes-curriculares',id] as const;
-    }
-
-    
-export const getMatrizesCurricularesControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>, TError = ErrorType<void>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getMatrizesCurricularesControllerFindOneQueryKey(id);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>> = ({ signal }) => matrizesCurricularesControllerFindOne(id, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<MatrizCurricularResponseDto>(
+    { url: `/matrizes-curriculares/${id}`, method: "GET", signal },
+    options,
+  )
 }
 
-export type MatrizesCurricularesControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>>
+export const getMatrizesCurricularesControllerFindOneQueryKey = (id: string) => {
+  return ["matrizes-curriculares", id] as const
+}
+
+export const getMatrizesCurricularesControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMatrizesCurricularesControllerFindOneQueryKey(id)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>
+  > = ({ signal }) =>
+    matrizesCurricularesControllerFindOne(id, requestOptions, signal)
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MatrizesCurricularesControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>
+>
 export type MatrizesCurricularesControllerFindOneQueryError = ErrorType<void>
 
-
+export function useMatrizesCurricularesControllerFindOne<
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useMatrizesCurricularesControllerFindOne<
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMatrizesCurricularesControllerFindOne<
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Buscar matriz curricular por ID
  */
 
-export function useMatrizesCurricularesControllerFindOne<TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>, TError = ErrorType<void>>(
- id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useMatrizesCurricularesControllerFindOne<
+  TData = Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof matrizesCurricularesControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getMatrizesCurricularesControllerFindOneQueryOptions(
+    id,
+    options,
+  )
 
-  const queryOptions = getMatrizesCurricularesControllerFindOneQueryOptions(id,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Atualizar matriz curricular
  */
 export const matrizesCurricularesControllerUpdate = (
-    id: string,
-    updateMatrizCurricularDto: BodyType<UpdateMatrizCurricularDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<MatrizCurricularResponseDto>(
-      {url: `/matrizes-curriculares/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateMatrizCurricularDto
+  id: string,
+  updateMatrizCurricularDto: BodyType<UpdateMatrizCurricularDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<MatrizCurricularResponseDto>(
+    {
+      url: `/matrizes-curriculares/${id}`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: updateMatrizCurricularDto,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getMatrizesCurricularesControllerUpdateMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>,
+    TError,
+    { id: string; data: BodyType<UpdateMatrizCurricularDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateMatrizCurricularDto> },
+  TContext
+> => {
+  const mutationKey = ["matrizesCurricularesControllerUpdate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getMatrizesCurricularesControllerUpdateMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>, TError,{id: string;data: BodyType<UpdateMatrizCurricularDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>, TError,{id: string;data: BodyType<UpdateMatrizCurricularDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>,
+    { id: string; data: BodyType<UpdateMatrizCurricularDto> }
+  > = (props) => {
+    const { id, data } = props ?? {}
 
-const mutationKey = ['matrizesCurricularesControllerUpdate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return matrizesCurricularesControllerUpdate(id, data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type MatrizesCurricularesControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>
+>
+export type MatrizesCurricularesControllerUpdateMutationBody =
+  BodyType<UpdateMatrizCurricularDto>
+export type MatrizesCurricularesControllerUpdateMutationError = ErrorType<void>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>, {id: string;data: BodyType<UpdateMatrizCurricularDto>}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  matrizesCurricularesControllerUpdate(id,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type MatrizesCurricularesControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>>
-    export type MatrizesCurricularesControllerUpdateMutationBody = BodyType<UpdateMatrizCurricularDto>
-    export type MatrizesCurricularesControllerUpdateMutationError = ErrorType<void>
-
-    /**
+/**
  * @summary Atualizar matriz curricular
  */
-export const useMatrizesCurricularesControllerUpdate = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>, TError,{id: string;data: BodyType<UpdateMatrizCurricularDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>,
-        TError,
-        {id: string;data: BodyType<UpdateMatrizCurricularDto>},
-        TContext
-      > => {
+export const useMatrizesCurricularesControllerUpdate = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>,
+      TError,
+      { id: string; data: BodyType<UpdateMatrizCurricularDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateMatrizCurricularDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getMatrizesCurricularesControllerUpdateMutationOptions(options)
 
-      const mutationOptions = getMatrizesCurricularesControllerUpdateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * @summary Remover matriz curricular
  */
 export const matrizesCurricularesControllerRemove = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<void>(
-      {url: `/matrizes-curriculares/${id}`, method: 'DELETE'
-    },
-      options);
-    }
-  
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<void>(
+    { url: `/matrizes-curriculares/${id}`, method: "DELETE" },
+    options,
+  )
+}
 
+export const getMatrizesCurricularesControllerRemoveMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>,
+    TError,
+    { id: string },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["matrizesCurricularesControllerRemove"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getMatrizesCurricularesControllerRemoveMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>, TError,{id: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {}
 
-const mutationKey = ['matrizesCurricularesControllerRemove'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return matrizesCurricularesControllerRemove(id, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type MatrizesCurricularesControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>
+>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+export type MatrizesCurricularesControllerRemoveMutationError = ErrorType<void>
 
-          return  matrizesCurricularesControllerRemove(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type MatrizesCurricularesControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>>
-    
-    export type MatrizesCurricularesControllerRemoveMutationError = ErrorType<void>
-
-    /**
+/**
  * @summary Remover matriz curricular
  */
-export const useMatrizesCurricularesControllerRemove = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
+export const useMatrizesCurricularesControllerRemove = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>,
+      TError,
+      { id: string },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof matrizesCurricularesControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationOptions =
+    getMatrizesCurricularesControllerRemoveMutationOptions(options)
 
-      const mutationOptions = getMatrizesCurricularesControllerRemoveMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    
+  return useMutation(mutationOptions, queryClient)
+}
