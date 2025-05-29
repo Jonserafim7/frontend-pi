@@ -15,9 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { CalendarIcon, RefreshCw, Save } from "lucide-react"
+import { CalendarIcon, RefreshCw, Save, Users, CheckCircle } from "lucide-react"
 import { ScheduleGrid } from "../components/ScheduleGrid"
+import { useTurmasParaAlocacao } from "../hooks"
+import { TurmaSelectionProvider, useTurmaSelection } from "../contexts"
 import type { ConfiguracaoHorarioDto } from "@/api-generated/model"
+import { cn } from "@/lib/utils"
 
 // Mock data para demonstração - será substituído por dados reais da API
 const mockConfiguracaoHorario: ConfiguracaoHorarioDto = {
@@ -48,7 +51,7 @@ const mockConfiguracaoHorario: ConfiguracaoHorarioDto = {
     { inicio: "19:00", fim: "19:50" },
     { inicio: "19:50", fim: "20:40" },
     { inicio: "20:40", fim: "21:30" },
-    { inicio: "21:40", fim: "22:30" },
+    { inicio: "21:30", fim: "22:20" },
   ],
   dataCriacao: "2024-01-01T00:00:00Z",
   dataAtualizacao: "2024-01-01T00:00:00Z",
@@ -66,174 +69,299 @@ const mockCursos = [
   { id: 3, nome: "Redes de Computadores" },
 ]
 
-export function PropostasHorarioPage() {
-  const [selectedPeriodo, setSelectedPeriodo] = useState<string>("1")
-  const [selectedCurso, setSelectedCurso] = useState<string>("1")
-  const [isLoading, setIsLoading] = useState(false)
+// Componente interno que usa o contexto
+function PropostasHorarioContent() {
+  const [periodoSelecionado, setPeriodoSelecionado] = useState<string>("1")
+  const { turmaSelecionada, selecionarTurma, limparSelecao, isSelecionada } =
+    useTurmaSelection()
 
-  const handleSlotClick = (slotInfo: {
-    day: string
-    startTime: string
-    endTime: string
-    turno: string
-  }) => {
-    console.log("Slot clicado:", slotInfo)
-    // Aqui será implementada a lógica de seleção de slot
+  // Usar o hook para buscar turmas para alocação
+  const { turmas, total, porStatus, estatisticas, isLoading, error } =
+    useTurmasParaAlocacao({
+      filtros: {
+        periodoLetivoId: periodoSelecionado,
+        somenteComProfessor: true,
+      },
+      enabled: !!periodoSelecionado,
+    })
+
+  const handleSlotClick = (slotInfo: any) => {
+    if (turmaSelecionada) {
+      console.log(
+        "Alocando turma:",
+        turmaSelecionada.turma.codigoDaTurma,
+        "no slot:",
+        slotInfo,
+      )
+      // TODO: Implementar lógica de alocação
+    } else {
+      console.log("Nenhuma turma selecionada para alocar no slot:", slotInfo)
+    }
   }
 
-  const handleRefresh = () => {
-    setIsLoading(true)
-    // Simular carregamento
-    setTimeout(() => setIsLoading(false), 1000)
-  }
-
-  const handleSave = () => {
-    console.log("Salvando propostas de horário...")
-    // Aqui será implementada a lógica de salvamento
+  const handleTurmaClick = (turma: any) => {
+    if (isSelecionada(turma.id)) {
+      limparSelecao()
+    } else {
+      selecionarTurma(turma)
+    }
   }
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
+    <div className="container mx-auto flex flex-col gap-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Propostas de Horário
-          </h1>
-          <p className="text-muted-foreground">
-            Gerencie e visualize as propostas de horário para os cursos
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
+            <CalendarIcon className="text-primary h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">Propostas de Horário</h1>
+            <p className="text-muted-foreground">
+              Gerencie a alocação de turmas nos horários
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={handleRefresh}
-            disabled={isLoading}
+            size="sm"
           >
-            <RefreshCw
-              className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-            />
+            <RefreshCw className="h-4 w-4" />
             Atualizar
           </Button>
-          <Button onClick={handleSave}>
-            <Save className="mr-2 h-4 w-4" />
-            Salvar Alterações
+          <Button size="sm">
+            <Save className="h-4 w-4" />
+            Salvar Proposta
           </Button>
         </div>
       </div>
 
+      {/* Turma Selecionada */}
+      {turmaSelecionada && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="text-primary h-5 w-5" />
+                <div>
+                  <div className="font-medium">
+                    Turma Selecionada: {turmaSelecionada.turma.codigoDaTurma}
+                  </div>
+                  <div className="text-muted-foreground text-sm">
+                    {turmaSelecionada.turma.disciplinaOfertada?.disciplina
+                      ?.nome || "Disciplina"}{" "}
+                    -
+                    {turmaSelecionada.turma.professorAlocado?.nome ||
+                      "Sem professor"}
+                  </div>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={limparSelecao}
+              >
+                Limpar Seleção
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Filtros */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5" />
-            Filtros
-          </CardTitle>
+          <CardTitle className="text-lg">Filtros</CardTitle>
           <CardDescription>
-            Selecione o período letivo e curso para visualizar as propostas de
-            horário
+            Configure os filtros para visualizar as turmas e horários
           </CardDescription>
         </CardHeader>
         <CardContent className="flex gap-4">
-          <div className="flex-1">
-            <label className="mb-2 block text-sm font-medium">
-              Período Letivo
-            </label>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Período Letivo</label>
             <Select
-              value={selectedPeriodo}
-              onValueChange={setSelectedPeriodo}
+              value={periodoSelecionado}
+              onValueChange={setPeriodoSelecionado}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-48">
                 <SelectValue placeholder="Selecione o período" />
               </SelectTrigger>
               <SelectContent>
-                {mockPeriodos.map((periodo) => (
-                  <SelectItem
-                    key={periodo.id}
-                    value={periodo.id.toString()}
-                  >
-                    <div className="flex items-center gap-2">
-                      {periodo.nome}
-                      <Badge
-                        variant={
-                          periodo.status === "ATIVO" ? "default" : "secondary"
-                        }
-                      >
-                        {periodo.status}
-                      </Badge>
+                <SelectItem value="1">2024.1</SelectItem>
+                <SelectItem value="2">2024.2</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Estatísticas das Turmas */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Users className="text-muted-foreground h-4 w-4" />
+              <span className="text-sm font-medium">Total de Turmas</span>
+            </div>
+            <div className="mt-2">
+              <span className="text-2xl font-bold">{total}</span>
+              {isLoading && (
+                <span className="text-muted-foreground ml-2 text-sm">
+                  Carregando...
+                </span>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <div className="h-3 w-3 rounded-full bg-gray-400" />
+              <span className="text-sm font-medium">Não Alocadas</span>
+            </div>
+            <div className="mt-2">
+              <span className="text-2xl font-bold">
+                {estatisticas.totalNaoAlocadas}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <div className="h-3 w-3 rounded-full bg-yellow-400" />
+              <span className="text-sm font-medium">Parcialmente Alocadas</span>
+            </div>
+            <div className="mt-2">
+              <span className="text-2xl font-bold">
+                {estatisticas.totalParcialmenteAlocadas}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <div className="h-3 w-3 rounded-full bg-green-400" />
+              <span className="text-sm font-medium">Totalmente Alocadas</span>
+            </div>
+            <div className="mt-2">
+              <span className="text-2xl font-bold">
+                {estatisticas.totalTotalmenteAlocadas}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Layout Principal */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+        {/* Lista de Turmas */}
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle className="text-lg">Turmas Disponíveis</CardTitle>
+            <CardDescription>
+              Clique em uma turma para selecioná-la para alocação
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {isLoading && (
+              <div className="py-4 text-center">
+                <span className="text-muted-foreground text-sm">
+                  Carregando turmas...
+                </span>
+              </div>
+            )}
+
+            {error && (
+              <div className="py-4 text-center">
+                <span className="text-sm text-red-500">
+                  Erro ao carregar turmas
+                </span>
+              </div>
+            )}
+
+            {turmas.map((turma) => (
+              <div
+                key={turma.id}
+                className={cn(
+                  "cursor-pointer rounded-lg border p-3 transition-colors",
+                  isSelecionada(turma.id) ?
+                    "border-primary bg-primary/10 hover:bg-primary/15"
+                  : "hover:bg-muted/50",
+                )}
+                onClick={() => handleTurmaClick(turma)}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-medium">
+                      {turma.codigoDaTurma}
                     </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex-1">
-            <label className="mb-2 block text-sm font-medium">Curso</label>
-            <Select
-              value={selectedCurso}
-              onValueChange={setSelectedCurso}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o curso" />
-              </SelectTrigger>
-              <SelectContent>
-                {mockCursos.map((curso) => (
-                  <SelectItem
-                    key={curso.id}
-                    value={curso.id.toString()}
-                  >
-                    {curso.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+                    <div className="text-muted-foreground text-xs">
+                      {turma.disciplinaOfertada?.disciplina?.nome || "Disciplina"}
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      {turma.professorAlocado?.nome || "Sem professor"}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isSelecionada(turma.id) && (
+                      <CheckCircle className="text-primary h-4 w-4" />
+                    )}
+                    <Badge
+                      variant={
+                        turma.corStatus === "green" ? "default" : "secondary"
+                      }
+                      className={`text-xs ${
+                        turma.corStatus === "green" ?
+                          "bg-green-100 text-green-800"
+                        : turma.corStatus === "yellow" ?
+                          "bg-yellow-100 text-yellow-800"
+                        : turma.corStatus === "red" ? "bg-red-100 text-red-800"
+                        : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {turma.aulasAlocadas}/{turma.totalAulas}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
-      {/* Grid de Horários */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Grade de Horários</CardTitle>
-          <CardDescription>
-            Clique nos slots para alocar turmas. Use as cores para identificar
-            diferentes tipos de alocação.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ScheduleGrid
-            configuracaoHorario={mockConfiguracaoHorario}
-            onSlotClick={handleSlotClick}
-          />
-        </CardContent>
-      </Card>
-
-      {/* Legenda */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Legenda</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-4">
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-4 rounded border border-green-300 bg-green-100"></div>
-              <span className="text-sm">Slot disponível</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-4 rounded border border-blue-300 bg-blue-100"></div>
-              <span className="text-sm">Turma alocada</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-4 rounded border border-red-300 bg-red-100"></div>
-              <span className="text-sm">Conflito detectado</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-4 rounded border border-gray-300 bg-gray-100"></div>
-              <span className="text-sm">Slot indisponível</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Grid de Horários */}
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle className="text-lg">Grade de Horários</CardTitle>
+            <CardDescription>
+              {turmaSelecionada ?
+                `Clique em um slot para alocar a turma ${turmaSelecionada.turma.codigoDaTurma}`
+              : "Selecione uma turma para começar a alocação"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScheduleGrid
+              configuracaoHorario={mockConfiguracaoHorario}
+              onSlotClick={handleSlotClick}
+              className="min-h-[600px]"
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
+  )
+}
+
+// Componente principal com provider
+export function PropostasHorarioPage() {
+  return (
+    <TurmaSelectionProvider>
+      <PropostasHorarioContent />
+    </TurmaSelectionProvider>
   )
 }
