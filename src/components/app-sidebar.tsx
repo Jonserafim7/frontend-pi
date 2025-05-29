@@ -13,6 +13,7 @@ import {
   CalendarDays,
   Clock,
   Users,
+  CalendarCheck,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import {
@@ -265,6 +266,18 @@ export function AppSidebar() {
                     <Link to="/coordenador/disponibilidades">
                       <Clock />
                       <span>Disponibilidades</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Propostas de Horário"
+                    isActive={isPathActive("/coordenador/propostas-horario")}
+                  >
+                    <Link to="/coordenador/propostas-horario">
+                      <CalendarCheck />
+                      <span>Propostas de Horário</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
