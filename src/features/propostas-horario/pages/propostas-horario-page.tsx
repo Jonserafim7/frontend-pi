@@ -17,6 +17,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { CalendarIcon, RefreshCw, Save, Users, CheckCircle } from "lucide-react"
 import { ScheduleGrid } from "../components/ScheduleGrid"
+import { TurmasListComponent } from "../components/TurmasListComponent"
 import { useTurmasParaAlocacao } from "../hooks"
 import { TurmaSelectionProvider, useTurmaSelection } from "../contexts"
 import type { ConfiguracaoHorarioDto } from "@/api-generated/model"
@@ -76,14 +77,15 @@ function PropostasHorarioContent() {
     useTurmaSelection()
 
   // Usar o hook para buscar turmas para alocação
-  const { turmas, total, porStatus, estatisticas, isLoading, error } =
-    useTurmasParaAlocacao({
+  const { turmas, total, estatisticas, isLoading, error } = useTurmasParaAlocacao(
+    {
       filtros: {
         periodoLetivoId: periodoSelecionado,
         somenteComProfessor: true,
       },
       enabled: !!periodoSelecionado,
-    })
+    },
+  )
 
   const handleSlotClick = (slotInfo: any) => {
     if (turmaSelecionada) {
@@ -96,14 +98,6 @@ function PropostasHorarioContent() {
       // TODO: Implementar lógica de alocação
     } else {
       console.log("Nenhuma turma selecionada para alocar no slot:", slotInfo)
-    }
-  }
-
-  const handleTurmaClick = (turma: any) => {
-    if (isSelecionada(turma.id)) {
-      limparSelecao()
-    } else {
-      selecionarTurma(turma)
     }
   }
 
@@ -260,79 +254,17 @@ function PropostasHorarioContent() {
 
       {/* Layout Principal */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-        {/* Lista de Turmas */}
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="text-lg">Turmas Disponíveis</CardTitle>
-            <CardDescription>
-              Clique em uma turma para selecioná-la para alocação
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {isLoading && (
-              <div className="py-4 text-center">
-                <span className="text-muted-foreground text-sm">
-                  Carregando turmas...
-                </span>
-              </div>
-            )}
-
-            {error && (
-              <div className="py-4 text-center">
-                <span className="text-sm text-red-500">
-                  Erro ao carregar turmas
-                </span>
-              </div>
-            )}
-
-            {turmas.map((turma) => (
-              <div
-                key={turma.id}
-                className={cn(
-                  "cursor-pointer rounded-lg border p-3 transition-colors",
-                  isSelecionada(turma.id) ?
-                    "border-primary bg-primary/10 hover:bg-primary/15"
-                  : "hover:bg-muted/50",
-                )}
-                onClick={() => handleTurmaClick(turma)}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm font-medium">
-                      {turma.codigoDaTurma}
-                    </div>
-                    <div className="text-muted-foreground text-xs">
-                      {turma.disciplinaOfertada?.disciplina?.nome || "Disciplina"}
-                    </div>
-                    <div className="text-muted-foreground text-xs">
-                      {turma.professorAlocado?.nome || "Sem professor"}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {isSelecionada(turma.id) && (
-                      <CheckCircle className="text-primary h-4 w-4" />
-                    )}
-                    <Badge
-                      variant={
-                        turma.corStatus === "green" ? "default" : "secondary"
-                      }
-                      className={`text-xs ${
-                        turma.corStatus === "green" ?
-                          "bg-green-100 text-green-800"
-                        : turma.corStatus === "yellow" ?
-                          "bg-yellow-100 text-yellow-800"
-                        : turma.corStatus === "red" ? "bg-red-100 text-red-800"
-                        : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {turma.aulasAlocadas}/{turma.totalAulas}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        {/* Lista de Turmas - Usando o novo componente */}
+        <div className="lg:col-span-1">
+          <TurmasListComponent
+            turmas={turmas}
+            isLoading={isLoading}
+            error={error}
+            onTurmaSelect={selecionarTurma}
+            onTurmaDeselect={() => limparSelecao()}
+            isSelecionada={isSelecionada}
+          />
+        </div>
 
         {/* Grid de Horários */}
         <Card className="lg:col-span-3">
