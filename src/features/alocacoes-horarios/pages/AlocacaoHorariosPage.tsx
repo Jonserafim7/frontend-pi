@@ -102,7 +102,7 @@ export const AlocacaoHorariosPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
+    <div className="container mx-auto flex flex-col space-y-6 overflow-hidden p-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
@@ -187,41 +187,48 @@ export const AlocacaoHorariosPage: React.FC = () => {
         </div>
       </Card>
 
-      {/* Main Content Layout with Sidebars */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-        {/* Filters Sidebar */}
-        <div className="xl:col-span-2">
-          <FiltrosSidebar
-            filtros={filtros}
-            onFiltrosChange={handleFiltrosChange}
-            showResultCount
-            resultCount={8} // TODO: Calculate actual count
-            compact
-          />
+      {/* Main Content Layout with Sidebars - Changed from Grid to Flexbox */}
+      <div className="flex min-h-0 flex-grow gap-6">
+        {/* Filters Sidebar - Fixed width, non-flexible */}
+        <div className="flex h-full w-max flex-none flex-col overflow-y-auto">
+          <div className="min-h-0 flex-grow">
+            <FiltrosSidebar
+              filtros={filtros}
+              onFiltrosChange={handleFiltrosChange}
+              showResultCount
+              resultCount={8} // TODO: Calculate actual count
+              compact
+            />
+          </div>
         </div>
 
-        {/* Main Grid */}
-        <div className="xl:col-span-7">
-          <HorarioGrid
-            periodoLetivoId={filtros.periodoLetivoId || ""}
-            cursoId={filtros.cursoId}
-            onAlocacaoCreate={handleAlocacaoCreate}
-            onAlocacaoUpdate={handleAlocacaoUpdate}
-            onAlocacaoDelete={handleAlocacaoDelete}
-          />
+        {/* Main Grid - Flexible width, occupies remaining space */}
+        <div className="flex h-full flex-1 flex-col overflow-y-auto">
+          <div className="min-h-0 flex-grow">
+            <HorarioGrid
+              periodoLetivoId={filtros.periodoLetivoId || ""}
+              cursoId={filtros.cursoId}
+              onAlocacaoCreate={handleAlocacaoCreate}
+              onAlocacaoUpdate={handleAlocacaoUpdate}
+              onAlocacaoDelete={handleAlocacaoDelete}
+            />
+          </div>
         </div>
 
-        {/* Turmas Sidebar */}
-        <div className="xl:col-span-3">
-          <TurmasSidebar
-            periodoLetivoId={filtros.periodoLetivoId}
-            cursoId={filtros.cursoId}
-            onTurmaSelect={handleTurmaSelect}
-            onTurmaClick={handleTurmaClick}
-            onTurmaDetails={handleTurmaDetails}
-            selectedTurma={selectedTurma}
-            draggingTurma={draggingTurma}
-          />
+        {/* Turmas Sidebar - Fixed width, non-flexible */}
+        <div className="flex h-full w-min flex-col overflow-y-auto">
+          {/* Using w-80 (320px) for symmetry, can be adjusted e.g. w-96 (384px) if more space needed */}
+          <div className="min-h-0 flex-grow">
+            <TurmasSidebar
+              periodoLetivoId={filtros.periodoLetivoId}
+              cursoId={filtros.cursoId}
+              onTurmaSelect={handleTurmaSelect}
+              onTurmaClick={handleTurmaClick}
+              onTurmaDetails={handleTurmaDetails}
+              selectedTurma={selectedTurma}
+              draggingTurma={draggingTurma}
+            />
+          </div>
         </div>
       </div>
 

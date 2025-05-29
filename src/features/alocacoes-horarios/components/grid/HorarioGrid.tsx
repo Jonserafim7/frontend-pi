@@ -21,6 +21,7 @@ import type { AlocacoesHorariosControllerFindManyDiaDaSemana } from "@/api-gener
 
 import { GridHeader } from "./GridHeader"
 import { HorarioSlot } from "./HorarioSlot"
+import { DroppableSlot } from "../dnd/DroppableSlot"
 import {
   DIAS_SEMANA_ORDEM,
   DIAS_SEMANA_LABELS,
@@ -299,15 +300,19 @@ export const HorarioGrid: React.FC<HorarioGridProps> = ({
 
               {/* Cells for this Time Slot */}
               {row.cells.map((cell, cellIndex) => (
-                <HorarioSlot
+                <DroppableSlot
                   key={`${cell.dia}-${cell.timeSlot.slotIndex}`}
-                  cell={cell}
+                  id={`slot-${cell.dia}-${cell.timeSlot.slotIndex}`}
+                  cellData={cell}
                   position={{ row: rowIndex, col: cellIndex }}
                   onInteraction={(interaction) => {
-                    console.log("Grid interaction:", interaction)
+                    // This onInteraction is for the HorarioSlot inside DroppableSlot
+                    // It might need adjustment based on how interactions are handled globally
+                    console.log(
+                      "Grid interaction via DroppableSlot:",
+                      interaction,
+                    )
                   }}
-                  isDropTarget={false}
-                  isDragOver={false}
                 />
               ))}
             </React.Fragment>

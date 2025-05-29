@@ -18,10 +18,6 @@ interface TurmaCardProps extends ComponentWithBaseProps {
   isSelected?: boolean
   /** Callback quando o card é clicado */
   onClick?: (turma: TurmaResponseDto) => void
-  /** Callback para iniciar drag */
-  onDragStart?: (turma: TurmaResponseDto) => void
-  /** Callback para finalizar drag */
-  onDragEnd?: () => void
   /** Callback para exibir mais informações */
   onShowDetails?: (turma: TurmaResponseDto) => void
   /** Se está no modo compacto */
@@ -36,8 +32,6 @@ export const TurmaCard: React.FC<TurmaCardProps> = ({
   isDragging = false,
   isSelected = false,
   onClick,
-  onDragStart,
-  onDragEnd,
   onShowDetails,
   compact = false,
   className = "",
@@ -50,18 +44,6 @@ export const TurmaCard: React.FC<TurmaCardProps> = ({
   const cargaHoraria = turma.disciplinaOfertada?.disciplina?.cargaHoraria || 0
   const semestre = turma.disciplinaOfertada?.periodoLetivo?.semestre
   const ano = turma.disciplinaOfertada?.periodoLetivo?.ano
-
-  // Handle drag events
-  const handleDragStart = (e: React.DragEvent) => {
-    onDragStart?.(turma)
-    // Store turma data in drag transfer for drop handling
-    e.dataTransfer.setData("application/json", JSON.stringify(turma))
-    e.dataTransfer.effectAllowed = "move"
-  }
-
-  const handleDragEnd = () => {
-    onDragEnd?.()
-  }
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -84,15 +66,11 @@ export const TurmaCard: React.FC<TurmaCardProps> = ({
     <Card
       className={cn(
         "transition-all duration-200 hover:shadow-md",
-        "cursor-grab active:cursor-grabbing",
         isDragging && "rotate-2 opacity-60 shadow-lg",
         isSelected && "ring-primary ring-2 ring-offset-1",
         compact ? "p-2" : "p-3",
         className,
       )}
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       role="button"
