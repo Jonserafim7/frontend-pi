@@ -1,11 +1,20 @@
 import React, { useMemo, useCallback } from "react"
 import { cn } from "@/lib/utils"
-import type { ConfiguracaoHorarioDto } from "@/api-generated/model"
+import type {
+  ConfiguracaoHorarioDto,
+  AlocacaoHorarioResponseDto,
+} from "@/api-generated/model"
 import { ScheduleCell } from "./ScheduleCell"
+import {
+  processClassSlots,
+  groupAllocationsByPosition,
+} from "../utils/gridPositioning"
 
 interface ScheduleGridProps {
   /** Configuração de horário com slots de aula */
   configuracaoHorario: ConfiguracaoHorarioDto
+  /** Lista de alocações existentes para exibir no grid */
+  alocacoes?: AlocacaoHorarioResponseDto[]
   /** Callback quando um slot é clicado */
   onSlotClick?: (slotInfo: {
     day: string
@@ -13,6 +22,8 @@ interface ScheduleGridProps {
     endTime: string
     turno: "manha" | "tarde" | "noite"
   }) => void
+  /** Callback quando uma alocação é clicada */
+  onAlocacaoClick?: (alocacao: AlocacaoHorarioResponseDto) => void
   /** Classe CSS adicional */
   className?: string
 }
@@ -21,44 +32,28 @@ interface ScheduleGridProps {
  * Componente de grid de horários para alocação de turmas
  */
 export const ScheduleGrid = React.memo(
-  ({ configuracaoHorario, onSlotClick, className }: ScheduleGridProps) => {
+  ({
+    configuracaoHorario,
+    alocacoes = [],
+    onSlotClick,
+    onAlocacaoClick,
+    className,
+  }: ScheduleGridProps) => {
     // Dias da semana
     const daysToShow = useMemo(
       () => ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
       [],
     )
 
-    // Processar slots de aula da configuração
+    // Processar slots de aula da configuração usando o utilitário
     const classSlots = useMemo(() => {
-      const slots: Array<{
-        inicio: string
-        fim: string
-        turno: "manha" | "tarde" | "noite"
-      }> = []
-
-      // Adicionar slots da manhã
-      if (configuracaoHorario.aulasTurnoManha) {
-        configuracaoHorario.aulasTurnoManha.forEach((slot) => {
-          slots.push({ ...slot, turno: "manha" })
-        })
-      }
-
-      // Adicionar slots da tarde
-      if (configuracaoHorario.aulasTurnoTarde) {
-        configuracaoHorario.aulasTurnoTarde.forEach((slot) => {
-          slots.push({ ...slot, turno: "tarde" })
-        })
-      }
-
-      // Adicionar slots da noite
-      if (configuracaoHorario.aulasTurnoNoite) {
-        configuracaoHorario.aulasTurnoNoite.forEach((slot) => {
-          slots.push({ ...slot, turno: "noite" })
-        })
-      }
-
-      return slots
+      return processClassSlots(configuracaoHorario)
     }, [configuracaoHorario])
+
+    // Agrupar alocações por posição no grid
+    const allocationsByPosition = useMemo(() => {
+      return groupAllocationsByPosition(alocacoes, classSlots, daysToShow)
+    }, [alocacoes, classSlots, daysToShow])
 
     // Estilos do grid
     const gridStyles = useMemo(
@@ -186,17 +181,27 @@ export const ScheduleGrid = React.memo(
               </div>
 
               {/* Células de cada dia */}
-              {daysToShow.map((day, dayIndex) => (
-                <ScheduleCell
-                  key={`${day}-${classSlotIndex}`}
-                  day={day}
-                  classSlot={classSlot}
-                  classSlotIndex={classSlotIndex}
-                  dayIndex={dayIndex}
-                  onSlotClick={onSlotClick}
-                  onKeyDown={handleKeyDown}
-                />
-              ))}
+              {daysToShow.map((day, dayIndex) => {
+                // Buscar alocações para esta posição
+                const positionKey = `${dayIndex}-${classSlotIndex}`
+                const cellAllocations =
+                  allocationsByPosition.get(positionKey) || []
+
+                return (
+                  <ScheduleCell
+                    key={`${day}-${classSlotIndex}`}
+                    day={day}
+                    classSlot={classSlot}
+                    classSlotIndex={classSlotIndex}
+                    dayIndex={dayIndex}
+                    alocacoes={cellAllocations}
+                    allAlocacoes={alocacoes}
+                    onSlotClick={onSlotClick}
+                    onAlocacaoClick={onAlocacaoClick}
+                    onKeyDown={handleKeyDown}
+                  />
+                )
+              })}
             </React.Fragment>
           ))}
         </div>
@@ -204,3 +209,5 @@ export const ScheduleGrid = React.memo(
     )
   },
 )
+
+export default ScheduleGrid

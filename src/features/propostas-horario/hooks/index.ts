@@ -8,3 +8,11 @@ export {
   useAlocacoesPorProfessor,
 } from "./useAlocacoes"
 export type { UseAlocacoesOptions, UseAlocacoesReturn } from "./useAlocacoes"
+
+export {
+  useConflicts,
+  useCriticalConflicts,
+  useAutoResolvableConflicts,
+  useAllocationConflicts,
+} from "./useConflicts"
+export type { UseConflictsOptions, UseConflictsReturn } from "./useConflicts"

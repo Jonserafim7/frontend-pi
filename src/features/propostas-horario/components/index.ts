@@ -10,3 +10,9 @@ export {
   AlocacaoCardDetailed,
 } from "./AlocacaoCard"
 export type { AlocacaoCardProps } from "./AlocacaoCard"
+
+export { default as ConflictIndicator, ConflictList } from "./ConflictIndicator"
+export type {
+  ConflictIndicatorProps,
+  ConflictListProps,
+} from "./ConflictIndicator"
