@@ -33,6 +33,8 @@ interface ScheduleCellProps {
     classSlotIndex: number,
     dayIndex: number,
   ) => void
+  /** Se este slot é o que causou um erro de validação recente */
+  isErrorSlot?: boolean
   className?: string
 }
 
@@ -50,6 +52,7 @@ export const ScheduleCell = React.memo(
     onSlotClick,
     onAlocacaoClick,
     onKeyDown,
+    isErrorSlot,
     className,
   }: ScheduleCellProps) => {
     // Detectar conflitos para as alocações desta célula
@@ -112,6 +115,8 @@ export const ScheduleCell = React.memo(
           hasMultipleAllocations &&
             !hasConflicts &&
             "border-orange-200 bg-orange-50",
+          isErrorSlot &&
+            "border-red-500 bg-red-200 ring-2 ring-red-500 dark:bg-red-700/30",
           className,
         )}
         role="gridcell"

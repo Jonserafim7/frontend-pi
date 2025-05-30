@@ -16,3 +16,5 @@ export type {
   ConflictIndicatorProps,
   ConflictListProps,
 } from "./ConflictIndicator"
+
+export { TestSchedulePage } from "./TestSchedulePage"

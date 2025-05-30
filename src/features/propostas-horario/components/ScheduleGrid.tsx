@@ -24,6 +24,12 @@ interface ScheduleGridProps {
   }) => void
   /** Callback quando uma alocação é clicada */
   onAlocacaoClick?: (alocacao: AlocacaoHorarioResponseDto) => void
+  /** Slot que causou erro de validação, para destaque visual */
+  errorSlot?: {
+    day: string
+    startTime: string
+    endTime: string
+  } | null
   /** Classe CSS adicional */
   className?: string
 }
@@ -37,6 +43,7 @@ export const ScheduleGrid = React.memo(
     alocacoes = [],
     onSlotClick,
     onAlocacaoClick,
+    errorSlot,
     className,
   }: ScheduleGridProps) => {
     // Dias da semana
@@ -199,6 +206,12 @@ export const ScheduleGrid = React.memo(
                     onSlotClick={onSlotClick}
                     onAlocacaoClick={onAlocacaoClick}
                     onKeyDown={handleKeyDown}
+                    isErrorSlot={
+                      !!errorSlot &&
+                      errorSlot.day === day &&
+                      errorSlot.startTime === classSlot.inicio &&
+                      errorSlot.endTime === classSlot.fim
+                    }
                   />
                 )
               })}

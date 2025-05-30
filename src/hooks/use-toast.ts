@@ -1,4 +1,5 @@
 import { toast, type ToastT } from "sonner"
+import type React from "react"
 
 type ToastType = ReturnType<typeof toast>
 
@@ -7,7 +8,7 @@ type ToastType = ReturnType<typeof toast>
  */
 type ToastOptions = {
   title: string
-  description?: string
+  description?: string | React.ReactNode
   variant?: "default" | "destructive" | "success" | "warning" | "info"
   duration?: number
   action?: {
