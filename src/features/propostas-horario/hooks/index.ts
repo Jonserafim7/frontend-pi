@@ -1,2 +1,10 @@
 // Hooks para propostas de horário
-export { useTurmasParaAlocacao } from "./useTurmasParaAlocacao"
+// Adicionar hooks conforme necessário
+
+export {
+  useAlocacoes,
+  useAlocacoesPorPeriodo,
+  useAlocacoesPorTurma,
+  useAlocacoesPorProfessor,
+} from "./useAlocacoes"
+export type { UseAlocacoesOptions, UseAlocacoesReturn } from "./useAlocacoes"

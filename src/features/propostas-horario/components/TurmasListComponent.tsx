@@ -24,93 +24,82 @@ interface TurmasListComponentProps {
   turmas: TurmaParaAlocacao[]
   /** Estado de carregamento */
   isLoading?: boolean
-  /** Erro ao carregar turmas */
-  error?: Error | null
   /** Turma atualmente selecionada */
-  turmaSelecionada?: string | null
+  turmaSelecionada?: TurmaParaAlocacao | null
   /** Callback quando uma turma é selecionada */
   onTurmaSelect?: (turma: TurmaParaAlocacao) => void
-  /** Callback quando uma turma é desselecionada */
-  onTurmaDeselect?: (turmaId: string) => void
-  /** Verificar se uma turma está selecionada */
-  isSelecionada?: (turmaId: string) => boolean
-  /** Título do componente */
-  title?: string
-  /** Descrição do componente */
-  description?: string
-  /** Classe CSS adicional */
-  className?: string
+  /** Callback para atualizar filtros de busca */
+  onSearchChange?: (searchTerm: string) => void
+  /** Callback para filtrar por status */
+  onStatusFilter?: (status: TurmaAllocationStatus[]) => void
+  /** Filtros ativos */
+  filtrosAtivos?: {
+    searchTerm?: string
+    statusSelecionados?: TurmaAllocationStatus[]
+  }
 }
 
 /**
- * Componente reutilizável para exibir lista de turmas com funcionalidades de busca e seleção
+ * Componente para exibir lista de turmas disponíveis para alocação
  */
 export function TurmasListComponent({
   turmas,
   isLoading = false,
-  error = null,
   turmaSelecionada,
   onTurmaSelect,
-  onTurmaDeselect,
-  isSelecionada,
-  title = "Turmas Disponíveis",
-  description = "Clique em uma turma para selecioná-la para alocação",
-  className,
+  onSearchChange,
+  onStatusFilter,
+  filtrosAtivos = {},
 }: TurmasListComponentProps) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState<TurmaAllocationStatus | "all">(
-    "all",
-  )
+  const [filtroStatus, setFiltroStatus] = useState<
+    TurmaAllocationStatus | "todos"
+  >("todos")
 
-  // Filtrar turmas baseado na busca e filtros
+  // Aplicar filtros locais se não houver callback para servidor
   const turmasFiltradas = useMemo(() => {
-    let resultado = turmas
-
-    // Filtro por texto de busca
-    if (searchTerm.trim()) {
-      const termo = searchTerm.toLowerCase()
-      resultado = resultado.filter(
-        (turma) =>
-          turma.codigoDaTurma?.toLowerCase().includes(termo) ||
-          turma.disciplinaOfertada?.disciplina?.nome
-            ?.toLowerCase()
-            .includes(termo) ||
-          turma.professorAlocado?.nome?.toLowerCase().includes(termo),
-      )
+    if (onSearchChange) {
+      // Se há callback, os filtros são aplicados no servidor
+      return turmas
     }
 
-    // Filtro por status
-    if (statusFilter !== "all") {
+    // Aplicar filtros locais apenas se não há callback
+    let resultado = turmas
+
+    if (filtroStatus !== "todos") {
       resultado = resultado.filter(
-        (turma) => turma.statusAlocacao === statusFilter,
+        (turma) => turma.statusAlocacao === filtroStatus,
       )
     }
 
     return resultado
-  }, [turmas, searchTerm, statusFilter])
+  }, [turmas, filtroStatus, onSearchChange])
 
-  const handleTurmaClick = (turma: TurmaParaAlocacao) => {
-    const isSelected = isSelecionada?.(turma.id) || turmaSelecionada === turma.id
-
-    if (isSelected) {
-      onTurmaDeselect?.(turma.id)
-    } else {
-      onTurmaSelect?.(turma)
+  const handleSearchChange = (value: string) => {
+    if (onSearchChange) {
+      onSearchChange(value)
     }
   }
 
-  const getStatusBadgeColor = (status: TurmaAllocationStatus) => {
+  const handleStatusFilter = (status: TurmaAllocationStatus | "todos") => {
+    setFiltroStatus(status)
+    if (onStatusFilter) {
+      const statusArray = status === "todos" ? [] : [status]
+      onStatusFilter(statusArray)
+    }
+  }
+
+  const getStatusBadgeVariant = (status: TurmaAllocationStatus) => {
     switch (status) {
       case "totalmente-alocada":
-        return "bg-green-100 text-green-800"
+        return "default" // Verde
       case "parcialmente-alocada":
-        return "bg-yellow-100 text-yellow-800"
+        return "secondary" // Amarelo
       case "nao-alocada":
-        return "bg-gray-100 text-gray-800"
+        return "outline" // Cinza
       case "conflito":
-        return "bg-red-100 text-red-800"
+        return "destructive" // Vermelho
       default:
-        return "bg-gray-100 text-gray-800"
+        return "outline"
     }
   }
 
@@ -129,188 +118,168 @@ export function TurmasListComponent({
     }
   }
 
-  return (
-    <TooltipProvider>
-      <Card className={cn("", className)}>
+  if (isLoading) {
+    return (
+      <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-
-          {/* Controles de busca e filtro */}
-          <div className="space-y-3">
-            <div className="relative">
-              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-              <Input
-                placeholder="Buscar por código, disciplina ou professor..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={statusFilter === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setStatusFilter("all")}
-              >
-                Todas
-              </Button>
-              <Button
-                variant={statusFilter === "nao-alocada" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setStatusFilter("nao-alocada")}
-              >
-                <div className="mr-2 h-2 w-2 rounded-full bg-gray-400" />
-                Pendentes
-              </Button>
-              <Button
-                variant={
-                  statusFilter === "parcialmente-alocada" ? "default" : "outline"
-                }
-                size="sm"
-                onClick={() => setStatusFilter("parcialmente-alocada")}
-              >
-                <div className="mr-2 h-2 w-2 rounded-full bg-yellow-400" />
-                Parciais
-              </Button>
-              <Button
-                variant={
-                  statusFilter === "totalmente-alocada" ? "default" : "outline"
-                }
-                size="sm"
-                onClick={() => setStatusFilter("totalmente-alocada")}
-              >
-                <div className="mr-2 h-2 w-2 rounded-full bg-green-400" />
-                Completas
-              </Button>
-            </div>
-          </div>
+          <CardTitle>Turmas Disponíveis</CardTitle>
+          <CardDescription>Carregando turmas...</CardDescription>
         </CardHeader>
-
-        <CardContent className="max-h-96 space-y-2 overflow-y-auto">
-          {isLoading && (
-            <div className="py-8 text-center">
-              <div className="border-primary mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2"></div>
-              <span className="text-muted-foreground text-sm">
-                Carregando turmas...
-              </span>
-            </div>
-          )}
-
-          {error && (
-            <div className="py-8 text-center">
-              <span className="text-sm text-red-500">
-                Erro ao carregar turmas
-              </span>
-            </div>
-          )}
-
-          {!isLoading && !error && turmasFiltradas.length === 0 && (
-            <div className="py-8 text-center">
-              <span className="text-muted-foreground text-sm">
-                {searchTerm || statusFilter !== "all" ?
-                  "Nenhuma turma encontrada com os filtros aplicados"
-                : "Nenhuma turma disponível"}
-              </span>
-            </div>
-          )}
-
-          {turmasFiltradas.map((turma) => {
-            const isSelected =
-              isSelecionada?.(turma.id) || turmaSelecionada === turma.id
-
-            return (
+        <CardContent>
+          <div className="space-y-2">
+            {[...Array(3)].map((_, i) => (
               <div
-                key={turma.id}
-                className={cn(
-                  "cursor-pointer rounded-lg border p-3 transition-all duration-200 hover:shadow-sm",
-                  isSelected ?
-                    "border-primary bg-primary/10 hover:bg-primary/15 shadow-sm"
-                  : "hover:bg-muted/50 hover:border-muted-foreground/20",
-                )}
-                onClick={() => handleTurmaClick(turma)}
+                key={i}
+                className="animate-pulse"
               >
-                <div className="flex items-center justify-between">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm font-medium">
-                        {turma.codigoDaTurma}
-                      </div>
-                      {isSelected && (
-                        <CheckCircle className="text-primary h-4 w-4 flex-shrink-0" />
-                      )}
-                    </div>
-                    <div className="text-muted-foreground truncate text-xs">
-                      {turma.disciplinaOfertada?.disciplina?.nome ||
-                        "Disciplina não informada"}
-                    </div>
-                    <div className="text-muted-foreground truncate text-xs">
-                      {turma.professorAlocado?.nome || "Sem professor atribuído"}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-shrink-0 items-center gap-2">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                        >
-                          <Info className="h-3 w-3" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="left"
-                        className="max-w-xs"
-                      >
-                        <div className="space-y-1 text-xs">
-                          <div>
-                            <strong>Código:</strong> {turma.codigoDaTurma}
-                          </div>
-                          <div>
-                            <strong>Disciplina:</strong>{" "}
-                            {turma.disciplinaOfertada?.disciplina?.nome || "N/A"}
-                          </div>
-                          <div>
-                            <strong>Professor:</strong>{" "}
-                            {turma.professorAlocado?.nome || "Não atribuído"}
-                          </div>
-                          <div>
-                            <strong>Status:</strong>{" "}
-                            {getStatusLabel(turma.statusAlocacao)}
-                          </div>
-                          <div>
-                            <strong>Aulas:</strong> {turma.aulasAlocadas}/
-                            {turma.totalAulas}
-                          </div>
-                          {turma.conflitos && turma.conflitos.length > 0 && (
-                            <div>
-                              <strong>Conflitos:</strong>{" "}
-                              {turma.conflitos.join(", ")}
-                            </div>
-                          )}
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "text-xs",
-                        getStatusBadgeColor(turma.statusAlocacao),
-                      )}
-                    >
-                      {turma.aulasAlocadas}/{turma.totalAulas}
-                    </Badge>
-                  </div>
-                </div>
+                <div className="bg-muted h-16 rounded"></div>
               </div>
-            )
-          })}
+            ))}
+          </div>
         </CardContent>
       </Card>
-    </TooltipProvider>
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Turmas Disponíveis</CardTitle>
+        <CardDescription>
+          Clique em uma turma para selecioná-la para alocação
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Busca */}
+        <div className="relative">
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+          <Input
+            placeholder="Buscar por código, disciplina ou professor..."
+            className="pl-10"
+            defaultValue={filtrosAtivos.searchTerm}
+            onChange={(e) => handleSearchChange(e.target.value)}
+          />
+        </div>
+
+        {/* Filtros por Status */}
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={filtroStatus === "todos" ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleStatusFilter("todos")}
+          >
+            Todas
+          </Button>
+          <Button
+            variant={filtroStatus === "nao-alocada" ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleStatusFilter("nao-alocada")}
+            className="gap-1"
+          >
+            <div className="h-2 w-2 rounded-full bg-gray-400" />
+            Pendentes
+          </Button>
+          <Button
+            variant={
+              filtroStatus === "parcialmente-alocada" ? "default" : "outline"
+            }
+            size="sm"
+            onClick={() => handleStatusFilter("parcialmente-alocada")}
+            className="gap-1"
+          >
+            <div className="h-2 w-2 rounded-full bg-yellow-400" />
+            Parciais
+          </Button>
+          <Button
+            variant={
+              filtroStatus === "totalmente-alocada" ? "default" : "outline"
+            }
+            size="sm"
+            onClick={() => handleStatusFilter("totalmente-alocada")}
+            className="gap-1"
+          >
+            <div className="h-2 w-2 rounded-full bg-green-400" />
+            Completas
+          </Button>
+        </div>
+
+        {/* Lista de Turmas */}
+        <div className="max-h-96 space-y-2 overflow-y-auto">
+          {turmasFiltradas.length === 0 ?
+            <div className="text-muted-foreground py-8 text-center">
+              <Filter className="mx-auto mb-2 h-8 w-8" />
+              <p>Nenhuma turma encontrada</p>
+            </div>
+          : turmasFiltradas.map((turma) => (
+              <TooltipProvider key={turma.id}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div
+                      className={cn(
+                        "cursor-pointer rounded-lg border p-3 transition-all",
+                        "hover:bg-muted/50 hover:border-primary/50",
+                        turmaSelecionada?.id === turma.id &&
+                          "border-primary bg-primary/5 ring-primary/20 ring-1",
+                      )}
+                      onClick={() => onTurmaSelect?.(turma)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center gap-2">
+                            <span className="text-sm font-medium">
+                              {turma.codigoDaTurma}
+                            </span>
+                            <Badge
+                              variant={getStatusBadgeVariant(
+                                turma.statusAlocacao,
+                              )}
+                            >
+                              {getStatusLabel(turma.statusAlocacao)}
+                            </Badge>
+                          </div>
+                          <p className="text-muted-foreground truncate text-sm">
+                            {turma.disciplinaOfertada?.disciplina?.nome ||
+                              "Disciplina não informada"}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            Prof:{" "}
+                            {turma.professorAlocado?.nome || "Não atribuído"}
+                          </p>
+                        </div>
+                        {turmaSelecionada?.id === turma.id && (
+                          <CheckCircle className="text-primary h-5 w-5 flex-shrink-0" />
+                        )}
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="right"
+                    className="max-w-xs"
+                  >
+                    <div className="space-y-1">
+                      <p className="font-medium">{turma.codigoDaTurma}</p>
+                      <p className="text-sm">
+                        {turma.disciplinaOfertada?.disciplina?.nome}
+                      </p>
+                      <p className="text-sm">
+                        Carga Horária:{" "}
+                        {turma.disciplinaOfertada?.disciplina?.cargaHoraria}h
+                      </p>
+                      <p className="text-sm">
+                        Professor:{" "}
+                        {turma.professorAlocado?.nome || "Não atribuído"}
+                      </p>
+                      <p className="text-sm">
+                        Alocação: {turma.aulasAlocadas}/{turma.totalAulas} aulas
+                      </p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ))
+          }
+        </div>
+      </CardContent>
+    </Card>
   )
 }

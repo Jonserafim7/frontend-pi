@@ -38,6 +38,14 @@ export interface FiltrosTurmasAlocacao {
   periodoLetivoId: string
   /** ID do curso para filtrar turmas específicas */
   cursoId?: string
+  /** Termo de busca geral (código, disciplina, professor) */
+  searchTerm?: string
+  /** Código específico da turma */
+  codigoTurma?: string
+  /** ID do professor */
+  professorId?: string
+  /** ID da disciplina */
+  disciplinaId?: string
   /** Filtrar apenas turmas sem alocação de horário */
   somenteNaoAlocadas?: boolean
   /** Filtrar apenas turmas com professor atribuído */
