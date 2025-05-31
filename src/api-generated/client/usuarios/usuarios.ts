@@ -5,349 +5,625 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query"
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query"
 
 import type {
   CreateUsuarioDto,
   UpdateUsuarioDto,
   UsuarioResponseDto,
-  UsuariosControllerFindAllParams
-} from '../../model';
+  UsuariosControllerFindAllParams,
+} from "../../model"
 
-import { orvalCustomInstance } from '../../../lib/orval-axios-instance';
-import type { ErrorType , BodyType } from '../../../lib/orval-axios-instance';
+import { orvalCustomInstance } from "../../../lib/orval-axios-instance"
+import type { ErrorType, BodyType } from "../../../lib/orval-axios-instance"
 
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
  * @summary Cria um novo usuário
  */
 export const usuariosControllerCreate = (
-    createUsuarioDto: BodyType<CreateUsuarioDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  createUsuarioDto: BodyType<CreateUsuarioDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<UsuarioResponseDto>(
-      {url: `/usuarios`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createUsuarioDto, signal
+  return orvalCustomInstance<UsuarioResponseDto>(
+    {
+      url: `/usuarios`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createUsuarioDto,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getUsuariosControllerCreateMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usuariosControllerCreate>>,
+    TError,
+    { data: BodyType<CreateUsuarioDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof usuariosControllerCreate>>,
+  TError,
+  { data: BodyType<CreateUsuarioDto> },
+  TContext
+> => {
+  const mutationKey = ["usuariosControllerCreate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getUsuariosControllerCreateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usuariosControllerCreate>>, TError,{data: BodyType<CreateUsuarioDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof usuariosControllerCreate>>, TError,{data: BodyType<CreateUsuarioDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof usuariosControllerCreate>>,
+    { data: BodyType<CreateUsuarioDto> }
+  > = (props) => {
+    const { data } = props ?? {}
 
-const mutationKey = ['usuariosControllerCreate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return usuariosControllerCreate(data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type UsuariosControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usuariosControllerCreate>>
+>
+export type UsuariosControllerCreateMutationBody = BodyType<CreateUsuarioDto>
+export type UsuariosControllerCreateMutationError = ErrorType<unknown>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usuariosControllerCreate>>, {data: BodyType<CreateUsuarioDto>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  usuariosControllerCreate(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UsuariosControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof usuariosControllerCreate>>>
-    export type UsuariosControllerCreateMutationBody = BodyType<CreateUsuarioDto>
-    export type UsuariosControllerCreateMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Cria um novo usuário
  */
-export const useUsuariosControllerCreate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usuariosControllerCreate>>, TError,{data: BodyType<CreateUsuarioDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof usuariosControllerCreate>>,
-        TError,
-        {data: BodyType<CreateUsuarioDto>},
-        TContext
-      > => {
+export const useUsuariosControllerCreate = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof usuariosControllerCreate>>,
+      TError,
+      { data: BodyType<CreateUsuarioDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof usuariosControllerCreate>>,
+  TError,
+  { data: BodyType<CreateUsuarioDto> },
+  TContext
+> => {
+  const mutationOptions = getUsuariosControllerCreateMutationOptions(options)
 
-      const mutationOptions = getUsuariosControllerCreateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * @summary Lista usuários
  */
 export const usuariosControllerFindAll = (
-    params?: UsuariosControllerFindAllParams,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  params?: UsuariosControllerFindAllParams,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<UsuarioResponseDto[]>(
-      {url: `/usuarios`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-  
-
-export const getUsuariosControllerFindAllQueryKey = (params?: UsuariosControllerFindAllParams,) => {
-    return ['usuarios', ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getUsuariosControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof usuariosControllerFindAll>>, TError = ErrorType<unknown>>(params?: UsuariosControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof usuariosControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getUsuariosControllerFindAllQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof usuariosControllerFindAll>>> = ({ signal }) => usuariosControllerFindAll(params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usuariosControllerFindAll>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<UsuarioResponseDto[]>(
+    { url: `/usuarios`, method: "GET", params, signal },
+    options,
+  )
 }
 
-export type UsuariosControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof usuariosControllerFindAll>>>
+export const getUsuariosControllerFindAllQueryKey = (
+  params?: UsuariosControllerFindAllParams,
+) => {
+  return ["usuarios", ...(params ? [params] : [])] as const
+}
+
+export const getUsuariosControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsuariosControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getUsuariosControllerFindAllQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof usuariosControllerFindAll>>
+  > = ({ signal }) => usuariosControllerFindAll(params, requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsuariosControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usuariosControllerFindAll>>
+>
 export type UsuariosControllerFindAllQueryError = ErrorType<unknown>
 
-
+export function useUsuariosControllerFindAll<
+  TData = Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | UsuariosControllerFindAllParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof usuariosControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useUsuariosControllerFindAll<
+  TData = Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsuariosControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof usuariosControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsuariosControllerFindAll<
+  TData = Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsuariosControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Lista usuários
  */
 
-export function useUsuariosControllerFindAll<TData = Awaited<ReturnType<typeof usuariosControllerFindAll>>, TError = ErrorType<unknown>>(
- params?: UsuariosControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof usuariosControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useUsuariosControllerFindAll<
+  TData = Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: UsuariosControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getUsuariosControllerFindAllQueryOptions(params, options)
 
-  const queryOptions = getUsuariosControllerFindAllQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Obtém um usuário pelo ID
  */
 export const usuariosControllerFindOne = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<UsuarioResponseDto>(
-      {url: `/usuarios/${id}`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getUsuariosControllerFindOneQueryKey = (id: string,) => {
-    return ['usuarios',id] as const;
-    }
-
-    
-export const getUsuariosControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof usuariosControllerFindOne>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof usuariosControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getUsuariosControllerFindOneQueryKey(id);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof usuariosControllerFindOne>>> = ({ signal }) => usuariosControllerFindOne(id, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usuariosControllerFindOne>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<UsuarioResponseDto>(
+    { url: `/usuarios/${id}`, method: "GET", signal },
+    options,
+  )
 }
 
-export type UsuariosControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof usuariosControllerFindOne>>>
+export const getUsuariosControllerFindOneQueryKey = (id: string) => {
+  return ["usuarios", id] as const
+}
+
+export const getUsuariosControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getUsuariosControllerFindOneQueryKey(id)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof usuariosControllerFindOne>>
+  > = ({ signal }) => usuariosControllerFindOne(id, requestOptions, signal)
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsuariosControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usuariosControllerFindOne>>
+>
 export type UsuariosControllerFindOneQueryError = ErrorType<unknown>
 
-
+export function useUsuariosControllerFindOne<
+  TData = Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof usuariosControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useUsuariosControllerFindOne<
+  TData = Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof usuariosControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsuariosControllerFindOne<
+  TData = Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Obtém um usuário pelo ID
  */
 
-export function useUsuariosControllerFindOne<TData = Awaited<ReturnType<typeof usuariosControllerFindOne>>, TError = ErrorType<unknown>>(
- id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof usuariosControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useUsuariosControllerFindOne<
+  TData = Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+  TError = ErrorType<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usuariosControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getUsuariosControllerFindOneQueryOptions(id, options)
 
-  const queryOptions = getUsuariosControllerFindOneQueryOptions(id,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Atualiza um usuário
  */
 export const usuariosControllerUpdate = (
-    id: string,
-    updateUsuarioDto: BodyType<UpdateUsuarioDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<UsuarioResponseDto>(
-      {url: `/usuarios/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateUsuarioDto
+  id: string,
+  updateUsuarioDto: BodyType<UpdateUsuarioDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<UsuarioResponseDto>(
+    {
+      url: `/usuarios/${id}`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: updateUsuarioDto,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getUsuariosControllerUpdateMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usuariosControllerUpdate>>,
+    TError,
+    { id: string; data: BodyType<UpdateUsuarioDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof usuariosControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateUsuarioDto> },
+  TContext
+> => {
+  const mutationKey = ["usuariosControllerUpdate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getUsuariosControllerUpdateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usuariosControllerUpdate>>, TError,{id: string;data: BodyType<UpdateUsuarioDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof usuariosControllerUpdate>>, TError,{id: string;data: BodyType<UpdateUsuarioDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof usuariosControllerUpdate>>,
+    { id: string; data: BodyType<UpdateUsuarioDto> }
+  > = (props) => {
+    const { id, data } = props ?? {}
 
-const mutationKey = ['usuariosControllerUpdate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return usuariosControllerUpdate(id, data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type UsuariosControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usuariosControllerUpdate>>
+>
+export type UsuariosControllerUpdateMutationBody = BodyType<UpdateUsuarioDto>
+export type UsuariosControllerUpdateMutationError = ErrorType<unknown>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usuariosControllerUpdate>>, {id: string;data: BodyType<UpdateUsuarioDto>}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  usuariosControllerUpdate(id,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UsuariosControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof usuariosControllerUpdate>>>
-    export type UsuariosControllerUpdateMutationBody = BodyType<UpdateUsuarioDto>
-    export type UsuariosControllerUpdateMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Atualiza um usuário
  */
-export const useUsuariosControllerUpdate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usuariosControllerUpdate>>, TError,{id: string;data: BodyType<UpdateUsuarioDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof usuariosControllerUpdate>>,
-        TError,
-        {id: string;data: BodyType<UpdateUsuarioDto>},
-        TContext
-      > => {
+export const useUsuariosControllerUpdate = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof usuariosControllerUpdate>>,
+      TError,
+      { id: string; data: BodyType<UpdateUsuarioDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof usuariosControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateUsuarioDto> },
+  TContext
+> => {
+  const mutationOptions = getUsuariosControllerUpdateMutationOptions(options)
 
-      const mutationOptions = getUsuariosControllerUpdateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * @summary Remove um usuário
  */
 export const usuariosControllerRemove = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<UsuarioResponseDto>(
-      {url: `/usuarios/${id}`, method: 'DELETE'
-    },
-      options);
-    }
-  
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<UsuarioResponseDto>(
+    { url: `/usuarios/${id}`, method: "DELETE" },
+    options,
+  )
+}
 
+export const getUsuariosControllerRemoveMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof usuariosControllerRemove>>,
+    TError,
+    { id: string },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof usuariosControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["usuariosControllerRemove"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getUsuariosControllerRemoveMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usuariosControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof usuariosControllerRemove>>, TError,{id: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof usuariosControllerRemove>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {}
 
-const mutationKey = ['usuariosControllerRemove'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return usuariosControllerRemove(id, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type UsuariosControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof usuariosControllerRemove>>
+>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usuariosControllerRemove>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+export type UsuariosControllerRemoveMutationError = ErrorType<unknown>
 
-          return  usuariosControllerRemove(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UsuariosControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof usuariosControllerRemove>>>
-    
-    export type UsuariosControllerRemoveMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Remove um usuário
  */
-export const useUsuariosControllerRemove = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usuariosControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof usuariosControllerRemove>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
+export const useUsuariosControllerRemove = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof usuariosControllerRemove>>,
+      TError,
+      { id: string },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof usuariosControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationOptions = getUsuariosControllerRemoveMutationOptions(options)
 
-      const mutationOptions = getUsuariosControllerRemoveMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    
+  return useMutation(mutationOptions, queryClient)
+}

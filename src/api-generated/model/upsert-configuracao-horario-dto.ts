@@ -8,13 +8,13 @@
 
 export interface UpsertConfiguracaoHorarioDto {
   /** Duração da aula em minutos. */
-  duracaoAulaMinutos?: number;
+  duracaoAulaMinutos?: number
   /** Número de aulas por turno. */
-  numeroAulasPorTurno?: number;
+  numeroAulasPorTurno?: number
   /** Horário de início do turno da manhã (HH:mm). */
-  inicioTurnoManha?: string;
+  inicioTurnoManha?: string
   /** Horário de início do turno da tarde (HH:mm). */
-  inicioTurnoTarde?: string;
+  inicioTurnoTarde?: string
   /** Horário de início do turno da noite (HH:mm). */
-  inicioTurnoNoite?: string;
+  inicioTurnoNoite?: string
 }

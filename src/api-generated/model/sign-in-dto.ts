@@ -8,7 +8,7 @@
 
 export interface SignInDto {
   /** Endereço de e-mail do usuário para login */
-  email: string;
+  email: string
   /** Senha do usuário (mínimo de 8 caracteres) */
-  senha: string;
+  senha: string
 }

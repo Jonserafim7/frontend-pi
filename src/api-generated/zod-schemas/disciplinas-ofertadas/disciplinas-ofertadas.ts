@@ -11,7 +11,7 @@ import {
 
 
 /**
- * @summary Criar uma nova oferta de disciplina (Coordenador)
+ * @summary Criar uma nova oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerCreateBody = zod.object({
   "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
@@ -20,7 +20,7 @@ export const disciplinasOfertadasControllerCreateBody = zod.object({
 })
 
 /**
- * @summary Listar disciplinas ofertadas (Coordenador, Diretor)
+ * @summary Listar disciplinas ofertadas (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerFindAllQueryParams = zod.object({
   "periodoId": zod.string().optional().describe('ID do período letivo para filtrar (UUID)'),
@@ -56,7 +56,7 @@ export const disciplinasOfertadasControllerFindAllResponseItem = zod.object({
 export const disciplinasOfertadasControllerFindAllResponse = zod.array(disciplinasOfertadasControllerFindAllResponseItem)
 
 /**
- * @summary Obter detalhes de uma oferta de disciplina específica (Coordenador, Diretor)
+ * @summary Obter detalhes de uma oferta de disciplina específica (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerFindOneParams = zod.object({
   "id": zod.string().describe('ID da oferta da disciplina (UUID)')
@@ -90,7 +90,7 @@ export const disciplinasOfertadasControllerFindOneResponse = zod.object({
 })
 
 /**
- * @summary Atualizar dados de uma oferta de disciplina (Coordenador)
+ * @summary Atualizar dados de uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerUpdateParams = zod.object({
   "id": zod.string().describe('ID da oferta da disciplina (UUID)')
@@ -130,7 +130,7 @@ export const disciplinasOfertadasControllerUpdateResponse = zod.object({
 })
 
 /**
- * @summary Cancelar uma oferta de disciplina (Coordenador)
+ * @summary Cancelar uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerRemoveParams = zod.object({
   "id": zod.string().describe('ID da oferta da disciplina (UUID)')

@@ -6,13 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 
-export type DisponibilidadeProfessorControllerFindByPeriodoOrderBy = typeof DisponibilidadeProfessorControllerFindByPeriodoOrderBy[keyof typeof DisponibilidadeProfessorControllerFindByPeriodoOrderBy];
-
+export type DisponibilidadeProfessorControllerFindByPeriodoOrderBy =
+  (typeof DisponibilidadeProfessorControllerFindByPeriodoOrderBy)[keyof typeof DisponibilidadeProfessorControllerFindByPeriodoOrderBy]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DisponibilidadeProfessorControllerFindByPeriodoOrderBy = {
-  diaDaSemana: 'diaDaSemana',
-  horaInicio: 'horaInicio',
-  horaFim: 'horaFim',
-  dataCriacao: 'dataCriacao',
-} as const;
+  diaDaSemana: "diaDaSemana",
+  horaInicio: "horaInicio",
+  horaFim: "horaFim",
+  dataCriacao: "dataCriacao",
+} as const

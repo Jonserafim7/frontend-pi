@@ -2,7 +2,6 @@ import { Link } from "react-router"
 import {
   BookOpenCheck as BookOpenCheckIcon,
   CalendarCog,
-  CalendarIcon,
   GraduationCapIcon,
   HelpCircle,
   HomeIcon,
@@ -265,6 +264,18 @@ export function AppSidebar() {
                     <Link to="/coordenador/disponibilidades">
                       <Clock />
                       <span>Disponibilidades</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Propostas de Horário"
+                    isActive={isPathActive("/coordenador/propostas-horario")}
+                  >
+                    <Link to="/coordenador/propostas-horario">
+                      <CalendarDays />
+                      <span>Propostas de Horário</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

@@ -5,8 +5,8 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { DisponibilidadeProfessorControllerGetSlotsValidos200SlotsItem } from './disponibilidade-professor-controller-get-slots-validos200-slots-item';
+import type { DisponibilidadeProfessorControllerGetSlotsValidos200SlotsItem } from "./disponibilidade-professor-controller-get-slots-validos200-slots-item"
 
 export type DisponibilidadeProfessorControllerGetSlotsValidos200 = {
-  slots?: DisponibilidadeProfessorControllerGetSlotsValidos200SlotsItem[];
-};
+  slots?: DisponibilidadeProfessorControllerGetSlotsValidos200SlotsItem[]
+}

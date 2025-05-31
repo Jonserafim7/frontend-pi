@@ -7,16 +7,16 @@
  */
 
 export type TurmasControllerFindAllParams = {
-/**
- * ID da disciplina ofertada para filtrar
- */
-idDisciplinaOfertada?: string;
-/**
- * ID do professor para filtrar
- */
-idProfessor?: string;
-/**
- * ID do período letivo para filtrar
- */
-idPeriodoLetivo?: string;
-};
+  /**
+   * ID da disciplina ofertada para filtrar
+   */
+  idDisciplinaOfertada?: string
+  /**
+   * ID do professor para filtrar
+   */
+  idProfessor?: string
+  /**
+   * ID do período letivo para filtrar
+   */
+  idPeriodoLetivo?: string
+}

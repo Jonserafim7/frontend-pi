@@ -5,157 +5,274 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query"
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query"
 
 import type {
   ConfiguracaoHorarioDto,
-  UpsertConfiguracaoHorarioDto
-} from '../../model';
+  UpsertConfiguracaoHorarioDto,
+} from "../../model"
 
-import { orvalCustomInstance } from '../../../lib/orval-axios-instance';
-import type { ErrorType , BodyType } from '../../../lib/orval-axios-instance';
+import { orvalCustomInstance } from "../../../lib/orval-axios-instance"
+import type { ErrorType, BodyType } from "../../../lib/orval-axios-instance"
 
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
  * @summary Obtém a configuração de horário global
  */
 export const configuracoesHorarioControllerGet = (
-    
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<ConfiguracaoHorarioDto>(
-      {url: `/configuracoes-horario`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getConfiguracoesHorarioControllerGetQueryKey = () => {
-    return ['configuracoes-horario'] as const;
-    }
-
-    
-export const getConfiguracoesHorarioControllerGetQueryOptions = <TData = Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getConfiguracoesHorarioControllerGetQueryKey();
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>> = ({ signal }) => configuracoesHorarioControllerGet(requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<ConfiguracaoHorarioDto>(
+    { url: `/configuracoes-horario`, method: "GET", signal },
+    options,
+  )
 }
 
-export type ConfiguracoesHorarioControllerGetQueryResult = NonNullable<Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>>
+export const getConfiguracoesHorarioControllerGetQueryKey = () => {
+  return ["configuracoes-horario"] as const
+}
+
+export const getConfiguracoesHorarioControllerGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getConfiguracoesHorarioControllerGetQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>
+  > = ({ signal }) => configuracoesHorarioControllerGet(requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ConfiguracoesHorarioControllerGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>
+>
 export type ConfiguracoesHorarioControllerGetQueryError = ErrorType<unknown>
 
-
+export function useConfiguracoesHorarioControllerGet<
+  TData = Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+          TError,
+          Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useConfiguracoesHorarioControllerGet<
+  TData = Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+          TError,
+          Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useConfiguracoesHorarioControllerGet<
+  TData = Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Obtém a configuração de horário global
  */
 
-export function useConfiguracoesHorarioControllerGet<TData = Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>, TError = ErrorType<unknown>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
+export function useConfiguracoesHorarioControllerGet<
+  TData = Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof configuracoesHorarioControllerGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
   const queryOptions = getConfiguracoesHorarioControllerGetQueryOptions(options)
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey
 
-  return query;
+  return query
 }
-
-
 
 /**
  * @summary Cria ou atualiza a configuração de horário global
  */
 export const configuracoesHorarioControllerUpsert = (
-    upsertConfiguracaoHorarioDto: BodyType<UpsertConfiguracaoHorarioDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<ConfiguracaoHorarioDto>(
-      {url: `/configuracoes-horario`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: upsertConfiguracaoHorarioDto
+  upsertConfiguracaoHorarioDto: BodyType<UpsertConfiguracaoHorarioDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<ConfiguracaoHorarioDto>(
+    {
+      url: `/configuracoes-horario`,
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      data: upsertConfiguracaoHorarioDto,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getConfiguracoesHorarioControllerUpsertMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>,
+    TError,
+    { data: BodyType<UpsertConfiguracaoHorarioDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>,
+  TError,
+  { data: BodyType<UpsertConfiguracaoHorarioDto> },
+  TContext
+> => {
+  const mutationKey = ["configuracoesHorarioControllerUpsert"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getConfiguracoesHorarioControllerUpsertMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>, TError,{data: BodyType<UpsertConfiguracaoHorarioDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>, TError,{data: BodyType<UpsertConfiguracaoHorarioDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>,
+    { data: BodyType<UpsertConfiguracaoHorarioDto> }
+  > = (props) => {
+    const { data } = props ?? {}
 
-const mutationKey = ['configuracoesHorarioControllerUpsert'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return configuracoesHorarioControllerUpsert(data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type ConfiguracoesHorarioControllerUpsertMutationResult = NonNullable<
+  Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>
+>
+export type ConfiguracoesHorarioControllerUpsertMutationBody =
+  BodyType<UpsertConfiguracaoHorarioDto>
+export type ConfiguracoesHorarioControllerUpsertMutationError = ErrorType<unknown>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>, {data: BodyType<UpsertConfiguracaoHorarioDto>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  configuracoesHorarioControllerUpsert(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ConfiguracoesHorarioControllerUpsertMutationResult = NonNullable<Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>>
-    export type ConfiguracoesHorarioControllerUpsertMutationBody = BodyType<UpsertConfiguracaoHorarioDto>
-    export type ConfiguracoesHorarioControllerUpsertMutationError = ErrorType<unknown>
-
-    /**
+/**
  * @summary Cria ou atualiza a configuração de horário global
  */
-export const useConfiguracoesHorarioControllerUpsert = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>, TError,{data: BodyType<UpsertConfiguracaoHorarioDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>,
-        TError,
-        {data: BodyType<UpsertConfiguracaoHorarioDto>},
-        TContext
-      > => {
+export const useConfiguracoesHorarioControllerUpsert = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>,
+      TError,
+      { data: BodyType<UpsertConfiguracaoHorarioDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof configuracoesHorarioControllerUpsert>>,
+  TError,
+  { data: BodyType<UpsertConfiguracaoHorarioDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getConfiguracoesHorarioControllerUpsertMutationOptions(options)
 
-      const mutationOptions = getConfiguracoesHorarioControllerUpsertMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    
+  return useMutation(mutationOptions, queryClient)
+}

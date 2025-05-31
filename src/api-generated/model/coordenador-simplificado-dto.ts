@@ -8,9 +8,9 @@
 
 export interface CoordenadorSimplificadoDto {
   /** ID único do coordenador no formato UUID v4 */
-  id: string;
+  id: string
   /** Nome completo do coordenador */
-  nome: string;
+  nome: string
   /** Email do coordenador */
-  email: string;
+  email: string
 }

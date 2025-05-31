@@ -8,7 +8,7 @@
 
 export interface AulaHorarioDto {
   /** Horário de início da aula (HH:mm). */
-  inicio: string;
+  inicio: string
   /** Horário de término da aula (HH:mm). */
-  fim: string;
+  fim: string
 }

@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 
-export type PeriodosLetivosControllerFindAllStatus = typeof PeriodosLetivosControllerFindAllStatus[keyof typeof PeriodosLetivosControllerFindAllStatus];
-
+export type PeriodosLetivosControllerFindAllStatus =
+  (typeof PeriodosLetivosControllerFindAllStatus)[keyof typeof PeriodosLetivosControllerFindAllStatus]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PeriodosLetivosControllerFindAllStatus = {
-  ATIVO: 'ATIVO',
-  INATIVO: 'INATIVO',
-} as const;
+  ATIVO: "ATIVO",
+  INATIVO: "INATIVO",
+} as const

@@ -9,15 +9,15 @@
 /**
  * Dia da semana
  */
-export type DisponibilidadeResponseDtoDiaDaSemana = typeof DisponibilidadeResponseDtoDiaDaSemana[keyof typeof DisponibilidadeResponseDtoDiaDaSemana];
-
+export type DisponibilidadeResponseDtoDiaDaSemana =
+  (typeof DisponibilidadeResponseDtoDiaDaSemana)[keyof typeof DisponibilidadeResponseDtoDiaDaSemana]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DisponibilidadeResponseDtoDiaDaSemana = {
-  SEGUNDA: 'SEGUNDA',
-  TERCA: 'TERCA',
-  QUARTA: 'QUARTA',
-  QUINTA: 'QUINTA',
-  SEXTA: 'SEXTA',
-  SABADO: 'SABADO',
-} as const;
+  SEGUNDA: "SEGUNDA",
+  TERCA: "TERCA",
+  QUARTA: "QUARTA",
+  QUINTA: "QUINTA",
+  SEXTA: "SEXTA",
+  SABADO: "SABADO",
+} as const

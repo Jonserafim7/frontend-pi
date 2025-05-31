@@ -8,5 +8,5 @@
 
 export interface AtribuirProfessorDto {
   /** ID do professor a ser atribuído à turma */
-  idUsuarioProfessor: string;
+  idUsuarioProfessor: string
 }

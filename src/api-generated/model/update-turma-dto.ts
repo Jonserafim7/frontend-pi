@@ -8,7 +8,7 @@
 
 export interface UpdateTurmaDto {
   /** Novo código/identificador da turma (ex: T1, T2, A, B) */
-  codigoDaTurma?: string;
+  codigoDaTurma?: string
   /** ID do professor a ser atribuído à turma */
-  idUsuarioProfessor?: string;
+  idUsuarioProfessor?: string
 }

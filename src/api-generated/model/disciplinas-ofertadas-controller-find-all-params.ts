@@ -7,12 +7,12 @@
  */
 
 export type DisciplinasOfertadasControllerFindAllParams = {
-/**
- * ID do período letivo para filtrar (UUID)
- */
-periodoId?: string;
-/**
- * ID do curso para filtrar (UUID)
- */
-cursoId?: string;
-};
+  /**
+   * ID do período letivo para filtrar (UUID)
+   */
+  periodoId?: string
+  /**
+   * ID do curso para filtrar (UUID)
+   */
+  cursoId?: string
+}

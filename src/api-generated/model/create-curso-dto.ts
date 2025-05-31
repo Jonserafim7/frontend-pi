@@ -8,9 +8,9 @@
 
 export interface CreateCursoDto {
   /** Nome do curso */
-  nome: string;
+  nome: string
   /** Código do curso (único) */
-  codigo: string;
+  codigo: string
   /** ID do coordenador principal do curso */
-  idCoordenador: string;
+  idCoordenador: string
 }

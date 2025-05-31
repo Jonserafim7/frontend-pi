@@ -5,39 +5,39 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { PeriodosLetivosControllerFindAllStatus } from './periodos-letivos-controller-find-all-status';
+import type { PeriodosLetivosControllerFindAllStatus } from "./periodos-letivos-controller-find-all-status"
 
 export type PeriodosLetivosControllerFindAllParams = {
-/**
- * ID do período letivo
- */
-id?: string;
-/**
- * Filtrar por ano
- */
-ano?: number;
-/**
- * Filtrar por semestre (1 ou 2)
- */
-semestre?: number;
-/**
- * Filtrar por status
- */
-status?: PeriodosLetivosControllerFindAllStatus;
-/**
- * Data de início do período letivo (filtro a partir de)
- */
-dataInicioGte?: string;
-/**
- * Data de início do período letivo (filtro até)
- */
-dataInicioLte?: string;
-/**
- * Data de fim do período letivo (filtro a partir de)
- */
-dataFimGte?: string;
-/**
- * Data de fim do período letivo (filtro até)
- */
-dataFimLte?: string;
-};
+  /**
+   * ID do período letivo
+   */
+  id?: string
+  /**
+   * Filtrar por ano
+   */
+  ano?: number
+  /**
+   * Filtrar por semestre (1 ou 2)
+   */
+  semestre?: number
+  /**
+   * Filtrar por status
+   */
+  status?: PeriodosLetivosControllerFindAllStatus
+  /**
+   * Data de início do período letivo (filtro a partir de)
+   */
+  dataInicioGte?: string
+  /**
+   * Data de início do período letivo (filtro até)
+   */
+  dataInicioLte?: string
+  /**
+   * Data de fim do período letivo (filtro a partir de)
+   */
+  dataFimGte?: string
+  /**
+   * Data de fim do período letivo (filtro até)
+   */
+  dataFimLte?: string
+}

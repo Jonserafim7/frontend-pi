@@ -8,9 +8,9 @@
 
 export interface CreateMatrizCurricularDto {
   /** Nome da matriz curricular */
-  nome: string;
+  nome: string
   /** ID do curso ao qual a matriz curricular pertence */
-  idCurso: string;
+  idCurso: string
   /** Lista de IDs das disciplinas da matriz curricular */
-  disciplinasIds: string[];
+  disciplinasIds: string[]
 }

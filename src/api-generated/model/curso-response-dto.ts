@@ -5,25 +5,25 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { CoordenadorSimplificadoDto } from './coordenador-simplificado-dto';
+import type { CoordenadorSimplificadoDto } from "./coordenador-simplificado-dto"
 
 export interface CursoResponseDto {
   /** ID único do curso no formato UUID v4 */
-  id: string;
+  id: string
   /**
    * Nome completo do curso
    * @maxLength 100
    */
-  nome: string;
+  nome: string
   /**
    * Código único de identificação do curso
    * @maxLength 20
    */
-  codigo: string;
+  codigo: string
   /** Data de criação do registro no formato ISO 8601 */
-  dataCriacao: string;
+  dataCriacao: string
   /** Data da última atualização no formato ISO 8601 */
-  dataAtualizacao: string;
+  dataAtualizacao: string
   /** Coordenador principal do curso */
-  coordenadorPrincipal?: CoordenadorSimplificadoDto;
+  coordenadorPrincipal?: CoordenadorSimplificadoDto
 }

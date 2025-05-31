@@ -5,28 +5,28 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { DisponibilidadeResponseDtoDiaDaSemana } from './disponibilidade-response-dto-dia-da-semana';
-import type { DisponibilidadeResponseDtoStatus } from './disponibilidade-response-dto-status';
-import type { ProfessorSimplificadoDto } from './professor-simplificado-dto';
-import type { PeriodoLetivoSimplificadoDto } from './periodo-letivo-simplificado-dto';
+import type { DisponibilidadeResponseDtoDiaDaSemana } from "./disponibilidade-response-dto-dia-da-semana"
+import type { DisponibilidadeResponseDtoStatus } from "./disponibilidade-response-dto-status"
+import type { ProfessorSimplificadoDto } from "./professor-simplificado-dto"
+import type { PeriodoLetivoSimplificadoDto } from "./periodo-letivo-simplificado-dto"
 
 export interface DisponibilidadeResponseDto {
   /** ID único da disponibilidade */
-  id: string;
+  id: string
   /** Dia da semana */
-  diaDaSemana: DisponibilidadeResponseDtoDiaDaSemana;
+  diaDaSemana: DisponibilidadeResponseDtoDiaDaSemana
   /** Horário de início (formato HH:mm) */
-  horaInicio: string;
+  horaInicio: string
   /** Horário de fim (formato HH:mm) */
-  horaFim: string;
+  horaFim: string
   /** Status da disponibilidade */
-  status: DisponibilidadeResponseDtoStatus;
+  status: DisponibilidadeResponseDtoStatus
   /** Data de criação */
-  dataCriacao: string;
+  dataCriacao: string
   /** Data da última atualização */
-  dataAtualizacao: string;
+  dataAtualizacao: string
   /** Dados do professor */
-  usuarioProfessor: ProfessorSimplificadoDto;
+  usuarioProfessor: ProfessorSimplificadoDto
   /** Dados do período letivo */
-  periodoLetivo: PeriodoLetivoSimplificadoDto;
+  periodoLetivo: PeriodoLetivoSimplificadoDto
 }

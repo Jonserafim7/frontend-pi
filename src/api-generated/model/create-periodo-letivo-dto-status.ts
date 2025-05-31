@@ -9,11 +9,11 @@
 /**
  * Status inicial do período letivo
  */
-export type CreatePeriodoLetivoDtoStatus = typeof CreatePeriodoLetivoDtoStatus[keyof typeof CreatePeriodoLetivoDtoStatus];
-
+export type CreatePeriodoLetivoDtoStatus =
+  (typeof CreatePeriodoLetivoDtoStatus)[keyof typeof CreatePeriodoLetivoDtoStatus]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreatePeriodoLetivoDtoStatus = {
-  ATIVO: 'ATIVO',
-  INATIVO: 'INATIVO',
-} as const;
+  ATIVO: "ATIVO",
+  INATIVO: "INATIVO",
+} as const

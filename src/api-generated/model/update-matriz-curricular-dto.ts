@@ -8,13 +8,13 @@
 
 export interface UpdateMatrizCurricularDto {
   /** Nome da matriz curricular */
-  nome?: string;
+  nome?: string
   /** ID do curso ao qual a matriz curricular pertence */
-  idCurso?: string;
+  idCurso?: string
   /** Lista de IDs das disciplinas da matriz curricular */
-  disciplinasIds?: string[];
+  disciplinasIds?: string[]
   /** Lista de IDs das disciplinas a serem adicionadas à matriz curricular */
-  disciplinasParaAdicionar?: string[];
+  disciplinasParaAdicionar?: string[]
   /** Lista de IDs das disciplinas a serem removidas da matriz curricular */
-  disciplinasParaRemover?: string[];
+  disciplinasParaRemover?: string[]
 }

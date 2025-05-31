@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 
-export type DisponibilidadeProfessorControllerFindAllStatus = typeof DisponibilidadeProfessorControllerFindAllStatus[keyof typeof DisponibilidadeProfessorControllerFindAllStatus];
-
+export type DisponibilidadeProfessorControllerFindAllStatus =
+  (typeof DisponibilidadeProfessorControllerFindAllStatus)[keyof typeof DisponibilidadeProfessorControllerFindAllStatus]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DisponibilidadeProfessorControllerFindAllStatus = {
-  DISPONIVEL: 'DISPONIVEL',
-  INDISPONIVEL: 'INDISPONIVEL',
-} as const;
+  DISPONIVEL: "DISPONIVEL",
+  INDISPONIVEL: "INDISPONIVEL",
+} as const

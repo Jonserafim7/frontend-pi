@@ -5,349 +5,639 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query"
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query"
 
 import type {
   CreateDisciplinaOfertadaDto,
   DisciplinaOfertadaResponseDto,
   DisciplinasOfertadasControllerFindAllParams,
-  UpdateDisciplinaOfertadaDto
-} from '../../model';
+  UpdateDisciplinaOfertadaDto,
+} from "../../model"
 
-import { orvalCustomInstance } from '../../../lib/orval-axios-instance';
-import type { ErrorType , BodyType } from '../../../lib/orval-axios-instance';
+import { orvalCustomInstance } from "../../../lib/orval-axios-instance"
+import type { ErrorType, BodyType } from "../../../lib/orval-axios-instance"
 
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
- * @summary Criar uma nova oferta de disciplina (Coordenador)
+ * @summary Criar uma nova oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerCreate = (
-    createDisciplinaOfertadaDto: BodyType<CreateDisciplinaOfertadaDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  createDisciplinaOfertadaDto: BodyType<CreateDisciplinaOfertadaDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisciplinaOfertadaResponseDto>(
-      {url: `/disciplinas-ofertadas`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createDisciplinaOfertadaDto, signal
+  return orvalCustomInstance<DisciplinaOfertadaResponseDto>(
+    {
+      url: `/disciplinas-ofertadas`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createDisciplinaOfertadaDto,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getDisciplinasOfertadasControllerCreateMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>,
+    TError,
+    { data: BodyType<CreateDisciplinaOfertadaDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>,
+  TError,
+  { data: BodyType<CreateDisciplinaOfertadaDto> },
+  TContext
+> => {
+  const mutationKey = ["disciplinasOfertadasControllerCreate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getDisciplinasOfertadasControllerCreateMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>, TError,{data: BodyType<CreateDisciplinaOfertadaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>, TError,{data: BodyType<CreateDisciplinaOfertadaDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>,
+    { data: BodyType<CreateDisciplinaOfertadaDto> }
+  > = (props) => {
+    const { data } = props ?? {}
 
-const mutationKey = ['disciplinasOfertadasControllerCreate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return disciplinasOfertadasControllerCreate(data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type DisciplinasOfertadasControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>
+>
+export type DisciplinasOfertadasControllerCreateMutationBody =
+  BodyType<CreateDisciplinaOfertadaDto>
+export type DisciplinasOfertadasControllerCreateMutationError = ErrorType<void>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>, {data: BodyType<CreateDisciplinaOfertadaDto>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  disciplinasOfertadasControllerCreate(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DisciplinasOfertadasControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>>
-    export type DisciplinasOfertadasControllerCreateMutationBody = BodyType<CreateDisciplinaOfertadaDto>
-    export type DisciplinasOfertadasControllerCreateMutationError = ErrorType<void>
-
-    /**
- * @summary Criar uma nova oferta de disciplina (Coordenador)
+/**
+ * @summary Criar uma nova oferta de disciplina (Admin, Diretor, Coordenador)
  */
-export const useDisciplinasOfertadasControllerCreate = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>, TError,{data: BodyType<CreateDisciplinaOfertadaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>,
-        TError,
-        {data: BodyType<CreateDisciplinaOfertadaDto>},
-        TContext
-      > => {
+export const useDisciplinasOfertadasControllerCreate = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>,
+      TError,
+      { data: BodyType<CreateDisciplinaOfertadaDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerCreate>>,
+  TError,
+  { data: BodyType<CreateDisciplinaOfertadaDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getDisciplinasOfertadasControllerCreateMutationOptions(options)
 
-      const mutationOptions = getDisciplinasOfertadasControllerCreateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
- * @summary Listar disciplinas ofertadas (Coordenador, Diretor)
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * @summary Listar disciplinas ofertadas (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerFindAll = (
-    params?: DisciplinasOfertadasControllerFindAllParams,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  params?: DisciplinasOfertadasControllerFindAllParams,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisciplinaOfertadaResponseDto[]>(
-      {url: `/disciplinas-ofertadas`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-  
-
-export const getDisciplinasOfertadasControllerFindAllQueryKey = (params?: DisciplinasOfertadasControllerFindAllParams,) => {
-    return ['disciplinas-ofertadas', ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getDisciplinasOfertadasControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>, TError = ErrorType<void>>(params?: DisciplinasOfertadasControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getDisciplinasOfertadasControllerFindAllQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>> = ({ signal }) => disciplinasOfertadasControllerFindAll(params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<DisciplinaOfertadaResponseDto[]>(
+    { url: `/disciplinas-ofertadas`, method: "GET", params, signal },
+    options,
+  )
 }
 
-export type DisciplinasOfertadasControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>>
+export const getDisciplinasOfertadasControllerFindAllQueryKey = (
+  params?: DisciplinasOfertadasControllerFindAllParams,
+) => {
+  return ["disciplinas-ofertadas", ...(params ? [params] : [])] as const
+}
+
+export const getDisciplinasOfertadasControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params?: DisciplinasOfertadasControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getDisciplinasOfertadasControllerFindAllQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>
+  > = ({ signal }) =>
+    disciplinasOfertadasControllerFindAll(params, requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DisciplinasOfertadasControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>
+>
 export type DisciplinasOfertadasControllerFindAllQueryError = ErrorType<void>
 
-
+export function useDisciplinasOfertadasControllerFindAll<
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params: undefined | DisciplinasOfertadasControllerFindAllParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisciplinasOfertadasControllerFindAll<
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params?: DisciplinasOfertadasControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisciplinasOfertadasControllerFindAll<
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params?: DisciplinasOfertadasControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Listar disciplinas ofertadas (Coordenador, Diretor)
+ * @summary Listar disciplinas ofertadas (Admin, Diretor, Coordenador)
  */
 
-export function useDisciplinasOfertadasControllerFindAll<TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>, TError = ErrorType<void>>(
- params?: DisciplinasOfertadasControllerFindAllParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useDisciplinasOfertadasControllerFindAll<
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+  TError = ErrorType<void>,
+>(
+  params?: DisciplinasOfertadasControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindAll>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getDisciplinasOfertadasControllerFindAllQueryOptions(
+    params,
+    options,
+  )
 
-  const queryOptions = getDisciplinasOfertadasControllerFindAllQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
-
-
 /**
- * @summary Obter detalhes de uma oferta de disciplina específica (Coordenador, Diretor)
+ * @summary Obter detalhes de uma oferta de disciplina específica (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerFindOne = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,signal?: AbortSignal
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return orvalCustomInstance<DisciplinaOfertadaResponseDto>(
-      {url: `/disciplinas-ofertadas/${id}`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getDisciplinasOfertadasControllerFindOneQueryKey = (id: string,) => {
-    return ['disciplinas-ofertadas',id] as const;
-    }
-
-    
-export const getDisciplinasOfertadasControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>, TError = ErrorType<void>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getDisciplinasOfertadasControllerFindOneQueryKey(id);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>> = ({ signal }) => disciplinasOfertadasControllerFindOne(id, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>, TError, TData> & { queryKey: QueryKey }
+  return orvalCustomInstance<DisciplinaOfertadaResponseDto>(
+    { url: `/disciplinas-ofertadas/${id}`, method: "GET", signal },
+    options,
+  )
 }
 
-export type DisciplinasOfertadasControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>>
+export const getDisciplinasOfertadasControllerFindOneQueryKey = (id: string) => {
+  return ["disciplinas-ofertadas", id] as const
+}
+
+export const getDisciplinasOfertadasControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getDisciplinasOfertadasControllerFindOneQueryKey(id)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>
+  > = ({ signal }) =>
+    disciplinasOfertadasControllerFindOne(id, requestOptions, signal)
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DisciplinasOfertadasControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>
+>
 export type DisciplinasOfertadasControllerFindOneQueryError = ErrorType<void>
 
-
+export function useDisciplinasOfertadasControllerFindOne<
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisciplinasOfertadasControllerFindOne<
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisciplinasOfertadasControllerFindOne<
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Obter detalhes de uma oferta de disciplina específica (Coordenador, Diretor)
+ * @summary Obter detalhes de uma oferta de disciplina específica (Admin, Diretor, Coordenador)
  */
 
-export function useDisciplinasOfertadasControllerFindOne<TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>, TError = ErrorType<void>>(
- id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>, TError, TData>, request?: SecondParameter<typeof orvalCustomInstance>}
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useDisciplinasOfertadasControllerFindOne<
+  TData = Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof disciplinasOfertadasControllerFindOne>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getDisciplinasOfertadasControllerFindOneQueryOptions(
+    id,
+    options,
+  )
 
-  const queryOptions = getDisciplinasOfertadasControllerFindOneQueryOptions(id,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions ) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
-
-
 /**
- * @summary Atualizar dados de uma oferta de disciplina (Coordenador)
+ * @summary Atualizar dados de uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerUpdate = (
-    id: string,
-    updateDisciplinaOfertadaDto: BodyType<UpdateDisciplinaOfertadaDto>,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<DisciplinaOfertadaResponseDto>(
-      {url: `/disciplinas-ofertadas/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateDisciplinaOfertadaDto
+  id: string,
+  updateDisciplinaOfertadaDto: BodyType<UpdateDisciplinaOfertadaDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<DisciplinaOfertadaResponseDto>(
+    {
+      url: `/disciplinas-ofertadas/${id}`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: updateDisciplinaOfertadaDto,
     },
-      options);
-    }
-  
+    options,
+  )
+}
 
+export const getDisciplinasOfertadasControllerUpdateMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>,
+    TError,
+    { id: string; data: BodyType<UpdateDisciplinaOfertadaDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateDisciplinaOfertadaDto> },
+  TContext
+> => {
+  const mutationKey = ["disciplinasOfertadasControllerUpdate"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getDisciplinasOfertadasControllerUpdateMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisciplinaOfertadaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisciplinaOfertadaDto>}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>,
+    { id: string; data: BodyType<UpdateDisciplinaOfertadaDto> }
+  > = (props) => {
+    const { id, data } = props ?? {}
 
-const mutationKey = ['disciplinasOfertadasControllerUpdate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return disciplinasOfertadasControllerUpdate(id, data, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type DisciplinasOfertadasControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>
+>
+export type DisciplinasOfertadasControllerUpdateMutationBody =
+  BodyType<UpdateDisciplinaOfertadaDto>
+export type DisciplinasOfertadasControllerUpdateMutationError = ErrorType<void>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>, {id: string;data: BodyType<UpdateDisciplinaOfertadaDto>}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  disciplinasOfertadasControllerUpdate(id,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DisciplinasOfertadasControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>>
-    export type DisciplinasOfertadasControllerUpdateMutationBody = BodyType<UpdateDisciplinaOfertadaDto>
-    export type DisciplinasOfertadasControllerUpdateMutationError = ErrorType<void>
-
-    /**
- * @summary Atualizar dados de uma oferta de disciplina (Coordenador)
+/**
+ * @summary Atualizar dados de uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
-export const useDisciplinasOfertadasControllerUpdate = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>, TError,{id: string;data: BodyType<UpdateDisciplinaOfertadaDto>}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>,
-        TError,
-        {id: string;data: BodyType<UpdateDisciplinaOfertadaDto>},
-        TContext
-      > => {
+export const useDisciplinasOfertadasControllerUpdate = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>,
+      TError,
+      { id: string; data: BodyType<UpdateDisciplinaOfertadaDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerUpdate>>,
+  TError,
+  { id: string; data: BodyType<UpdateDisciplinaOfertadaDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getDisciplinasOfertadasControllerUpdateMutationOptions(options)
 
-      const mutationOptions = getDisciplinasOfertadasControllerUpdateMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    /**
- * @summary Cancelar uma oferta de disciplina (Coordenador)
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * @summary Cancelar uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerRemove = (
-    id: string,
- options?: SecondParameter<typeof orvalCustomInstance>,) => {
-      
-      
-      return orvalCustomInstance<void>(
-      {url: `/disciplinas-ofertadas/${id}`, method: 'DELETE'
-    },
-      options);
-    }
-  
+  id: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<void>(
+    { url: `/disciplinas-ofertadas/${id}`, method: "DELETE" },
+    options,
+  )
+}
 
+export const getDisciplinasOfertadasControllerRemoveMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>,
+    TError,
+    { id: string },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["disciplinasOfertadasControllerRemove"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-export const getDisciplinasOfertadasControllerRemoveMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>, TError,{id: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {}
 
-const mutationKey = ['disciplinasOfertadasControllerRemove'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return disciplinasOfertadasControllerRemove(id, requestOptions)
+  }
 
-      
+  return { mutationFn, ...mutationOptions }
+}
 
+export type DisciplinasOfertadasControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>
+>
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+export type DisciplinasOfertadasControllerRemoveMutationError = ErrorType<void>
 
-          return  disciplinasOfertadasControllerRemove(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DisciplinasOfertadasControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>>
-    
-    export type DisciplinasOfertadasControllerRemoveMutationError = ErrorType<void>
-
-    /**
- * @summary Cancelar uma oferta de disciplina (Coordenador)
+/**
+ * @summary Cancelar uma oferta de disciplina (Admin, Diretor, Coordenador)
  */
-export const useDisciplinasOfertadasControllerRemove = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalCustomInstance>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
+export const useDisciplinasOfertadasControllerRemove = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>,
+      TError,
+      { id: string },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationOptions =
+    getDisciplinasOfertadasControllerRemoveMutationOptions(options)
 
-      const mutationOptions = getDisciplinasOfertadasControllerRemoveMutationOptions(options);
-
-      return useMutation(mutationOptions );
-    }
-    
+  return useMutation(mutationOptions, queryClient)
+}

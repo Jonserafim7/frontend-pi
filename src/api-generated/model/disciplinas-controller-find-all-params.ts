@@ -7,12 +7,12 @@
  */
 
 export type DisciplinasControllerFindAllParams = {
-/**
- * Filtrar disciplinas por nome (pesquisa parcial)
- */
-nome?: string;
-/**
- * Filtrar disciplinas por código (pesquisa parcial)
- */
-codigo?: string;
-};
+  /**
+   * Filtrar disciplinas por nome (pesquisa parcial)
+   */
+  nome?: string
+  /**
+   * Filtrar disciplinas por código (pesquisa parcial)
+   */
+  codigo?: string
+}

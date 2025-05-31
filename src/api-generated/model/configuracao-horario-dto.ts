@@ -5,35 +5,35 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { AulaHorarioDto } from './aula-horario-dto';
+import type { AulaHorarioDto } from "./aula-horario-dto"
 
 export interface ConfiguracaoHorarioDto {
   /** ID da configuração */
-  id: string;
+  id: string
   /** Duração da aula em minutos. */
-  duracaoAulaMinutos: number;
+  duracaoAulaMinutos: number
   /** Número de aulas por turno. */
-  numeroAulasPorTurno: number;
+  numeroAulasPorTurno: number
   /** Horário de início do turno da manhã (HH:mm). */
-  inicioTurnoManha: string;
+  inicioTurnoManha: string
   /** Horário de término do turno da manhã calculado (HH:mm). */
-  fimTurnoManhaCalculado: string;
+  fimTurnoManhaCalculado: string
   /** Horário de início do turno da tarde (HH:mm). */
-  inicioTurnoTarde: string;
+  inicioTurnoTarde: string
   /** Horário de término do turno da tarde calculado (HH:mm). */
-  fimTurnoTardeCalculado: string;
+  fimTurnoTardeCalculado: string
   /** Horário de início do turno da noite (HH:mm). */
-  inicioTurnoNoite: string;
+  inicioTurnoNoite: string
   /** Horário de término do turno da noite calculado (HH:mm). */
-  fimTurnoNoiteCalculado: string;
+  fimTurnoNoiteCalculado: string
   /** Lista detalhada dos horários das aulas do turno da manhã. */
-  aulasTurnoManha: AulaHorarioDto[];
+  aulasTurnoManha: AulaHorarioDto[]
   /** Lista detalhada dos horários das aulas do turno da tarde. */
-  aulasTurnoTarde: AulaHorarioDto[];
+  aulasTurnoTarde: AulaHorarioDto[]
   /** Lista detalhada dos horários das aulas do turno da noite. */
-  aulasTurnoNoite: AulaHorarioDto[];
+  aulasTurnoNoite: AulaHorarioDto[]
   /** Data de criação da configuração */
-  dataCriacao: string;
+  dataCriacao: string
   /** Data da última atualização da configuração */
-  dataAtualizacao: string;
+  dataAtualizacao: string
 }

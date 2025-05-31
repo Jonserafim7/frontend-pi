@@ -9,11 +9,11 @@
 /**
  * Status da disponibilidade
  */
-export type DisponibilidadeResponseDtoStatus = typeof DisponibilidadeResponseDtoStatus[keyof typeof DisponibilidadeResponseDtoStatus];
-
+export type DisponibilidadeResponseDtoStatus =
+  (typeof DisponibilidadeResponseDtoStatus)[keyof typeof DisponibilidadeResponseDtoStatus]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DisponibilidadeResponseDtoStatus = {
-  DISPONIVEL: 'DISPONIVEL',
-  INDISPONIVEL: 'INDISPONIVEL',
-} as const;
+  DISPONIVEL: "DISPONIVEL",
+  INDISPONIVEL: "INDISPONIVEL",
+} as const

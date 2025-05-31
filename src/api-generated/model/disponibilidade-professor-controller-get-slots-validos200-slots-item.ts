@@ -7,6 +7,6 @@
  */
 
 export type DisponibilidadeProfessorControllerGetSlotsValidos200SlotsItem = {
-  inicio?: string;
-  fim?: string;
-};
+  inicio?: string
+  fim?: string
+}
