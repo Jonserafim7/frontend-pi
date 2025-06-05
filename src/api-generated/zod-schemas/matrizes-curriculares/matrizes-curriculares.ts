@@ -15,7 +15,6 @@ import {
  */
 export const matrizesCurricularesControllerCreateBody = zod.object({
   "nome": zod.string().describe('Nome da matriz curricular'),
-  "idCurso": zod.string().describe('ID do curso ao qual a matriz curricular pertence'),
   "disciplinasIds": zod.array(zod.string()).describe('Lista de IDs das disciplinas da matriz curricular')
 })
 
@@ -77,7 +76,6 @@ export const matrizesCurricularesControllerUpdateParams = zod.object({
 
 export const matrizesCurricularesControllerUpdateBody = zod.object({
   "nome": zod.string().optional().describe('Nome da matriz curricular'),
-  "idCurso": zod.string().optional().describe('ID do curso ao qual a matriz curricular pertence'),
   "disciplinasIds": zod.array(zod.string()).optional().describe('Lista de IDs das disciplinas da matriz curricular'),
   "disciplinasParaAdicionar": zod.array(zod.string()).optional().describe('Lista de IDs das disciplinas a serem adicionadas à matriz curricular'),
   "disciplinasParaRemover": zod.array(zod.string()).optional().describe('Lista de IDs das disciplinas a serem removidas da matriz curricular')
