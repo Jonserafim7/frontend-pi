@@ -3,7 +3,7 @@ import { HeaderIconContainer } from "@/components/icon-container"
 import { Calendar, Plus } from "lucide-react"
 import { DisciplinaOfertadaDataTable } from "../components/data-table/disciplina-ofertada-data-table"
 import { useDisciplinasOfertadasControllerFindAll } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
-import { CreateEditDisciplinaOfertadaFormDialog } from "../components/create-edit-disciplina-ofertada-form-dialog"
+import { CreateDisciplinaOfertadaComMatrizDialog } from "../components/create-disciplina-ofertada-com-matriz-dialog"
 import { SkeletonTable } from "@/components/skeleton-table"
 import { disciplinaOfertadaColumns } from "../components/data-table/disciplina-ofertada-columns"
 import { useState } from "react"
@@ -13,16 +13,11 @@ import { useState } from "react"
  */
 export function DisciplinasOfertadasListPage() {
   // Estados para os diálogos
-  const [isCreateEditDialogOpen, setIsCreateEditDialogOpen] = useState(false)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   // Busca as disciplinas ofertadas da API
   const { data: disciplinasOfertadas, isLoading } =
     useDisciplinasOfertadasControllerFindAll()
-
-  // Fecha o diálogo de criação/edição
-  const handleCloseCreateEditDialog = (open: boolean) => {
-    setIsCreateEditDialogOpen(open)
-  }
 
   return (
     <>
@@ -33,11 +28,12 @@ export function DisciplinasOfertadasListPage() {
             <div className="flex flex-col gap-1">
               <h1 className="text-2xl font-bold">Disciplinas Ofertadas</h1>
               <p className="text-muted-foreground">
-                Gerencie as ofertas de disciplinas por período letivo
+                Gerencie as ofertas de disciplinas por período letivo. Selecione
+                uma matriz curricular para ofertar disciplinas.
               </p>
             </div>
           </div>
-          <Button onClick={() => setIsCreateEditDialogOpen(true)}>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
             <Plus />
             Nova Oferta
           </Button>
@@ -55,10 +51,10 @@ export function DisciplinasOfertadasListPage() {
         }
       </div>
 
-      {/* Diálogo de criação/edição */}
-      <CreateEditDisciplinaOfertadaFormDialog
-        isOpen={isCreateEditDialogOpen}
-        onOpenChange={handleCloseCreateEditDialog}
+      {/* Diálogo de criação com matriz curricular */}
+      <CreateDisciplinaOfertadaComMatrizDialog
+        isOpen={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
       />
     </>
   )

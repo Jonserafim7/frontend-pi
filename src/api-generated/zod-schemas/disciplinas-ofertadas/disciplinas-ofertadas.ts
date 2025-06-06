@@ -56,6 +56,14 @@ export const disciplinasOfertadasControllerFindAllResponseItem = zod.object({
 export const disciplinasOfertadasControllerFindAllResponse = zod.array(disciplinasOfertadasControllerFindAllResponseItem)
 
 /**
+ * @summary Criar oferta de disciplina no período letivo ativo (Coordenador)
+ */
+export const disciplinasOfertadasControllerCreateComPeriodoAtivoBody = zod.object({
+  "idDisciplina": zod.string().describe('ID da disciplina a ser ofertada'),
+  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina')
+})
+
+/**
  * @summary Obter detalhes de uma oferta de disciplina específica (Admin, Diretor, Coordenador)
  */
 export const disciplinasOfertadasControllerFindOneParams = zod.object({

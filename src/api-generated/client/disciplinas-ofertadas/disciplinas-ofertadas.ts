@@ -23,6 +23,7 @@ import type {
 
 import type {
   CreateDisciplinaOfertadaDto,
+  CreateDisciplinaOfertadaSimplificadaDto,
   DisciplinaOfertadaResponseDto,
   DisciplinasOfertadasControllerFindAllParams,
   UpdateDisciplinaOfertadaDto,
@@ -295,6 +296,115 @@ export function useDisciplinasOfertadasControllerFindAll<
   return query
 }
 
+/**
+ * @summary Criar oferta de disciplina no período letivo ativo (Coordenador)
+ */
+export const disciplinasOfertadasControllerCreateComPeriodoAtivo = (
+  createDisciplinaOfertadaSimplificadaDto: BodyType<CreateDisciplinaOfertadaSimplificadaDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
+) => {
+  return orvalCustomInstance<DisciplinaOfertadaResponseDto>(
+    {
+      url: `/disciplinas-ofertadas/periodo-ativo`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createDisciplinaOfertadaSimplificadaDto,
+      signal,
+    },
+    options,
+  )
+}
+
+export const getDisciplinasOfertadasControllerCreateComPeriodoAtivoMutationOptions =
+  <TError = ErrorType<void>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof disciplinasOfertadasControllerCreateComPeriodoAtivo>
+      >,
+      TError,
+      { data: BodyType<CreateDisciplinaOfertadaSimplificadaDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<typeof disciplinasOfertadasControllerCreateComPeriodoAtivo>
+    >,
+    TError,
+    { data: BodyType<CreateDisciplinaOfertadaSimplificadaDto> },
+    TContext
+  > => {
+    const mutationKey = ["disciplinasOfertadasControllerCreateComPeriodoAtivo"]
+    const { mutation: mutationOptions, request: requestOptions } =
+      options ?
+        (
+          options.mutation &&
+          "mutationKey" in options.mutation &&
+          options.mutation.mutationKey
+        ) ?
+          options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined }
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<typeof disciplinasOfertadasControllerCreateComPeriodoAtivo>
+      >,
+      { data: BodyType<CreateDisciplinaOfertadaSimplificadaDto> }
+    > = (props) => {
+      const { data } = props ?? {}
+
+      return disciplinasOfertadasControllerCreateComPeriodoAtivo(
+        data,
+        requestOptions,
+      )
+    }
+
+    return { mutationFn, ...mutationOptions }
+  }
+
+export type DisciplinasOfertadasControllerCreateComPeriodoAtivoMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof disciplinasOfertadasControllerCreateComPeriodoAtivo>
+    >
+  >
+export type DisciplinasOfertadasControllerCreateComPeriodoAtivoMutationBody =
+  BodyType<CreateDisciplinaOfertadaSimplificadaDto>
+export type DisciplinasOfertadasControllerCreateComPeriodoAtivoMutationError =
+  ErrorType<void>
+
+/**
+ * @summary Criar oferta de disciplina no período letivo ativo (Coordenador)
+ */
+export const useDisciplinasOfertadasControllerCreateComPeriodoAtivo = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof disciplinasOfertadasControllerCreateComPeriodoAtivo>
+      >,
+      TError,
+      { data: BodyType<CreateDisciplinaOfertadaSimplificadaDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof disciplinasOfertadasControllerCreateComPeriodoAtivo>>,
+  TError,
+  { data: BodyType<CreateDisciplinaOfertadaSimplificadaDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getDisciplinasOfertadasControllerCreateComPeriodoAtivoMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}
 /**
  * @summary Obter detalhes de uma oferta de disciplina específica (Admin, Diretor, Coordenador)
  */
