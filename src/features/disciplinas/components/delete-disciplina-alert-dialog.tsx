@@ -11,13 +11,13 @@ import {
 import { useDisciplinasControllerRemove } from "@/api-generated/client/disciplinas/disciplinas"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
 import { TriangleAlert } from "lucide-react"
 import { getDisciplinasControllerFindAllQueryKey } from "@/api-generated/client/disciplinas/disciplinas"
 import { useQueryClient } from "@tanstack/react-query"
 import type { DisciplinaResponseDto } from "@/api-generated/model/disciplina-response-dto"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { toast } from "sonner"
 
 interface DeleteDisciplinaAlertDialogProps {
   disciplina: DisciplinaResponseDto
@@ -37,7 +37,6 @@ export function DeleteDisciplinaAlertDialog({
   const { mutateAsync: removeDisciplina } = useDisciplinasControllerRemove()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "REMOVER"
-  const { toast } = useToast()
 
   const handleDeleteDisciplina = () => {
     removeDisciplina(
@@ -46,10 +45,7 @@ export function DeleteDisciplinaAlertDialog({
         onSuccess: () => {
           setConfirmationText("")
           onOpenChange(false)
-          toast({
-            title: "Disciplina removida com sucesso",
-            description: "A disciplina foi removida com sucesso.",
-          })
+          toast.success("Disciplina removida com sucesso")
           queryClient.invalidateQueries({
             queryKey: getDisciplinasControllerFindAllQueryKey(),
           })
@@ -57,11 +53,7 @@ export function DeleteDisciplinaAlertDialog({
         onError: () => {
           setConfirmationText("")
           onOpenChange(false)
-          toast({
-            title: "Erro",
-            description: "Erro ao remover a disciplina.",
-            variant: "destructive",
-          })
+          toast.error("Erro ao remover a disciplina")
         },
       },
     )

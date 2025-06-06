@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, CheckCircle, X, Loader2, Sun, Sunset, Moon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useToast } from "@/hooks/use-toast"
 import { useQueryClient } from "@tanstack/react-query"
 
 import {
@@ -16,6 +15,7 @@ import { CreateDisponibilidadeDtoDiaDaSemana } from "@/api-generated/model/creat
 import { CreateDisponibilidadeDtoStatus } from "@/api-generated/model/create-disponibilidade-dto-status"
 import type { DisponibilidadeResponseDto } from "@/api-generated/model"
 import type { TurnoType, TurnoData } from "../../hooks/use-configuracoes-horario"
+import { toast } from "sonner"
 
 // Tipos
 interface SlotData {
@@ -171,7 +171,6 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
   readonly = false,
 }) => {
   const [loadingSlots, setLoadingSlots] = useState<Set<string>>(new Set())
-  const { toast } = useToast()
   const queryClient = useQueryClient()
 
   // Mutations
@@ -300,11 +299,9 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
           createDisponibilidade(payload, {
             onSuccess: async (response) => {
               console.log("✅ CREATE SUCCESS:", response)
-              toast({
-                variant: "default",
-                title: "Disponibilidade criada",
-                description: `Horário ${slot.horaInicio}-${slot.horaFim} marcado como disponível`,
-              })
+              toast.success(
+                `Horário ${slot.horaInicio}-${slot.horaFim} marcado como disponível`,
+              )
 
               // Invalidar queries imediatamente após sucesso
               await Promise.all([
@@ -329,11 +326,7 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
               console.error("❌ CREATE ERROR:", error)
               console.error("Error response:", error.response?.data)
               console.error("Error status:", error.response?.status)
-              toast({
-                title: "Erro ao criar disponibilidade",
-                description: error?.message || "Ocorreu um erro inesperado",
-                variant: "destructive",
-              })
+              toast.error(error?.message || "Ocorreu um erro inesperado")
               reject(error)
             },
           })
@@ -356,11 +349,9 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
           updateDisponibilidade(payload, {
             onSuccess: async (response) => {
               console.log("✅ UPDATE SUCCESS:", response)
-              toast({
-                variant: "default",
-                title: "Disponibilidade atualizada",
-                description: `Horário ${slot.horaInicio}-${slot.horaFim} marcado como indisponível`,
-              })
+              toast.success(
+                `Horário ${slot.horaInicio}-${slot.horaFim} marcado como indisponível`,
+              )
 
               // Invalidar queries imediatamente após sucesso
               await Promise.all([
@@ -384,11 +375,7 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
             onError: (error: any) => {
               console.error("❌ UPDATE ERROR:", error)
               console.error("Error response:", error.response?.data)
-              toast({
-                title: "Erro ao atualizar disponibilidade",
-                description: error?.message || "Ocorreu um erro inesperado",
-                variant: "destructive",
-              })
+              toast.error(error?.message || "Ocorreu um erro inesperado")
               reject(error)
             },
           })
@@ -398,15 +385,11 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
         console.log("📤 Payload que será enviado para DELETE:", payload)
 
         // Remover disponibilidade
-        await new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve) => {
           removeDisponibilidade(payload, {
             onSuccess: async (response) => {
               console.log("✅ DELETE SUCCESS:", response)
-              toast({
-                variant: "default",
-                title: "Disponibilidade removida",
-                description: `Horário ${slot.horaInicio}-${slot.horaFim} removido`,
-              })
+              toast.success(`Horário ${slot.horaInicio}-${slot.horaFim} removido`)
 
               // Invalidar queries imediatamente após sucesso
               await Promise.all([
@@ -430,12 +413,7 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
             onError: (error: any) => {
               console.error("❌ DELETE ERROR:", error)
               console.error("Error response:", error.response?.data)
-              toast({
-                title: "Erro ao remover disponibilidade",
-                description: error?.message || "Ocorreu um erro inesperado",
-                variant: "destructive",
-              })
-              reject(error)
+              toast.error(error?.message || "Ocorreu um erro inesperado")
             },
           })
         })

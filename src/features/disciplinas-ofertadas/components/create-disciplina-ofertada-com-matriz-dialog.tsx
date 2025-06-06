@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
   DialogContent,
@@ -46,6 +45,7 @@ import type { DisciplinaResponseDto } from "@/api-generated/model/disciplina-res
 import { useQueryClient } from "@tanstack/react-query"
 import { getDisciplinasOfertadasControllerFindAllQueryKey } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
 import { getTurmasControllerFindAllQueryKey } from "@/api-generated/client/turmas/turmas"
+import { toast } from "sonner"
 
 // Schema de validação
 const createDisciplinaOfertadaSchema = z.object({
@@ -74,7 +74,6 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
   onOpenChange,
 }: CreateDisciplinaOfertadaComMatrizDialogProps) {
   // Hooks
-  const { toast } = useToast()
   const queryClient = useQueryClient()
 
   // Estados
@@ -153,11 +152,7 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
       },
       {
         onSuccess: () => {
-          toast({
-            title: "Disciplina ofertada criada",
-            description:
-              "A disciplina foi ofertada com sucesso para o período letivo ativo.",
-          })
+          toast.success("Disciplina ofertada criada")
 
           // Invalida as queries para atualizar os dados
           Promise.all([
@@ -172,12 +167,9 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
           onOpenChange(false)
         },
         onError: (error: any) => {
-          toast({
-            title: "Erro ao criar disciplina ofertada",
-            description:
-              error.response?.data?.message || "Ocorreu um erro inesperado.",
-            variant: "destructive",
-          })
+          toast.error(
+            error.response?.data?.message || "Ocorreu um erro inesperado.",
+          )
         },
       },
     )

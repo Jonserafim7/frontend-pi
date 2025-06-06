@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
   DialogContent,
@@ -45,6 +44,7 @@ import { Badge } from "@/components/ui/badge"
 import { matrizesCurricularesControllerCreateBody } from "@/api-generated/zod-schemas/matrizes-curriculares/matrizes-curriculares"
 import { useDisciplinasControllerFindAll } from "@/api-generated/client/disciplinas/disciplinas"
 import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 /**
  * Schema de validação para o formulário de matriz curricular
@@ -81,7 +81,6 @@ export function CreateEditMatrizCurricularFormDialog({
   const [selectedDisciplinas, setSelectedDisciplinas] = useState<string[]>([])
   const [commandOpen, setCommandOpen] = useState(false)
 
-  const { toast } = useToast()
   const { data: disciplinasData } = useDisciplinasControllerFindAll()
   const { data: matrizCurricularData } =
     useMatrizesCurricularesControllerFindAll()
@@ -136,10 +135,7 @@ export function CreateEditMatrizCurricularFormDialog({
         {
           onSuccess: () => {
             console.log("Matriz curricular atualizada com sucesso")
-            toast({
-              title: "Matriz curricular atualizada com sucesso",
-              description: `A matriz curricular "${data.nome}" foi atualizada.`,
-            })
+            toast.success(`A matriz curricular "${data.nome}" foi atualizada.`)
             queryClient.invalidateQueries({
               queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
             })
@@ -147,12 +143,7 @@ export function CreateEditMatrizCurricularFormDialog({
             form.reset()
           },
           onError: (error) => {
-            toast({
-              title: "Erro ao atualizar matriz curricular",
-              description:
-                error?.message || "Erro ao atualizar matriz curricular",
-              variant: "destructive",
-            })
+            toast.error(error?.message || "Erro ao atualizar matriz curricular")
           },
         },
       )
@@ -166,10 +157,9 @@ export function CreateEditMatrizCurricularFormDialog({
         },
         {
           onSuccess: () => {
-            toast({
-              title: "Matriz curricular criada com sucesso",
-              description: `A matriz curricular "${data.nome}" foi criada para o seu curso.`,
-            })
+            toast.success(
+              `A matriz curricular "${data.nome}" foi criada para o seu curso.`,
+            )
             queryClient.invalidateQueries({
               queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
             })
@@ -177,11 +167,7 @@ export function CreateEditMatrizCurricularFormDialog({
             form.reset()
           },
           onError: (error) => {
-            toast({
-              title: "Erro ao criar matriz curricular",
-              description: error?.message || "Erro ao criar matriz curricular",
-              variant: "destructive",
-            })
+            toast.error(error?.message || "Erro ao criar matriz curricular")
           },
         },
       )

@@ -9,7 +9,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Loader2, TriangleAlert } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import { usePeriodosLetivosControllerRemove } from "@/api-generated/client/períodos-letivos/períodos-letivos"
 import type { PeriodoLetivoResponseDto } from "@/api-generated/model/periodo-letivo-response-dto"
@@ -18,6 +17,7 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { toast } from "sonner"
 
 interface DeletePeriodoLetivoAlertDialogProps {
   isOpen: boolean
@@ -33,7 +33,6 @@ export function DeletePeriodoLetivoAlertDialog({
   onOpenChange,
   periodoLetivo,
 }: DeletePeriodoLetivoAlertDialogProps) {
-  const { toast } = useToast()
   const queryClient = useQueryClient()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "EXCLUIR"
@@ -46,10 +45,7 @@ export function DeletePeriodoLetivoAlertDialog({
       { id: periodoLetivo.id },
       {
         onSuccess: () => {
-          toast({
-            title: "Período Letivo excluído",
-            description: "O período letivo foi excluído com sucesso",
-          })
+          toast.success("Período Letivo excluído")
           queryClient.invalidateQueries({
             queryKey: getPeriodosLetivosControllerFindAllQueryKey(),
           })
@@ -59,11 +55,7 @@ export function DeletePeriodoLetivoAlertDialog({
         onError: (error) => {
           const errorMessage =
             error?.message || "Ocorreu um erro ao excluir o período letivo"
-          toast({
-            title: "Erro ao excluir período letivo",
-            description: errorMessage,
-            variant: "destructive",
-          })
+          toast.error(errorMessage)
         },
       },
     )

@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useToast } from "@/hooks/use-toast"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +18,7 @@ import {
   getTurmasControllerFindAllQueryKey,
 } from "@/api-generated/client/turmas/turmas"
 import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 /**
  * Propriedades do alert dialog de deleção de turma
@@ -39,7 +39,6 @@ export function DeleteTurmaAlertDialog({
   turmaId,
   turmaCode,
 }: DeleteTurmaAlertDialogProps) {
-  const { toast } = useToast()
   const queryClient = useQueryClient()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "EXCLUIR"
@@ -52,10 +51,7 @@ export function DeleteTurmaAlertDialog({
       { id: turmaId },
       {
         onSuccess: () => {
-          toast({
-            title: "Turma excluída",
-            description: `A turma "${turmaCode}" foi excluída com sucesso.`,
-          })
+          toast.success(`A turma "${turmaCode}" foi excluída com sucesso.`)
           queryClient.invalidateQueries({
             queryKey: getTurmasControllerFindAllQueryKey(),
           })
@@ -66,11 +62,7 @@ export function DeleteTurmaAlertDialog({
           const errorMessage =
             error?.message ||
             "A turma pode estar em uso por outras entidades do sistema."
-          toast({
-            title: "Erro ao excluir turma",
-            description: errorMessage,
-            variant: "destructive",
-          })
+          toast.error(errorMessage)
         },
       },
     )

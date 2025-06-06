@@ -26,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
 import {
   useDisciplinasOfertadasControllerCreate,
   useDisciplinasOfertadasControllerUpdate,
@@ -44,6 +43,7 @@ import { HeaderIconContainer } from "@/components/icon-container"
 import { Loader2, Calendar, PenLine } from "lucide-react"
 import type { AxiosError } from "axios"
 import { getTurmasControllerFindAllQueryKey } from "@/api-generated/client/turmas/turmas"
+import { toast } from "sonner"
 
 // Tipos inferidos dos schemas
 type CreateDisciplinaOfertadaFormValues = z.infer<
@@ -77,7 +77,6 @@ export function CreateEditDisciplinaOfertadaFormDialog({
   disciplinaOfertada,
 }: CreateEditDisciplinaOfertadaFormDialogProps) {
   // Hooks
-  const { toast } = useToast()
   const { mutate: mutateCreate, isPending: isLoadingCreate } =
     useDisciplinasOfertadasControllerCreate()
   const { mutate: mutateUpdate, isPending: isLoadingUpdate } =
@@ -147,10 +146,7 @@ export function CreateEditDisciplinaOfertadaFormDialog({
         },
         {
           onSuccess: () => {
-            toast({
-              title: "Disciplina ofertada atualizada",
-              description: "A disciplina ofertada foi atualizada com sucesso.",
-            })
+            toast.success("Disciplina ofertada atualizada")
             Promise.all([
               queryClient.invalidateQueries({
                 queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
@@ -162,13 +158,10 @@ export function CreateEditDisciplinaOfertadaFormDialog({
             onOpenChange(false)
           },
           onError: (error: AxiosError) => {
-            toast({
-              title: "Erro ao atualizar disciplina ofertada",
-              description:
-                error.request.message ||
+            toast.error(
+              error.request.message ||
                 "Ocorreu um erro ao atualizar a disciplina ofertada.",
-              variant: "destructive",
-            })
+            )
           },
         },
       )
@@ -180,10 +173,7 @@ export function CreateEditDisciplinaOfertadaFormDialog({
         { data: createData },
         {
           onSuccess: () => {
-            toast({
-              title: "Disciplina ofertada criada",
-              description: "A disciplina ofertada foi criada com sucesso.",
-            })
+            toast.success("Disciplina ofertada criada")
             Promise.all([
               queryClient.invalidateQueries({
                 queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
@@ -195,13 +185,10 @@ export function CreateEditDisciplinaOfertadaFormDialog({
             onOpenChange(false)
           },
           onError: (error: AxiosError) => {
-            toast({
-              title: "Erro ao criar disciplina ofertada",
-              description:
-                error.request.message ||
+            toast.error(
+              error.request.message ||
                 "Ocorreu um erro ao criar a disciplina ofertada.",
-              variant: "destructive",
-            })
+            )
           },
         },
       )

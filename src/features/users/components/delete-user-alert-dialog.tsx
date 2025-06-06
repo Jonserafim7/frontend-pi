@@ -11,13 +11,13 @@ import {
 import { useUsuariosControllerRemove } from "@/api-generated/client/usuarios/usuarios"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
 import { TriangleAlert } from "lucide-react"
 import { getUsuariosControllerFindAllQueryKey } from "@/api-generated/client/usuarios/usuarios"
 import { useQueryClient } from "@tanstack/react-query"
 import type { UsuarioResponseDto } from "@/api-generated/model"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { toast } from "sonner"
 
 interface DeleteUserAlertDialogProps {
   user: UsuarioResponseDto
@@ -34,7 +34,6 @@ export function DeleteUserAlertDialog({
   const { mutateAsync: removeUser } = useUsuariosControllerRemove()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "REMOVER"
-  const { toast } = useToast()
 
   const handleDeleteUser = () => {
     removeUser(
@@ -43,10 +42,7 @@ export function DeleteUserAlertDialog({
         onSuccess: () => {
           setConfirmationText("")
           onOpenChange(false)
-          toast({
-            title: "Usuário removido com sucesso",
-            description: "O usuário foi removido com sucesso.",
-          })
+          toast.success("Usuário removido com sucesso")
           queryClient.invalidateQueries({
             queryKey: getUsuariosControllerFindAllQueryKey(),
           })
@@ -54,11 +50,7 @@ export function DeleteUserAlertDialog({
         onError: () => {
           setConfirmationText("")
           onOpenChange(false)
-          toast({
-            title: "Erro",
-            description: "Erro ao remover o usuário.",
-            variant: "destructive",
-          })
+          toast.error("Erro ao remover o usuário.")
         },
       },
     )

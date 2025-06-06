@@ -38,7 +38,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
 import {
   getPeriodosLetivosControllerFindAllQueryKey,
   usePeriodosLetivosControllerCreate,
@@ -46,6 +45,7 @@ import {
 } from "@/api-generated/client/períodos-letivos/períodos-letivos"
 import { useQueryClient } from "@tanstack/react-query"
 import type { AxiosError } from "axios"
+import { toast } from "sonner"
 
 // Definindo schema para o formulário interno
 const formSchema = z
@@ -98,7 +98,6 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
   const { mutate: mutateUpdate, isPending: isUpdating } =
     usePeriodosLetivosControllerUpdate()
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   const isPending = isCreating || isUpdating
 
@@ -153,9 +152,7 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
         { data: dataToSubmit },
         {
           onSuccess: () => {
-            toast({
-              title: "Período Letivo criado com sucesso!",
-            })
+            toast.success("Período Letivo criado com sucesso!")
             queryClient.invalidateQueries({
               queryKey: getPeriodosLetivosControllerFindAllQueryKey(),
             })
@@ -170,11 +167,7 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
               error.message ||
               "Erro ao criar período letivo"
             console.error("Erro ao criar período letivo:", error)
-            toast({
-              title: "Erro ao criar período letivo",
-              description: errorMessage,
-              variant: "destructive",
-            })
+            toast.error(errorMessage)
           },
         },
       )
@@ -187,9 +180,7 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
         { id: periodoLetivo.id, data: dataToSubmit },
         {
           onSuccess: () => {
-            toast({
-              title: "Período Letivo atualizado com sucesso!",
-            })
+            toast.success("Período Letivo atualizado com sucesso!")
             queryClient.invalidateQueries({
               queryKey: getPeriodosLetivosControllerFindAllQueryKey(),
             })
@@ -204,11 +195,7 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
               error.message ||
               "Erro ao atualizar período letivo"
             console.error("Erro ao atualizar período letivo (onError):", error)
-            toast({
-              title: "Erro ao atualizar período letivo",
-              description: errorMessage,
-              variant: "destructive",
-            })
+            toast.error(errorMessage)
           },
         },
       )
