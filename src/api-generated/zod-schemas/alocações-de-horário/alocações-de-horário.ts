@@ -11,7 +11,7 @@ import {
 
 
 /**
- * Cria uma nova alocação de horário após validar disponibilidade e conflitos
+ * Cria uma nova alocação de horário após validar disponibilidade e conflitos. Para coordenadores, tenta associar automaticamente à proposta draft ativa.
  * @summary Criar nova alocação de horário
  */
 export const alocacoesHorariosControllerCreateBody = zod.object({

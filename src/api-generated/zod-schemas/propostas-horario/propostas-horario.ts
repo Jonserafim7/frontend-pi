@@ -484,6 +484,21 @@ export const propostasHorarioControllerAprovarResponse = zod.object({
 })
 
 /**
+ * Calcula o percentual de completude de uma proposta baseado nas alocações
+ * @summary Calcular completude da proposta
+ */
+export const propostasHorarioControllerCalcularCompletudeParams = zod.object({
+  "id": zod.string().describe('ID da proposta')
+})
+
+export const propostasHorarioControllerCalcularCompletudeResponse = zod.object({
+  "totalAulasNecessarias": zod.number().optional().describe('Total de aulas necessárias'),
+  "aulasAlocadas": zod.number().optional().describe('Número de aulas já alocadas'),
+  "percentualCompleto": zod.number().optional().describe('Percentual de completude'),
+  "disciplinasSemAlocacao": zod.array(zod.string()).optional().describe('Disciplinas que ainda não têm alocações')
+})
+
+/**
  * Rejeita uma proposta em estado PENDENTE_APROVACAO (muda status para REJEITADA)
  * @summary Rejeitar proposta
  */
