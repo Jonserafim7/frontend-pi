@@ -41,6 +41,27 @@ export const cursosControllerFindAllResponseItem = zod.object({
 export const cursosControllerFindAllResponse = zod.array(cursosControllerFindAllResponseItem)
 
 /**
+ * @summary Listar cursos do coordenador autenticado
+ */
+export const cursosControllerFindCursosDoCoordenadorResponseNomeMax = 100;
+export const cursosControllerFindCursosDoCoordenadorResponseCodigoMax = 20;
+
+
+export const cursosControllerFindCursosDoCoordenadorResponseItem = zod.object({
+  "id": zod.string().describe('ID único do curso no formato UUID v4'),
+  "nome": zod.string().max(cursosControllerFindCursosDoCoordenadorResponseNomeMax).describe('Nome completo do curso'),
+  "codigo": zod.string().max(cursosControllerFindCursosDoCoordenadorResponseCodigoMax).describe('Código único de identificação do curso'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro no formato ISO 8601'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização no formato ISO 8601'),
+  "coordenadorPrincipal": zod.object({
+  "id": zod.string().describe('ID único do coordenador no formato UUID v4'),
+  "nome": zod.string().describe('Nome completo do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
+}).optional().describe('Coordenador principal do curso')
+})
+export const cursosControllerFindCursosDoCoordenadorResponse = zod.array(cursosControllerFindCursosDoCoordenadorResponseItem)
+
+/**
  * @summary Buscar um curso pelo ID
  */
 export const cursosControllerFindOneParams = zod.object({

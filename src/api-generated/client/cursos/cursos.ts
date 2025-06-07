@@ -277,6 +277,159 @@ export function useCursosControllerFindAll<
 }
 
 /**
+ * @summary Listar cursos do coordenador autenticado
+ */
+export const cursosControllerFindCursosDoCoordenador = (
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
+) => {
+  return orvalCustomInstance<CursoResponseDto[]>(
+    { url: `/cursos/coordenador/meus-cursos`, method: "GET", signal },
+    options,
+  )
+}
+
+export const getCursosControllerFindCursosDoCoordenadorQueryKey = () => {
+  return ["cursos", "coordenador", "meus-cursos"] as const
+}
+
+export const getCursosControllerFindCursosDoCoordenadorQueryOptions = <
+  TData = Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getCursosControllerFindCursosDoCoordenadorQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>
+  > = ({ signal }) =>
+    cursosControllerFindCursosDoCoordenador(requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CursosControllerFindCursosDoCoordenadorQueryResult = NonNullable<
+  Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>
+>
+export type CursosControllerFindCursosDoCoordenadorQueryError = ErrorType<void>
+
+export function useCursosControllerFindCursosDoCoordenador<
+  TData = Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+  TError = ErrorType<void>,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+          TError,
+          Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useCursosControllerFindCursosDoCoordenador<
+  TData = Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+          TError,
+          Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCursosControllerFindCursosDoCoordenador<
+  TData = Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Listar cursos do coordenador autenticado
+ */
+
+export function useCursosControllerFindCursosDoCoordenador<
+  TData = Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof cursosControllerFindCursosDoCoordenador>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getCursosControllerFindCursosDoCoordenadorQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Buscar um curso pelo ID
  */
 export const cursosControllerFindOne = (

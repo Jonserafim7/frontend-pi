@@ -19,6 +19,7 @@ import { PropostasList } from "../components/propostas-list"
 import { usePropostaDraftAtiva } from "../hooks/use-proposta-draft-ativa"
 import { useMinhasPropostas } from "../hooks/use-minhas-propostas"
 import { useProposalOperations } from "../hooks/use-proposal-operations"
+import { useCoordenadorCursos } from "../hooks/use-coordenador-cursos"
 import type { PropostaHorarioResponseDto } from "@/api-generated/model"
 import { PropostaHorarioResponseDtoStatus } from "@/api-generated/model"
 import { toast } from "sonner"
@@ -74,16 +75,25 @@ export function PropostasHorarioPage() {
     staleTime: 2 * 60 * 1000, // 2 minutos
   })
 
+  // Hook para buscar cursos do coordenador
+  const {
+    cursoPrincipalId,
+    hasCursos,
+    isLoading: isLoadingCursos,
+    cursoPrincipal,
+  } = useCoordenadorCursos({
+    enabled: isCoordenador() && !!user,
+  })
+
   // Hook para proposta draft ativa (coordenadores)
-  // TODO: Implementar busca do curso do coordenador via API específica
   const {
     data: propostaDraftAtiva,
     hasDraftAtiva,
     refetch: refetchDraft,
   } = usePropostaDraftAtiva({
-    cursoId: undefined, // TODO: implementar busca do curso do coordenador
+    cursoId: cursoPrincipalId, // Usando o curso principal do coordenador
     periodoId: "periodo-atual", // TODO: buscar período ativo
-    enabled: false, // Desabilitado temporariamente até implementar busca do curso
+    enabled: isCoordenador() && !!cursoPrincipalId, // Habilitado quando temos o curso
   })
 
   // Hook para operações (criar, enviar, aprovar, rejeitar)
@@ -169,22 +179,26 @@ export function PropostasHorarioPage() {
   }, [refetch, refetchDraft])
 
   const handleCreateNova = useCallback(async () => {
-    // TODO: Implementar busca do curso do coordenador via API específica
-    toast.error(
-      "Funcionalidade temporariamente indisponível - aguardando implementação da busca do curso do coordenador",
-    )
-    return
-
-    // Código a ser implementado quando a API de curso do coordenador estiver disponível
-    // eslint-disable-next-line @typescript-eslint/no-unreachable-code
     if (!user) {
       toast.error("Erro: Usuário não encontrado")
       return
     }
 
+    if (!cursoPrincipalId) {
+      toast.error(
+        "Não foi possível encontrar o curso associado ao seu perfil. Entre em contato com o administrador.",
+      )
+      return
+    }
+
+    if (isLoadingCursos) {
+      toast.error("Aguarde o carregamento dos dados do curso...")
+      return
+    }
+
     try {
       await createProposta({
-        idCurso: "curso-temporario", // TODO: usar curso real do coordenador
+        idCurso: cursoPrincipalId,
         idPeriodoLetivo: "periodo-atual", // TODO: buscar período ativo
         observacoesCoordenador: "Nova proposta criada",
       })
@@ -193,7 +207,7 @@ export function PropostasHorarioPage() {
       // Error é tratado pelo hook com toast
       console.error(error)
     }
-  }, [user, createProposta])
+  }, [user, cursoPrincipalId, isLoadingCursos, createProposta])
 
   const handleEnviar = useCallback(
     async (proposta: PropostaHorarioResponseDto) => {
@@ -346,15 +360,39 @@ export function PropostasHorarioPage() {
                 <h2 className="text-xl font-semibold">Propostas em Rascunho</h2>
                 <p className="text-muted-foreground text-sm">
                   Propostas que ainda estão sendo elaboradas
+                  {cursoPrincipal && (
+                    <span className="ml-2 font-medium text-blue-600">
+                      • {cursoPrincipal.nome}
+                    </span>
+                  )}
                 </p>
               </div>
               <Button
                 onClick={handleCreateNova}
-                disabled={isCreating}
+                disabled={isCreating || isLoadingCursos || !hasCursos}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Nova Proposta
               </Button>
+            </div>
+          )}
+
+          {/* Aviso quando o coordenador não tem curso associado */}
+          {isCoordenador() && !isLoadingCursos && !hasCursos && (
+            <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
+              <div className="flex">
+                <AlertCircle className="h-5 w-5 text-orange-600" />
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-orange-800">
+                    Nenhum curso associado
+                  </h3>
+                  <p className="mt-1 text-sm text-orange-700">
+                    Você não possui cursos associados ao seu perfil. Entre em
+                    contato com o administrador para vincular um curso ao seu
+                    perfil de coordenador.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
           {isCoordenador() && hasDraftAtiva && propostaDraftAtiva ?
