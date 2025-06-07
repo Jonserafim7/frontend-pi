@@ -20,6 +20,7 @@ import { usePropostaDraftAtiva } from "../hooks/use-proposta-draft-ativa"
 import { useMinhasPropostas } from "../hooks/use-minhas-propostas"
 import { useProposalOperations } from "../hooks/use-proposal-operations"
 import { useCoordenadorCursos } from "../hooks/use-coordenador-cursos"
+import { usePeriodoAtivoId } from "../hooks/use-periodo-ativo"
 import type { PropostaHorarioResponseDto } from "@/api-generated/model"
 import { PropostaHorarioResponseDtoStatus } from "@/api-generated/model"
 import { toast } from "sonner"
@@ -85,6 +86,9 @@ export function PropostasHorarioPage() {
     enabled: isCoordenador() && !!user,
   })
 
+  // Hook para buscar período letivo ativo
+  const periodoAtivoId = usePeriodoAtivoId(!!user)
+
   // Hook para proposta draft ativa (coordenadores)
   const {
     data: propostaDraftAtiva,
@@ -92,8 +96,8 @@ export function PropostasHorarioPage() {
     refetch: refetchDraft,
   } = usePropostaDraftAtiva({
     cursoId: cursoPrincipalId, // Usando o curso principal do coordenador
-    periodoId: "periodo-atual", // TODO: buscar período ativo
-    enabled: isCoordenador() && !!cursoPrincipalId, // Habilitado quando temos o curso
+    periodoId: periodoAtivoId, // Período letivo ativo real
+    enabled: isCoordenador() && !!cursoPrincipalId && !!periodoAtivoId, // Habilitado quando temos curso e período
   })
 
   // Hook para operações (criar, enviar, aprovar, rejeitar)
@@ -196,10 +200,17 @@ export function PropostasHorarioPage() {
       return
     }
 
+    if (!periodoAtivoId) {
+      toast.error(
+        "Não foi possível encontrar o período letivo ativo. Entre em contato com o administrador.",
+      )
+      return
+    }
+
     try {
       await createProposta({
         idCurso: cursoPrincipalId,
-        idPeriodoLetivo: "periodo-atual", // TODO: buscar período ativo
+        idPeriodoLetivo: periodoAtivoId, // Período letivo ativo real
         observacoesCoordenador: "Nova proposta criada",
       })
       // Success é tratado pelo hook com toast e navigation
