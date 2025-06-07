@@ -21,7 +21,10 @@ export function PropostasHorarioPage() {
       </div>
 
       {/* Grade de horários */}
-      <ScheduleGrid className="w-full" />
+      <ScheduleGrid
+        className="w-full"
+        propostaId="proposta-teste-001"
+      />
     </div>
   )
 }

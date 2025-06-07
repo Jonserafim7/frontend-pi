@@ -14,6 +14,7 @@ import type { ScheduleCellProps } from "./schedule-grid-types"
  * - Preparar dados para o combobox de turmas
  * - Tratar callbacks de criação/remoção de alocações
  * - Gerenciar estados de loading e error
+ * - Suportar múltiplas alocações por célula
  *
  * @component
  */
@@ -21,17 +22,18 @@ export function ScheduleCellContainer({
   dia,
   horario,
   alocacao,
-}: ScheduleCellProps) {
+  alocacoes = [],
+  propostaId,
+  todasAlocacoes = [],
+}: ScheduleCellProps & {
+  propostaId: string
+  todasAlocacoes?: any[]
+  alocacoes?: any[]
+}) {
   const [dialogOpen, setDialogOpen] = React.useState(false)
 
-  const {
-    isLoadingTurmas,
-    isCreating,
-    isDeleting,
-    getTurmasDisponiveis,
-    criarAlocacao,
-    removerAlocacao,
-  } = useScheduleAllocation()
+  const { isLoadingTurmas, isCreating, isDeleting, removerAlocacao } =
+    useScheduleAllocation(propostaId)
 
   /**
    * Determinar se há operação em andamento
@@ -40,71 +42,38 @@ export function ScheduleCellContainer({
 
   /**
    * Preparar lista de alocações existentes para o slot
+   * Prioriza array de alocacoes, mas mantém compatibilidade com alocacao única
    */
   const alocacoesExistentes = React.useMemo(() => {
+    if (alocacoes && alocacoes.length > 0) {
+      return alocacoes
+    }
     return alocacao ? [alocacao] : []
-  }, [alocacao])
+  }, [alocacoes, alocacao])
 
   /**
-   * Preparar lista de turmas disponíveis para o slot
+   * Abre o dialog para adicionar nova alocação
    */
-  const turmasDisponiveis = React.useMemo(() => {
-    const turmasLivres = getTurmasDisponiveis(
-      dia,
-      horario.inicio,
-      horario.fim,
-      alocacoesExistentes,
-    )
-
-    // Mapear para o formato esperado pelo dialog
-    return turmasLivres.map((turma) => ({
-      id: turma.id,
-      codigo: turma.codigoDaTurma,
-      disciplina:
-        turma.disciplinaOfertada?.disciplina?.nome || "Disciplina não informada",
-      professor: turma.professorAlocado?.nome,
-    }))
-  }, [getTurmasDisponiveis, dia, horario, alocacoesExistentes])
-
-  /**
-   * Abre o dialog para gerenciar alocações
-   */
-  const handleCellClick = React.useCallback(() => {
+  const handleAddClick = React.useCallback(() => {
     setDialogOpen(true)
   }, [])
 
   /**
-   * Criar nova alocação
+   * Remove uma alocação específica
    */
-  const handleAlocarTurma = React.useCallback(
-    async (turmaId: string) => {
-      try {
-        await criarAlocacao(turmaId, dia, horario.inicio, horario.fim)
-        toast.success("Turma alocada com sucesso!")
-        setDialogOpen(false)
-      } catch (error) {
-        console.error("Erro ao alocar turma:", error)
-        toast.error(
-          error instanceof Error ? error.message : "Erro ao alocar turma",
-        )
-      }
-    },
-    [criarAlocacao, dia, horario],
-  )
-
-  /**
-   * Remover alocação existente
-   */
-  const handleRemoverAlocacao = React.useCallback(
+  const handleRemoveAlocacao = React.useCallback(
     async (alocacaoId: string) => {
       try {
+        if (!removerAlocacao) {
+          toast.error("Função de remoção não disponível")
+          return
+        }
+
         await removerAlocacao(alocacaoId)
-        toast.success("Alocação removida com sucesso!")
+        toast.success("Alocação removida com sucesso")
       } catch (error) {
         console.error("Erro ao remover alocação:", error)
-        toast.error(
-          error instanceof Error ? error.message : "Erro ao remover alocação",
-        )
+        toast.error("Erro ao remover alocação")
       }
     },
     [removerAlocacao],
@@ -114,21 +83,21 @@ export function ScheduleCellContainer({
     <>
       {/* Componente de apresentação */}
       <ScheduleCellView
-        alocacao={alocacao}
-        onCellClick={handleCellClick}
+        alocacoes={alocacoesExistentes}
+        onAddClick={handleAddClick}
+        onRemoveAlocacao={handleRemoveAlocacao}
         isLoading={isLoading}
       />
 
       {/* Dialog para gerenciar alocações */}
       <ScheduleAllocationDialog
+        propostaId={propostaId}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         dia={dia}
         horario={horario}
         alocacoesExistentes={alocacoesExistentes}
-        turmasDisponiveis={turmasDisponiveis}
-        onAlocarTurma={handleAlocarTurma}
-        onRemoverAlocacao={handleRemoverAlocacao}
+        todasAlocacoes={todasAlocacoes}
       />
     </>
   )

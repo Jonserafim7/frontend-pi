@@ -7,11 +7,14 @@ import {
   getAlocacoesHorariosControllerFindManyQueryKey,
 } from "@/api-generated/client/alocações-de-horário/alocações-de-horário"
 import { useTurmasControllerFindAll } from "@/api-generated/client/turmas/turmas"
+import { usePeriodosLetivosControllerFindPeriodoAtivo } from "@/api-generated/client/períodos-letivos/períodos-letivos"
+import { useDisponibilidadeProfessorControllerFindByPeriodo } from "@/api-generated/client/disponibilidade-de-professores/disponibilidade-de-professores"
 import type {
   CreateAlocacaoHorarioDto,
   ValidateAlocacaoDto,
   AlocacaoHorarioResponseDto,
   TurmaResponseDto,
+  DisponibilidadeResponseDto,
 } from "@/api-generated/model"
 import type { DiaSemanaKey } from "../components/schedule-grid-types"
 
@@ -26,7 +29,7 @@ import type { DiaSemanaKey } from "../components/schedule-grid-types"
  * - Verificar disponibilidade de professores
  * - Invalidar cache para atualizar a UI
  */
-export function useScheduleAllocation() {
+export function useScheduleAllocation(_propostaId?: string) {
   const queryClient = useQueryClient()
 
   // Mutations para alocações
@@ -34,9 +37,35 @@ export function useScheduleAllocation() {
   const deleteAlocacaoMutation = useAlocacoesHorariosControllerDelete()
   const validateAlocacaoMutation = useAlocacoesHorariosControllerValidate()
 
+  // Buscar período ativo
+  const { data: periodoAtivo } = usePeriodosLetivosControllerFindPeriodoAtivo()
+
+  // Buscar disponibilidades do período ativo
+  const { data: disponibilidades = [], isLoading: isLoadingDisponibilidades } =
+    useDisponibilidadeProfessorControllerFindByPeriodo(
+      periodoAtivo?.id || "",
+      {
+        status: "DISPONIVEL",
+      },
+      {
+        query: {
+          enabled: !!periodoAtivo?.id,
+        },
+      },
+    )
+
   // Query para buscar todas as turmas disponíveis
   const { data: turmas = [], isLoading: isLoadingTurmas } =
-    useTurmasControllerFindAll({})
+    useTurmasControllerFindAll(
+      {
+        idPeriodoLetivo: periodoAtivo?.id,
+      },
+      {
+        query: {
+          enabled: !!periodoAtivo?.id,
+        },
+      },
+    )
 
   /**
    * Mapear DiaSemanaKey para o enum da API
@@ -169,7 +198,20 @@ export function useScheduleAllocation() {
           return false
         }
 
-        // 3. Verificar conflitos de horário
+        // 3. Verificar se o professor está disponível no horário
+        const professorDisponivel = isProfessorDisponivel(
+          turma.professorAlocado.id,
+          dia,
+          horaInicio,
+          horaFim,
+          disponibilidades,
+        )
+
+        if (!professorDisponivel) {
+          return false
+        }
+
+        // 4. Verificar conflitos de horário
         const { temConflito } = temConflitoHorario(
           turma,
           dia,
@@ -181,7 +223,7 @@ export function useScheduleAllocation() {
         return !temConflito
       })
     },
-    [turmas, temConflitoHorario],
+    [turmas, temConflitoHorario, disponibilidades],
   )
 
   /**
@@ -209,6 +251,21 @@ export function useScheduleAllocation() {
       // Verificar se tem professor atribuído
       if (!turma.professorAlocado) {
         motivos.push("Professor não atribuído")
+      } else {
+        // Verificar disponibilidade do professor
+        const professorDisponivel = isProfessorDisponivel(
+          turma.professorAlocado.id,
+          dia,
+          horaInicio,
+          horaFim,
+          disponibilidades,
+        )
+
+        if (!professorDisponivel) {
+          motivos.push(
+            `Professor ${turma.professorAlocado.nome} não está disponível neste horário`,
+          )
+        }
       }
 
       // Verificar conflitos de horário
@@ -225,7 +282,7 @@ export function useScheduleAllocation() {
 
       return motivos
     },
-    [temConflitoHorario],
+    [temConflitoHorario, disponibilidades],
   )
 
   /**
@@ -328,6 +385,28 @@ export function useScheduleAllocation() {
     [deleteAlocacaoMutation, queryClient],
   )
 
+  /**
+   * Verifica se um professor está disponível em um horário específico
+   */
+  function isProfessorDisponivel(
+    professorId: string,
+    diaSemana: DiaSemanaKey,
+    horaInicio: string,
+    horaFim: string,
+    disponibilidades: DisponibilidadeResponseDto[],
+  ): boolean {
+    const disponibilidade = disponibilidades.find(
+      (d) =>
+        d.usuarioProfessor.id === professorId &&
+        d.diaDaSemana === diaSemana &&
+        d.horaInicio <= horaInicio &&
+        d.horaFim >= horaFim &&
+        d.status === "DISPONIVEL",
+    )
+
+    return !!disponibilidade
+  }
+
   return {
     // Data
     turmas,
@@ -348,5 +427,10 @@ export function useScheduleAllocation() {
     // Utility functions
     temSobreposicaoHorario,
     temConflitoHorario,
+
+    // New data
+    periodoAtivo,
+    isLoadingDisponibilidades,
+    disponibilidades,
   }
 }

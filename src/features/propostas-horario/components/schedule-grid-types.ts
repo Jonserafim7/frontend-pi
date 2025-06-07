@@ -30,9 +30,11 @@ export type DiaSemanaKey = (typeof DIAS_SEMANA)[number]["key"]
 /**
  * Props do componente ScheduleGrid.
  * @property className Classe CSS opcional para estilização externa.
+ * @property propostaId ID da proposta de horário.
  */
 export interface ScheduleGridProps {
   className?: string
+  propostaId: string
 }
 
 /**
@@ -42,13 +44,17 @@ export interface ScheduleGridProps {
  * @property inicio Horário de início do turno.
  * @property fim Horário de término do turno.
  * @property alocacoesMap Mapa para busca rápida das alocações por dia e horário.
+ * @property propostaId ID da proposta de horário.
+ * @property todasAlocacoes Lista completa de alocações para verificar conflitos.
  */
 export interface TurnoSectionProps {
   titulo: string
   aulas: AulaHorarioDto[]
   inicio: string
   fim: string
-  alocacoesMap: Map<string, AlocacaoHorarioResponseDto>
+  alocacoesMap: Map<string, AlocacaoHorarioResponseDto[]>
+  propostaId: string
+  todasAlocacoes: AlocacaoHorarioResponseDto[]
 }
 
 /**
@@ -56,9 +62,11 @@ export interface TurnoSectionProps {
  * @property dia Dia da semana (chave).
  * @property horario Objeto com informações do horário da aula.
  * @property alocacao (Opcional) Alocação existente para o dia/horário, se houver.
+ * @property alocacoes (Opcional) Array de alocações existentes para o dia/horário.
  */
 export interface ScheduleCellProps {
   dia: DiaSemanaKey
   horario: AulaHorarioDto
   alocacao?: AlocacaoHorarioResponseDto
+  alocacoes?: AlocacaoHorarioResponseDto[]
 }

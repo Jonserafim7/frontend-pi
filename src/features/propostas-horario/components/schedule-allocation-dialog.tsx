@@ -1,15 +1,8 @@
 import * as React from "react"
 import { Check, ChevronsUpDown, X } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import {
   Command,
   CommandEmpty,
@@ -18,14 +11,27 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import type {
   AulaHorarioDto,
   AlocacaoHorarioResponseDto,
 } from "@/api-generated/model"
 import type { DiaSemanaKey } from "./schedule-grid-types"
+import { useScheduleAllocation } from "../hooks/use-schedule-allocation"
 
 interface ScheduleAllocationDialogProps {
+  /**
+   * ID da proposta de horário
+   */
+  propostaId: string
   /**
    * Controla se o dialog está aberto ou fechado
    */
@@ -47,22 +53,9 @@ interface ScheduleAllocationDialogProps {
    */
   alocacoesExistentes?: AlocacaoHorarioResponseDto[]
   /**
-   * Lista de turmas disponíveis para alocação
+   * Todas as alocações da proposta (para verificar conflitos)
    */
-  turmasDisponiveis?: Array<{
-    id: string
-    codigo: string
-    disciplina: string
-    professor?: string
-  }>
-  /**
-   * Callback chamado quando uma alocação é adicionada
-   */
-  onAlocarTurma?: (turmaId: string) => void
-  /**
-   * Callback chamado quando uma alocação é removida
-   */
-  onRemoverAlocacao?: (alocacaoId: string) => void
+  todasAlocacoes?: AlocacaoHorarioResponseDto[]
 }
 
 /**
@@ -87,17 +80,25 @@ interface ScheduleAllocationDialogProps {
  * />
  */
 export function ScheduleAllocationDialog({
+  propostaId,
   open,
   onOpenChange,
   dia,
   horario,
   alocacoesExistentes = [],
-  turmasDisponiveis = [],
-  onAlocarTurma,
-  onRemoverAlocacao,
+  todasAlocacoes = [],
 }: ScheduleAllocationDialogProps) {
   const [openCombobox, setOpenCombobox] = React.useState(false)
   const [selectedTurma, setSelectedTurma] = React.useState("")
+
+  // Hook para gerenciar alocações
+  const {
+    getTurmasDisponiveis,
+    criarAlocacao,
+    removerAlocacao,
+    isCreating,
+    isDeleting,
+  } = useScheduleAllocation(propostaId)
 
   // Mapear dias da semana para labels em português
   const diaLabels: Record<DiaSemanaKey, string> = {
@@ -108,6 +109,26 @@ export function ScheduleAllocationDialog({
     SEXTA: "Sexta-feira",
     SABADO: "Sábado",
   }
+
+  /**
+   * Obter turmas disponíveis baseado na disponibilidade do professor
+   */
+  const turmasDisponiveis = React.useMemo(() => {
+    return getTurmasDisponiveis(
+      dia,
+      horario.inicio,
+      horario.fim,
+      alocacoesExistentes,
+      todasAlocacoes,
+    )
+  }, [
+    getTurmasDisponiveis,
+    dia,
+    horario.inicio,
+    horario.fim,
+    alocacoesExistentes,
+    todasAlocacoes,
+  ])
 
   /**
    * Filtra turmas que não estão alocadas neste slot
@@ -122,20 +143,28 @@ export function ScheduleAllocationDialog({
   /**
    * Adiciona uma turma ao slot
    */
-  const handleAdicionarTurma = () => {
-    if (selectedTurma && onAlocarTurma) {
-      onAlocarTurma(selectedTurma)
-      setSelectedTurma("")
-      setOpenCombobox(false)
+  const handleAdicionarTurma = async () => {
+    if (selectedTurma) {
+      try {
+        await criarAlocacao(selectedTurma, dia, horario.inicio, horario.fim)
+        setSelectedTurma("")
+        setOpenCombobox(false)
+      } catch (error) {
+        console.error("Erro ao adicionar turma:", error)
+        // Aqui você pode adicionar um toast ou notificação de erro
+      }
     }
   }
 
   /**
    * Remove uma alocação do slot
    */
-  const handleRemoverAlocacao = (alocacaoId: string) => {
-    if (onRemoverAlocacao) {
-      onRemoverAlocacao(alocacaoId)
+  const handleRemoverAlocacao = async (alocacaoId: string) => {
+    try {
+      await removerAlocacao(alocacaoId)
+    } catch (error) {
+      console.error("Erro ao remover alocação:", error)
+      // Aqui você pode adicionar um toast ou notificação de erro
     }
   }
 
@@ -178,6 +207,7 @@ export function ScheduleAllocationDialog({
                       variant="ghost"
                       size="sm"
                       onClick={() => handleRemoverAlocacao(alocacao.id)}
+                      disabled={isDeleting}
                       className="h-8 w-8 p-0"
                     >
                       <X className="h-4 w-4" />
@@ -208,7 +238,7 @@ export function ScheduleAllocationDialog({
                       {selectedTurma ?
                         turmasNaoAlocadas.find(
                           (turma) => turma.id === selectedTurma,
-                        )?.codigo
+                        )?.codigoDaTurma
                       : "Selecionar turma..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -241,10 +271,14 @@ export function ScheduleAllocationDialog({
                                 )}
                               />
                               <div className="flex-1">
-                                <div className="font-medium">{turma.codigo}</div>
+                                <div className="font-medium">
+                                  {turma.codigoDaTurma}
+                                </div>
                                 <div className="text-muted-foreground text-sm">
-                                  {turma.disciplina}
-                                  {turma.professor && ` - ${turma.professor}`}
+                                  {turma.disciplinaOfertada?.disciplina?.nome ||
+                                    "Disciplina não informada"}
+                                  {turma.professorAlocado?.nome &&
+                                    ` - ${turma.professorAlocado.nome}`}
                                 </div>
                               </div>
                             </CommandItem>
@@ -256,9 +290,9 @@ export function ScheduleAllocationDialog({
                 </Popover>
                 <Button
                   onClick={handleAdicionarTurma}
-                  disabled={!selectedTurma}
+                  disabled={!selectedTurma || isCreating}
                 >
-                  Adicionar
+                  {isCreating ? "Adicionando..." : "Adicionar"}
                 </Button>
               </div>
             </div>

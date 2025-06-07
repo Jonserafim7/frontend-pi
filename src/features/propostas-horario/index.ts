@@ -1,15 +1,8 @@
 // Components
-export { ScheduleGrid } from "./components/ScheduleGrid"
-export { TurmasListComponent } from "./components/TurmasListComponent"
+export { ScheduleGrid } from "./components/schedule-grid"
 
 // Pages
 export { PropostasHorarioPage } from "./pages"
 
 // Hooks
 export * from "./hooks"
-
-// Contexts
-export { TurmaSelectionProvider, useTurmaSelection } from "./contexts"
-
-// Types
-export * from "./types"

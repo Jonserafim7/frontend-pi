@@ -13,7 +13,7 @@ import type { ScheduleGridProps } from "./schedule-grid-types"
  * Componente da grade de horários que exibe a estrutura visual
  * baseada na configuração de horários do sistema
  */
-export function ScheduleGrid({ className }: ScheduleGridProps) {
+export function ScheduleGrid({ className, propostaId }: ScheduleGridProps) {
   const {
     data: configuracao,
     isLoading: isLoadingConfig,
@@ -33,11 +33,18 @@ export function ScheduleGrid({ className }: ScheduleGridProps) {
       return new Map()
     }
 
-    const map = new Map<string, AlocacaoHorarioResponseDto>()
+    const map = new Map<string, AlocacaoHorarioResponseDto[]>()
     alocacoes.forEach((alocacao) => {
       // Criar chave única: diaDaSemana_horaInicio
       const key = `${alocacao.diaDaSemana}_${alocacao.horaInicio}`
-      map.set(key, alocacao)
+
+      // Se já existe uma entrada para esta chave, adiciona à lista
+      if (map.has(key)) {
+        map.get(key)!.push(alocacao)
+      } else {
+        // Senão, cria uma nova lista com esta alocação
+        map.set(key, [alocacao])
+      }
     })
 
     return map
@@ -126,6 +133,8 @@ export function ScheduleGrid({ className }: ScheduleGridProps) {
             inicio={configuracao.inicioTurnoManha}
             fim={configuracao.fimTurnoManhaCalculado}
             alocacoesMap={alocacoesMap}
+            propostaId={propostaId}
+            todasAlocacoes={alocacoes || []}
           />
 
           {/* Turno da Tarde */}
@@ -135,6 +144,8 @@ export function ScheduleGrid({ className }: ScheduleGridProps) {
             inicio={configuracao.inicioTurnoTarde}
             fim={configuracao.fimTurnoTardeCalculado}
             alocacoesMap={alocacoesMap}
+            propostaId={propostaId}
+            todasAlocacoes={alocacoes || []}
           />
 
           {/* Turno da Noite */}
@@ -144,6 +155,8 @@ export function ScheduleGrid({ className }: ScheduleGridProps) {
             inicio={configuracao.inicioTurnoNoite}
             fim={configuracao.fimTurnoNoiteCalculado}
             alocacoesMap={alocacoesMap}
+            propostaId={propostaId}
+            todasAlocacoes={alocacoes || []}
           />
         </CardContent>
       </Card>

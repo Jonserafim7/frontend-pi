@@ -27,6 +27,8 @@ export function TurnoSection({
   inicio,
   fim,
   alocacoesMap,
+  propostaId,
+  todasAlocacoes,
 }: TurnoSectionProps) {
   return (
     <div>
@@ -74,14 +76,19 @@ export function TurnoSection({
             {/* Células para cada dia da semana */}
             {DIAS_SEMANA.map((dia) => {
               const chaveAlocacao = `${dia.key}_${aula.inicio}`
-              const alocacaoEncontrada = alocacoesMap.get(chaveAlocacao)
+              const alocacoesEncontradas = alocacoesMap.get(chaveAlocacao) || []
+              // Mantém compatibilidade com código existente
+              const primeiraAlocacao = alocacoesEncontradas[0]
 
               return (
                 <ScheduleCellContainer
                   key={`${dia.key}-${aula.inicio}`}
                   dia={dia.key}
                   horario={aula}
-                  alocacao={alocacaoEncontrada}
+                  alocacao={primeiraAlocacao}
+                  alocacoes={alocacoesEncontradas}
+                  propostaId={propostaId}
+                  todasAlocacoes={todasAlocacoes}
                 />
               )
             })}
