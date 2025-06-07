@@ -41,7 +41,6 @@ export const ChangeStatusPeriodoLetivoDialog: React.FC<
 
   const isActivating = newStatus === "ATIVO"
   const currentStatusText = periodoLetivo.status === "ATIVO" ? "ativo" : "inativo"
-  const newStatusText = isActivating ? "ativo" : "inativo"
 
   const handleConfirm = () => {
     mutateChangeStatus(

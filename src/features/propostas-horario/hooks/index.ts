@@ -1,2 +1,5 @@
 export * from "./use-proposta-draft-ativa"
 export * from "./use-schedule-allocation"
+export * from "./use-minhas-propostas"
+export * from "./use-proposal-operations"
+export * from "./use-proposal-completeness"

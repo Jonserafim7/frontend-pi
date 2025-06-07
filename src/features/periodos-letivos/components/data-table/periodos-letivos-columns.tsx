@@ -1,6 +1,6 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { type PeriodoLetivoResponseDto } from "@/api-generated/model"
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+
 import { PeriodosLetivosActionRowDropdownMenu } from "./periodos-letivos-action-row-dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { formatDateToDisplay } from "@/lib/utils/format-date"

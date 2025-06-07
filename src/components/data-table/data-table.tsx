@@ -164,7 +164,7 @@ export function DataTable<TData, TValue>({
                       "[&_td:first-child]:rounded-l-lg [&_td:last-child]:rounded-r-lg",
                     )}
                   >
-                    {row.getVisibleCells().map((cell, cellIndex) => (
+                    {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
                         className={cn(
