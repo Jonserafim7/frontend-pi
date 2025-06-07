@@ -315,13 +315,6 @@ export function PropostasList({
         </div>
 
         <div className="flex items-center gap-2">
-          {onCreate && (
-            <Button onClick={onCreate}>
-              <Plus className="mr-2 h-4 w-4" />
-              Nova Proposta
-            </Button>
-          )}
-
           {onRefresh && (
             <Button
               variant="outline"
