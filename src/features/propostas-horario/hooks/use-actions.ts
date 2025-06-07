@@ -74,12 +74,25 @@ export function useActions(): UseActionsReturn {
       try {
         const result = await submitMutation.mutateAsync({ id })
 
-        toast.success("Proposta enviada para aprovação")
+        toast.success("✅ Proposta enviada com sucesso!", {
+          description:
+            "Sua proposta está agora na lista de pendentes aguardando análise da diretoria.",
+        })
         await invalidateCache()
 
         return result
       } catch (error) {
-        toast.error("Erro ao enviar proposta")
+        console.error("Erro ao enviar proposta:", error)
+
+        // Mensagem de erro mais específica baseada no tipo de erro
+        const errorMessage =
+          error instanceof Error && error.message.includes("400") ?
+            "Não é possível enviar uma proposta vazia. Adicione pelo menos uma alocação de horário."
+          : "Não foi possível enviar a proposta. Verifique sua conexão e tente novamente."
+
+        toast.error("❌ Falha ao enviar proposta", {
+          description: errorMessage,
+        })
         throw error
       }
     },
@@ -101,12 +114,24 @@ export function useActions(): UseActionsReturn {
           data: approveData,
         })
 
-        toast.success("Proposta aprovada com sucesso")
+        toast.success("🎉 Proposta aprovada!", {
+          description:
+            "A proposta foi movida para a lista de aprovadas. O horário pode ser implementado.",
+        })
         await invalidateCache()
 
         return result
       } catch (error) {
-        toast.error("Erro ao aprovar proposta")
+        console.error("Erro ao aprovar proposta:", error)
+
+        const errorMessage =
+          error instanceof Error && error.message.includes("404") ?
+            "Esta proposta não foi encontrada. Ela pode ter sido removida ou modificada."
+          : "Não foi possível aprovar a proposta. Tente novamente em alguns instantes."
+
+        toast.error("❌ Falha na aprovação", {
+          description: errorMessage,
+        })
         throw error
       }
     },
@@ -129,12 +154,24 @@ export function useActions(): UseActionsReturn {
           data: rejectData,
         })
 
-        toast.success("Proposta rejeitada")
+        toast.success("📋 Proposta rejeitada", {
+          description:
+            "A proposta foi movida para a lista de rejeitadas com a justificativa registrada.",
+        })
         await invalidateCache()
 
         return result
       } catch (error) {
-        toast.error("Erro ao rejeitar proposta")
+        console.error("Erro ao rejeitar proposta:", error)
+
+        const errorMessage =
+          error instanceof Error && error.message.includes("404") ?
+            "Esta proposta não foi encontrada. Ela pode ter sido removida ou modificada."
+          : "Não foi possível rejeitar a proposta. Verifique se a justificativa foi preenchida corretamente."
+
+        toast.error("❌ Falha na rejeição", {
+          description: errorMessage,
+        })
         throw error
       }
     },

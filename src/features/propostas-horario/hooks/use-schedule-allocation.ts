@@ -1,5 +1,6 @@
 import { useCallback } from "react"
 import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 import {
   useAlocacoesHorariosControllerCreate,
   useAlocacoesHorariosControllerDelete,
@@ -342,6 +343,16 @@ export function useScheduleAllocation(
           result,
         )
 
+        // Buscar dados da turma para feedback específico
+        const turmaInfo = turmas.find((t) => t.id === idTurma)
+        const disciplinaNome =
+          turmaInfo?.disciplinaOfertada?.disciplina?.nome || "Disciplina"
+        const turmaCode = turmaInfo?.codigoDaTurma || "Turma"
+
+        toast.success("✅ Alocação criada!", {
+          description: `${disciplinaNome} (${turmaCode}) agendada para ${dia.toLowerCase()}, ${horaInicio}-${horaFim}`,
+        })
+
         console.log("🔄 [useScheduleAllocation] Invalidando cache...")
         await invalidateCache()
         console.log("✅ [useScheduleAllocation] Cache invalidado")
@@ -349,6 +360,15 @@ export function useScheduleAllocation(
         return result
       } catch (error) {
         console.error("❌ [useScheduleAllocation] Erro ao criar alocação:", error)
+
+        const errorMessage =
+          error instanceof Error && error.message.includes("conflict") ?
+            "Não é possível alocar: há conflitos de horário ou professor."
+          : "Não foi possível criar a alocação. Verifique se todos os dados estão corretos."
+
+        toast.error("❌ Falha na alocação", {
+          description: errorMessage,
+        })
         throw error
       }
     },
@@ -362,10 +382,25 @@ export function useScheduleAllocation(
     async (alocacaoId: string) => {
       try {
         await deleteAlocacaoMutation.mutateAsync({ id: alocacaoId })
+
+        toast.success("🗑️ Alocação removida", {
+          description:
+            "O horário foi liberado e está disponível para nova alocação.",
+        })
+
         await invalidateCache()
         return true
       } catch (error) {
         console.error("Erro ao remover alocação:", error)
+
+        const errorMessage =
+          error instanceof Error && error.message.includes("404") ?
+            "Esta alocação não foi encontrada. Ela pode já ter sido removida."
+          : "Não foi possível remover a alocação. Tente novamente em alguns instantes."
+
+        toast.error("❌ Falha na remoção", {
+          description: errorMessage,
+        })
         throw error
       }
     },

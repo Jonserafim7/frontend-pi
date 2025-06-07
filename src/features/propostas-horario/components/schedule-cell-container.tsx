@@ -35,15 +35,18 @@ export function ScheduleCellContainer({
     async (alocacaoId: string) => {
       try {
         if (!removerAlocacao) {
-          toast.error("Função de remoção não disponível")
+          toast.error("⚠️ Função indisponível", {
+            description:
+              "A funcionalidade de remoção não está disponível no momento.",
+          })
           return
         }
 
+        // O hook já faz o feedback de sucesso/erro
         await removerAlocacao(alocacaoId)
-        toast.success("Alocação removida com sucesso")
       } catch (error) {
         console.error("Erro ao remover alocação:", error)
-        toast.error("Erro ao remover alocação")
+        // O hook já mostra o toast de erro, não precisamos duplicar
       }
     },
     [removerAlocacao],

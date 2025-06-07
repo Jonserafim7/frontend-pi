@@ -60,12 +60,24 @@ export function useCreateProposta(): UseCreatePropostaReturn {
 
         const result = await createMutation.mutateAsync({ data: createData })
 
-        toast.success("Proposta criada com sucesso")
+        toast.success("📋 Nova proposta criada!", {
+          description:
+            "Você pode agora começar a alocar horários para suas turmas.",
+        })
         await invalidateCache()
 
         return result
       } catch (error) {
-        toast.error("Erro ao criar proposta")
+        console.error("Erro ao criar proposta:", error)
+
+        const errorMessage =
+          error instanceof Error && error.message.includes("400") ?
+            "Não é possível criar proposta: verifique se o período letivo está ativo."
+          : "Não foi possível criar a proposta. Verifique sua conexão e tente novamente."
+
+        toast.error("❌ Falha ao criar proposta", {
+          description: errorMessage,
+        })
         throw error
       }
     },

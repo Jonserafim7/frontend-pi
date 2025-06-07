@@ -104,7 +104,8 @@ export function DraftEditor() {
       })
       refetchDraft()
     } catch (error) {
-      console.error(error)
+      console.error("Erro ao criar proposta:", error)
+      // O hook use-create-proposta já mostra o toast de erro
     }
   }, [
     user,
@@ -122,7 +123,8 @@ export function DraftEditor() {
       await submitProposta(propostaDraftAtiva.id)
       refetchDraft()
     } catch (error) {
-      console.error(error)
+      console.error("Erro ao enviar proposta:", error)
+      // O hook use-actions já mostra o toast de erro
     }
   }, [propostaDraftAtiva, submitProposta, refetchDraft])
 
