@@ -11,13 +11,13 @@ import {
 import { useDisciplinasOfertadasControllerRemove } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
 import { TriangleAlert } from "lucide-react"
 import { getDisciplinasOfertadasControllerFindAllQueryKey } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
 import { useQueryClient } from "@tanstack/react-query"
 import type { DisciplinaOfertadaResponseDto } from "@/api-generated/model/disciplina-ofertada-response-dto"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { toast } from "sonner"
 
 interface DeleteDisciplinaOfertadaAlertDialogProps {
   disciplinaOfertada: DisciplinaOfertadaResponseDto
@@ -42,7 +42,6 @@ export function DeleteDisciplinaOfertadaAlertDialog({
     useDisciplinasOfertadasControllerRemove()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "REMOVER"
-  const { toast } = useToast()
 
   // Detalhes formatados da disciplina ofertada para exibição
   const disciplinaDisplay =
@@ -60,10 +59,7 @@ export function DeleteDisciplinaOfertadaAlertDialog({
         onSuccess: () => {
           setConfirmationText("")
           onOpenChange(false)
-          toast({
-            title: "Disciplina ofertada removida",
-            description: "A disciplina ofertada foi removida com sucesso.",
-          })
+          toast.success("Disciplina ofertada removida")
           queryClient.invalidateQueries({
             queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
           })
@@ -71,12 +67,9 @@ export function DeleteDisciplinaOfertadaAlertDialog({
         onError: () => {
           setConfirmationText("")
           onOpenChange(false)
-          toast({
-            title: "Erro ao remover",
-            description:
-              "Não foi possível remover a disciplina ofertada. Verifique se ela não possui turmas associadas.",
-            variant: "destructive",
-          })
+          toast.error(
+            "Não foi possível remover a disciplina ofertada. Verifique se ela não possui turmas associadas.",
+          )
         },
       },
     )

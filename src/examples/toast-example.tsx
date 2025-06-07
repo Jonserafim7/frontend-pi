@@ -1,106 +1,55 @@
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 /**
  * Exemplo de uso do componente Toast atualizado
  * Demonstra diferentes variantes e opções do toast
  */
 export function ToastExample() {
-  const { toast } = useToast()
-
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-bold">Exemplos de Toast</h2>
       <div className="flex flex-wrap gap-4">
-        <Button
-          onClick={() =>
-            toast({
-              title: "Notificação Padrão",
-              description: "Esta é uma notificação padrão do sistema",
-            })
-          }
-        >
-          Toast Padrão
-        </Button>
+        <Button onClick={() => toast("Notificação Padrão")}>Toast Padrão</Button>
 
         <Button
           variant="default"
-          onClick={() =>
-            toast({
-              title: "Operação Concluída",
-              description: "A operação foi concluída com sucesso",
-              variant: "success",
-            })
-          }
+          onClick={() => toast("Operação Concluída")}
         >
           Toast Sucesso
         </Button>
 
         <Button
           variant="destructive"
-          onClick={() =>
-            toast({
-              title: "Erro Encontrado",
-              description: "Ocorreu um erro ao processar sua solicitação",
-              variant: "destructive",
-            })
-          }
+          onClick={() => toast("Erro Encontrado")}
         >
           Toast Erro
         </Button>
 
         <Button
           variant="default"
-          onClick={() =>
-            toast({
-              title: "Atenção",
-              description: "Esta ação requer sua atenção",
-              variant: "warning",
-            })
-          }
+          onClick={() => toast("Atenção")}
         >
           Toast Aviso
         </Button>
 
         <Button
           variant="secondary"
-          onClick={() =>
-            toast({
-              title: "Informação",
-              description: "Aqui está uma informação importante",
-              variant: "info",
-            })
-          }
+          onClick={() => toast("Informação")}
         >
           Toast Info
         </Button>
 
         <Button
           variant="outline"
-          onClick={() =>
-            toast({
-              title: "Com Ação",
-              description: "Este toast possui uma ação que pode ser executada",
-              variant: "info",
-              action: {
-                label: "Desfazer",
-                onClick: () => console.log("Ação desfeita!"),
-              },
-            })
-          }
+          onClick={() => toast("Com Ação")}
         >
           Toast Com Ação
         </Button>
 
         <Button
           variant="outline"
-          onClick={() =>
-            toast({
-              title: "Duração Personalizada",
-              description: "Este toast permanecerá visível por 10 segundos",
-              duration: 10000, // 10 segundos
-            })
-          }
+          onClick={() => toast("Duração Personalizada")}
         >
           Toast Longo (10s)
         </Button>

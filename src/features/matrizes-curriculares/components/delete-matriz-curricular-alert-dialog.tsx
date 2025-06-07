@@ -1,4 +1,3 @@
-import { useToast } from "@/hooks/use-toast"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +15,7 @@ import { Loader2, TriangleAlert } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 import { getMatrizesCurricularesControllerFindAllQueryKey } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
 
 /**
@@ -37,7 +37,6 @@ export function DeleteMatrizCurricularAlertDialog({
   matrizCurricularId,
   matrizCurricularName,
 }: DeleteMatrizCurricularAlertDialogProps) {
-  const { toast } = useToast()
   const queryClient = useQueryClient()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "EXCLUIR"
@@ -52,10 +51,9 @@ export function DeleteMatrizCurricularAlertDialog({
       { id: matrizCurricularId },
       {
         onSuccess: () => {
-          toast({
-            title: "Matriz curricular excluída",
-            description: `A matriz curricular "${matrizCurricularName}" foi excluída com sucesso.`,
-          })
+          toast.success(
+            `A matriz curricular "${matrizCurricularName}" foi excluída com sucesso.`,
+          )
           queryClient.invalidateQueries({
             queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
           })
@@ -65,11 +63,7 @@ export function DeleteMatrizCurricularAlertDialog({
           const errorMessage =
             error?.message ||
             "A matriz curricular pode estar em uso por outras entidades do sistema."
-          toast({
-            title: "Erro ao excluir matriz curricular",
-            description: errorMessage,
-            variant: "destructive",
-          })
+          toast.error(errorMessage)
         },
       },
     )

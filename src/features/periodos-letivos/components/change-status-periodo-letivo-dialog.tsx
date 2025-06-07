@@ -8,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { useToast } from "@/hooks/use-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   getPeriodosLetivosControllerFindAllQueryKey,
@@ -20,6 +19,7 @@ import type {
 } from "@/api-generated/model"
 import type { AxiosError } from "axios"
 import { AlertTriangleIcon } from "lucide-react"
+import { toast } from "sonner"
 
 interface ChangeStatusPeriodoLetivoDialogProps {
   open: boolean
@@ -38,7 +38,6 @@ export const ChangeStatusPeriodoLetivoDialog: React.FC<
   const { mutate: mutateChangeStatus, isPending } =
     usePeriodosLetivosControllerChangeStatus()
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   const isActivating = newStatus === "ATIVO"
   const currentStatusText = periodoLetivo.status === "ATIVO" ? "ativo" : "inativo"
@@ -52,10 +51,9 @@ export const ChangeStatusPeriodoLetivoDialog: React.FC<
       },
       {
         onSuccess: () => {
-          toast({
-            title: `Período letivo ${isActivating ? "ativado" : "desativado"} com sucesso!`,
-            description: `${periodoLetivo.ano}/${periodoLetivo.semestre} está agora ${newStatusText}.`,
-          })
+          toast.success(
+            `Período letivo ${isActivating ? "ativado" : "desativado"} com sucesso!`,
+          )
           queryClient.invalidateQueries({
             queryKey: getPeriodosLetivosControllerFindAllQueryKey(),
           })
@@ -73,11 +71,7 @@ export const ChangeStatusPeriodoLetivoDialog: React.FC<
             `Erro ao ${isActivating ? "ativar" : "desativar"} período letivo:`,
             error,
           )
-          toast({
-            title: `Erro ao ${isActivating ? "ativar" : "desativar"} período letivo`,
-            description: errorMessage,
-            variant: "destructive",
-          })
+          toast.error(errorMessage)
         },
       },
     )

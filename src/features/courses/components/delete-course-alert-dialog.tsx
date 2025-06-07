@@ -9,7 +9,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Loader2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import { useCursosControllerRemove } from "@/api-generated/client/cursos/cursos"
 import type { CursoResponseDto } from "@/api-generated/model/curso-response-dto"
@@ -19,6 +18,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { TriangleAlert } from "lucide-react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { toast } from "sonner"
 
 interface DeleteCourseAlertDialogProps {
   isOpen: boolean
@@ -34,7 +34,6 @@ export function DeleteCourseAlertDialog({
   onOpenChange,
   course,
 }: DeleteCourseAlertDialogProps) {
-  const { toast } = useToast()
   const queryClient = useQueryClient()
   const [confirmationText, setConfirmationText] = useState("")
   const isConfirmed = confirmationText === "EXCLUIR"
@@ -47,10 +46,7 @@ export function DeleteCourseAlertDialog({
       { id: course.id },
       {
         onSuccess: () => {
-          toast({
-            title: "Curso excluído",
-            description: "O curso foi excluído com sucesso",
-          })
+          toast.success("Curso excluído")
           queryClient.invalidateQueries({
             queryKey: getCursosControllerFindAllQueryKey(),
           })
@@ -59,11 +55,7 @@ export function DeleteCourseAlertDialog({
         onError: (error) => {
           const errorMessage =
             error?.message || "Ocorreu um erro ao excluir o curso"
-          toast({
-            title: "Erro ao excluir curso",
-            description: errorMessage,
-            variant: "destructive",
-          })
+          toast.error(errorMessage)
         },
       },
     )

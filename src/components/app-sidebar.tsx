@@ -2,7 +2,6 @@ import { Link } from "react-router"
 import {
   BookOpenCheck as BookOpenCheckIcon,
   CalendarCog,
-  CalendarIcon,
   GraduationCapIcon,
   HelpCircle,
   HomeIcon,
@@ -276,7 +275,7 @@ export function AppSidebar() {
                     isActive={isPathActive("/coordenador/propostas-horario")}
                   >
                     <Link to="/coordenador/propostas-horario">
-                      <CalendarCheck />
+                      <CalendarDays />
                       <span>Propostas de Horário</span>
                     </Link>
                   </SidebarMenuButton>

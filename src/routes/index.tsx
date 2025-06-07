@@ -24,8 +24,7 @@ import {
   CoordenadorDisponibilidadePage,
 } from "@/features/disponibilidade-professores/pages"
 import { TurmasListPage } from "@/features/turmas/pages/turmas-list-page"
-import { PropostasHorarioPage } from "@/features/propostas-horario/pages"
-import { TestSchedulePage } from "@/features/propostas-horario/components"
+import { PropostasHorarioPage } from "@/features/propostas-horario/pages/propostas-horario-page"
 
 // Placeholders genéricos para cada tipo de usuário
 const CoordenadorDashboard = () => <div>Dashboard do Coordenador (em breve)</div>
@@ -210,16 +209,6 @@ export function AppRoutes() {
                     allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
                   >
                     <PropostasHorarioPage />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="teste"
-                element={
-                  <RequireAuth
-                    allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
-                  >
-                    <TestSchedulePage />
                   </RequireAuth>
                 }
               />

@@ -6,9 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface CreateMatrizCurricularDto {
-  /** Nome da matriz curricular */
-  nome: string
-  /** Lista de IDs das disciplinas da matriz curricular */
-  disciplinasIds: string[]
+export interface CreateDisciplinaOfertadaSimplificadaDto {
+  /** ID da disciplina a ser ofertada */
+  idDisciplina: string
+  /**
+   * Quantidade de turmas para esta disciplina
+   * @minimum 1
+   */
+  quantidadeTurmas: number
 }

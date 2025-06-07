@@ -11,9 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import type { DisciplinaOfertadaResponseDto } from "@/api-generated/model/disciplina-ofertada-response-dto"
-import { useToast } from "@/hooks/use-toast"
 import { DeleteDisciplinaOfertadaAlertDialog } from "../delete-disciplina-ofertada-alert-dialog"
 import { CreateEditDisciplinaOfertadaFormDialog } from "../create-edit-disciplina-ofertada-form-dialog"
+import { toast } from "sonner"
 
 interface DisciplinaOfertadaActionRowDropdownMenuProps {
   disciplinaOfertada: DisciplinaOfertadaResponseDto
@@ -30,7 +30,6 @@ export function DisciplinaOfertadaActionRowDropdownMenu({
   disciplinaOfertada,
   onViewTurmas,
 }: DisciplinaOfertadaActionRowDropdownMenuProps) {
-  const { toast } = useToast()
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -62,18 +61,12 @@ export function DisciplinaOfertadaActionRowDropdownMenu({
       if (filtro) {
         navigate(`/coordenador/turmas?filtro=${encodeURIComponent(filtro)}`)
 
-        toast({
-          title: "Redirecionando...",
-          description: `Visualizando turmas da disciplina ${disciplinaNome}`,
-        })
+        toast.info(`Visualizando turmas da disciplina ${disciplinaNome}`)
       } else {
         // Fallback caso não tenha nome da disciplina
         navigate("/coordenador/turmas")
 
-        toast({
-          title: "Ver turmas",
-          description: "Redirecionando para a página de turmas",
-        })
+        toast.info("Redirecionando para a página de turmas")
       }
     }
     setIsOpen(false)

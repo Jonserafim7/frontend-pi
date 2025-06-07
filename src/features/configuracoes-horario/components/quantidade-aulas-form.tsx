@@ -17,12 +17,12 @@ import {
   useConfiguracoesHorarioControllerUpsert,
   getConfiguracoesHorarioControllerGetQueryKey,
 } from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
-import { useToast } from "@/hooks/use-toast"
 import { AxiosError } from "axios"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Pencil, Save, X } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { toast } from "sonner"
 
 const formSchema = z.object({
   quantidade_aulas: z.coerce
@@ -42,7 +42,6 @@ export function QuantidadeAulasForm() {
     },
   })
   const [isEditing, setIsEditing] = useState(false)
-  const { toast } = useToast()
   const queryClient = useQueryClient()
   const { data: configuracoesHorario } = useConfiguracoesHorarioControllerGet({})
   const { mutate: upsertConfiguracoesHorario } =
@@ -65,20 +64,14 @@ export function QuantidadeAulasForm() {
       },
       {
         onSuccess: () => {
-          toast({
-            title: "Configurações atualizadas com sucesso",
-          })
+          toast.success("Configurações atualizadas com sucesso")
           queryClient.invalidateQueries({
             queryKey: getConfiguracoesHorarioControllerGetQueryKey(),
           })
           setIsEditing(false)
         },
         onError: (error: AxiosError) => {
-          toast({
-            title: "Erro ao atualizar configurações",
-            description:
-              error.request.message || "Erro ao atualizar configurações",
-          })
+          toast.error(error.request.message || "Erro ao atualizar configurações")
         },
       },
     )

@@ -17,12 +17,12 @@ import {
   useConfiguracoesHorarioControllerUpsert,
   getConfiguracoesHorarioControllerGetQueryKey,
 } from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
-import { useToast } from "@/hooks/use-toast"
 import { AxiosError } from "axios"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Pencil, Save, X } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { toast } from "sonner"
 
 /**
  * Schema para validação do formulário de horário de início de turno
@@ -53,7 +53,6 @@ export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
     },
   })
   const [isEditing, setIsEditing] = useState(false)
-  const { toast } = useToast()
   const queryClient = useQueryClient()
   const { data: configuracoesHorario } = useConfiguracoesHorarioControllerGet({})
   const { mutate: upsertConfiguracoesHorario } =
@@ -101,23 +100,19 @@ export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
       },
       {
         onSuccess: () => {
-          toast({
-            title: "Horário de início atualizado com sucesso",
-            description: `O horário de início do turno da ${tituloTurno.toLowerCase()} foi atualizado para ${values.horarioInicio}.`,
-          })
+          toast.success(
+            `O horário de início do turno da ${tituloTurno.toLowerCase()} foi atualizado para ${values.horarioInicio}.`,
+          )
           queryClient.invalidateQueries({
             queryKey: getConfiguracoesHorarioControllerGetQueryKey(),
           })
           setIsEditing(false)
         },
         onError: (error: AxiosError) => {
-          toast({
-            title: "Erro ao atualizar horário de início",
-            description:
-              error.request.message ||
+          toast.error(
+            error.request.message ||
               "Ocorreu um erro ao atualizar o horário de início",
-            variant: "destructive",
-          })
+          )
         },
       },
     )

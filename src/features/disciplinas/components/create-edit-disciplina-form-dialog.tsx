@@ -19,7 +19,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
 import {
   useDisciplinasControllerCreate,
   useDisciplinasControllerUpdate,
@@ -34,6 +33,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { Loader2, BookOpen, PenLine } from "lucide-react"
 import type { AxiosError } from "axios"
+import { toast } from "sonner"
 
 // Tipos inferidos dos schemas
 type CreateDisciplinaFormValues = z.infer<typeof disciplinasControllerCreateBody>
@@ -63,7 +63,6 @@ export function CreateEditDisciplinaFormDialog({
   disciplina,
 }: CreateEditDisciplinaFormDialogProps) {
   // Hooks
-  const { toast } = useToast()
   const { mutate: mutateCreate } = useDisciplinasControllerCreate()
   const { mutate: mutateUpdate } = useDisciplinasControllerUpdate()
   const queryClient = useQueryClient()
@@ -118,23 +117,17 @@ export function CreateEditDisciplinaFormDialog({
         },
         {
           onSuccess: () => {
-            toast({
-              title: "Disciplina atualizada",
-              description: "A disciplina foi atualizada com sucesso.",
-            })
+            toast.success("Disciplina atualizada")
             queryClient.invalidateQueries({
               queryKey: getDisciplinasControllerFindAllQueryKey(),
             })
             onOpenChange(false)
           },
           onError: (error: AxiosError) => {
-            toast({
-              title: "Erro ao atualizar disciplina",
-              description:
-                error.request.message ||
+            toast.error(
+              error.request.message ||
                 "Ocorreu um erro ao atualizar a disciplina.",
-              variant: "destructive",
-            })
+            )
           },
         },
       )
@@ -146,23 +139,16 @@ export function CreateEditDisciplinaFormDialog({
         { data: createData },
         {
           onSuccess: () => {
-            toast({
-              title: "Disciplina criada",
-              description: "A disciplina foi criada com sucesso.",
-            })
+            toast.success("Disciplina criada")
             queryClient.invalidateQueries({
               queryKey: getDisciplinasControllerFindAllQueryKey(),
             })
             onOpenChange(false)
           },
           onError: (error: AxiosError) => {
-            toast({
-              title: "Erro ao criar disciplina",
-              description:
-                error.request.response ||
-                "Ocorreu um erro ao criar a disciplina.",
-              variant: "destructive",
-            })
+            toast.error(
+              error.request.response || "Ocorreu um erro ao criar a disciplina.",
+            )
           },
         },
       )

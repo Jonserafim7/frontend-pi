@@ -15,7 +15,6 @@ import {
  */
 export const matrizesCurricularesControllerCreateBody = zod.object({
   "nome": zod.string().describe('Nome da matriz curricular'),
-  "idCurso": zod.string().describe('ID do curso ao qual a matriz curricular pertence'),
   "disciplinasIds": zod.array(zod.string()).describe('Lista de IDs das disciplinas da matriz curricular')
 })
 
@@ -43,6 +42,27 @@ export const matrizesCurricularesControllerFindAllResponseItem = zod.object({
 })).describe('Lista de disciplinas da matriz curricular')
 })
 export const matrizesCurricularesControllerFindAllResponse = zod.array(matrizesCurricularesControllerFindAllResponseItem)
+
+/**
+ * @summary Listar matrizes curriculares do coordenador logado
+ */
+export const matrizesCurricularesControllerFindMatrizesDoCoordenadorResponseItem = zod.object({
+  "id": zod.string().describe('ID único da matriz curricular'),
+  "nome": zod.string().describe('Nome da matriz curricular'),
+  "idCurso": zod.string().describe('ID do curso ao qual a matriz curricular pertence'),
+  "nomeCurso": zod.string().describe('Nome do curso ao qual a matriz curricular pertence'),
+  "createdAt": zod.string().datetime({}).describe('Data de criação da matriz curricular'),
+  "updatedAt": zod.string().datetime({}).describe('Data da última atualização da matriz curricular'),
+  "disciplinas": zod.array(zod.object({
+  "id": zod.string().describe('ID único da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().optional().describe('Código único da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária total da disciplina em horas'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do registro')
+})).describe('Lista de disciplinas da matriz curricular')
+})
+export const matrizesCurricularesControllerFindMatrizesDoCoordenadorResponse = zod.array(matrizesCurricularesControllerFindMatrizesDoCoordenadorResponseItem)
 
 /**
  * @summary Buscar matriz curricular por ID
@@ -77,7 +97,6 @@ export const matrizesCurricularesControllerUpdateParams = zod.object({
 
 export const matrizesCurricularesControllerUpdateBody = zod.object({
   "nome": zod.string().optional().describe('Nome da matriz curricular'),
-  "idCurso": zod.string().optional().describe('ID do curso ao qual a matriz curricular pertence'),
   "disciplinasIds": zod.array(zod.string()).optional().describe('Lista de IDs das disciplinas da matriz curricular'),
   "disciplinasParaAdicionar": zod.array(zod.string()).optional().describe('Lista de IDs das disciplinas a serem adicionadas à matriz curricular'),
   "disciplinasParaRemover": zod.array(zod.string()).optional().describe('Lista de IDs das disciplinas a serem removidas da matriz curricular')

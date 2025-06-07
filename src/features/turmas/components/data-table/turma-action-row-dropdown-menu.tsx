@@ -15,8 +15,8 @@ import {
   useTurmasControllerRemoverProfessor,
   getTurmasControllerFindAllQueryKey,
 } from "@/api-generated/client/turmas/turmas"
-import { useToast } from "@/hooks/use-toast"
 import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 /**
  * Propriedades para o menu de ações da turma
@@ -42,7 +42,6 @@ export function TurmaActionRowDropdownMenu({
   const [isAtribuirProfessorModalOpen, setIsAtribuirProfessorModalOpen] =
     useState(false)
 
-  const { toast } = useToast()
   const queryClient = useQueryClient()
 
   const { mutate: removerProfessor } = useTurmasControllerRemoverProfessor()
@@ -52,21 +51,13 @@ export function TurmaActionRowDropdownMenu({
       { id: turmaId },
       {
         onSuccess: () => {
-          toast({
-            title: "Professor removido",
-            description: "O professor foi removido da turma com sucesso.",
-          })
+          toast.success("Professor removido")
           queryClient.invalidateQueries({
             queryKey: getTurmasControllerFindAllQueryKey(),
           })
         },
         onError: (error) => {
-          toast({
-            title: "Erro ao remover professor",
-            description:
-              error?.message || "Ocorreu um erro ao remover o professor.",
-            variant: "destructive",
-          })
+          toast.error(error?.message || "Ocorreu um erro ao remover o professor.")
         },
       },
     )

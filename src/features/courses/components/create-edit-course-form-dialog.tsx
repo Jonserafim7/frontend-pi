@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/hooks/use-toast"
 import { GraduationCapIcon, Loader2, PenSquare, Save } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 import {
@@ -44,6 +43,7 @@ import {
 import { z } from "zod"
 import { HeaderIconContainer } from "@/components/icon-container"
 import type { AxiosError } from "axios"
+import { toast } from "sonner"
 
 // Tipos inferidos dos schemas
 type CourseFormValues = z.infer<typeof cursosControllerCreateBody>
@@ -64,7 +64,6 @@ export function CreateEditCourseFormDialog({
   course,
 }: CreateEditCourseFormDialogProps) {
   // Hooks
-  const { toast } = useToast()
   const { mutate: mutateUpdate, isPending: isUpdating } =
     useCursosControllerUpdate()
   const { mutate: mutateCreate, isPending: isCreating } =
@@ -136,10 +135,7 @@ export function CreateEditCourseFormDialog({
         },
         {
           onSuccess: () => {
-            toast({
-              title: "Curso atualizado",
-              description: "O curso foi atualizado com sucesso",
-            })
+            toast.success("Curso atualizado")
             queryClient.invalidateQueries({
               queryKey: getCursosControllerFindAllQueryKey(),
             })
@@ -148,11 +144,7 @@ export function CreateEditCourseFormDialog({
           onError: (error: AxiosError) => {
             const errorMessage =
               error?.request.response || "Ocorreu um erro ao atualizar o curso"
-            toast({
-              title: "Erro ao atualizar curso",
-              description: errorMessage,
-              variant: "destructive",
-            })
+            toast.error(errorMessage)
           },
         },
       )
@@ -162,10 +154,7 @@ export function CreateEditCourseFormDialog({
         { data: data as CourseFormValues },
         {
           onSuccess: () => {
-            toast({
-              title: "Curso criado",
-              description: "O curso foi criado com sucesso",
-            })
+            toast.success("Curso criado")
             queryClient.invalidateQueries({
               queryKey: getCursosControllerFindAllQueryKey(),
             })
@@ -174,11 +163,7 @@ export function CreateEditCourseFormDialog({
           onError: (error: AxiosError) => {
             const errorMessage =
               error?.request.response || "Ocorreu um erro ao criar o curso"
-            toast({
-              title: "Erro ao criar curso",
-              description: errorMessage,
-              variant: "destructive",
-            })
+            toast.error(errorMessage)
           },
         },
       )

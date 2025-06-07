@@ -23,6 +23,7 @@ import type {
 
 import type {
   CreateDisciplinaOfertadaDto,
+  CreateDisciplinaOfertadaSimplificadaDto,
   DisciplinaOfertadaResponseDto,
   DisciplinasOfertadasControllerFindAllParams,
   UpdateDisciplinaOfertadaDto,
@@ -296,7 +297,7 @@ export function useDisciplinasOfertadasControllerFindAll<
 }
 
 /**
- * @summary Obter detalhes de uma oferta de disciplina específica (Admin, Diretor, Coordenador)
+ * @summary Obter detalhes de uma oferta de disciplina específica (Coordenador, Diretor)
  */
 export const disciplinasOfertadasControllerFindOne = (
   id: string,

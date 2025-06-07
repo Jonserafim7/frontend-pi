@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import { UsuarioResponseDtoPapel } from "@/api-generated/model/usuario-response-dto-papel"
 import {
@@ -45,6 +44,7 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { useQueryClient } from "@tanstack/react-query"
 import type { UsuarioResponseDto } from "@/api-generated/model/usuario-response-dto"
 import type { AxiosError } from "axios"
+import { toast } from "sonner"
 
 // Tipos inferidos dos schemas
 type CreateUserFormValues = z.infer<typeof usuariosControllerCreateBody>
@@ -73,7 +73,6 @@ export function CreateEditUserFormDialog({
 }: CreateEditUserFormDialogProps) {
   // Hooks
   const navigate = useNavigate()
-  const { toast } = useToast()
   const { isAdmin, isDiretor, isCoordenador } = useAuth()
 
   // Centraliza definição dos papéis e permissões de exibição
@@ -98,7 +97,7 @@ export function CreateEditUserFormDialog({
       label: "Professor",
       canShow: () => isAdmin() || isDiretor() || isCoordenador(),
     },
-  ];
+  ]
 
   const { mutateAsync: mutateUpdate } = useUsuariosControllerUpdate()
   const { mutateAsync: mutateCreate } = useUsuariosControllerCreate()
@@ -168,10 +167,7 @@ export function CreateEditUserFormDialog({
         },
         {
           onSuccess: () => {
-            toast({
-              title: "Usuário atualizado",
-              description: "O usuário foi atualizado com sucesso.",
-            })
+            toast.success("Usuário atualizado")
             form.reset()
             onOpenChange(false)
             queryClient.invalidateQueries({
@@ -181,11 +177,7 @@ export function CreateEditUserFormDialog({
           onError: (error: AxiosError) => {
             const errorMessage =
               error?.request.response || "Ocorreu um erro ao atualizar o usuário"
-            toast({
-              title: "Erro ao atualizar usuário",
-              description: errorMessage,
-              variant: "destructive",
-            })
+            toast.error(errorMessage)
           },
         },
       )
@@ -198,10 +190,7 @@ export function CreateEditUserFormDialog({
         {
           onSuccess: () => {
             navigate("/usuarios")
-            toast({
-              title: "Usuário criado",
-              description: "O usuário foi criado com sucesso.",
-            })
+            toast.success("Usuário criado")
             form.reset()
             onOpenChange(false)
             queryClient.invalidateQueries({
@@ -211,11 +200,7 @@ export function CreateEditUserFormDialog({
           onError: (error: AxiosError) => {
             const errorMessage =
               error?.request.response || "Ocorreu um erro ao criar o usuário"
-            toast({
-              title: "Erro ao criar usuário",
-              description: errorMessage,
-              variant: "destructive",
-            })
+            toast.error(errorMessage)
           },
         },
       )
@@ -321,9 +306,12 @@ export function CreateEditUserFormDialog({
                     </FormControl>
                     <SelectContent>
                       {papelOptions
-                        .filter(option => option.canShow())
-                        .map(option => (
-                          <SelectItem key={option.value} value={option.value}>
+                        .filter((option) => option.canShow())
+                        .map((option) => (
+                          <SelectItem
+                            key={option.value}
+                            value={option.value}
+                          >
                             {option.label}
                           </SelectItem>
                         ))}

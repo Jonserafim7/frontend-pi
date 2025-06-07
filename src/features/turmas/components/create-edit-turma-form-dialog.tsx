@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
   DialogContent,
@@ -39,6 +38,7 @@ import {
 import { useDisciplinasOfertadasControllerFindAll } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
 import type { CreateTurmaDto, UpdateTurmaDto } from "@/api-generated/model"
 import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 /**
  * Schema de validação para o formulário de turma
@@ -68,7 +68,6 @@ export function CreateEditTurmaFormDialog({
   turmaId,
 }: CreateEditTurmaFormDialogProps) {
   const isEditing = !!turmaId
-  const { toast } = useToast()
   const queryClient = useQueryClient()
 
   const form = useForm<TurmaFormData>({
@@ -123,22 +122,16 @@ export function CreateEditTurmaFormDialog({
         },
         {
           onSuccess: () => {
-            toast({
-              title: "Turma atualizada",
-              description: `A turma "${data.codigoDaTurma}" foi atualizada com sucesso.`,
-            })
+            toast.success(
+              `A turma "${data.codigoDaTurma}" foi atualizada com sucesso.`,
+            )
             queryClient.invalidateQueries({
               queryKey: getTurmasControllerFindAllQueryKey(),
             })
             onOpenChange(false)
           },
           onError: (error) => {
-            toast({
-              title: "Erro ao atualizar turma",
-              description:
-                error?.message || "Ocorreu um erro ao atualizar a turma.",
-              variant: "destructive",
-            })
+            toast.error(error?.message || "Ocorreu um erro ao atualizar a turma.")
           },
         },
       )
@@ -151,21 +144,16 @@ export function CreateEditTurmaFormDialog({
         { data: createData },
         {
           onSuccess: () => {
-            toast({
-              title: "Turma criada",
-              description: `A turma "${data.codigoDaTurma}" foi criada com sucesso.`,
-            })
+            toast.success(
+              `A turma "${data.codigoDaTurma}" foi criada com sucesso.`,
+            )
             queryClient.invalidateQueries({
               queryKey: getTurmasControllerFindAllQueryKey(),
             })
             onOpenChange(false)
           },
           onError: (error) => {
-            toast({
-              title: "Erro ao criar turma",
-              description: error?.message || "Ocorreu um erro ao criar a turma.",
-              variant: "destructive",
-            })
+            toast.error(error?.message || "Ocorreu um erro ao criar a turma.")
           },
         },
       )

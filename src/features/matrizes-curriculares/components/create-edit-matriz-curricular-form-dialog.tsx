@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
   DialogContent,
@@ -29,14 +28,6 @@ import {
   useMatrizesCurricularesControllerFindAll,
   useMatrizesCurricularesControllerUpdate,
 } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { useCursosControllerFindAll } from "@/api-generated/client/cursos/cursos"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Command,
@@ -53,13 +44,14 @@ import { Badge } from "@/components/ui/badge"
 import { matrizesCurricularesControllerCreateBody } from "@/api-generated/zod-schemas/matrizes-curriculares/matrizes-curriculares"
 import { useDisciplinasControllerFindAll } from "@/api-generated/client/disciplinas/disciplinas"
 import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 /**
  * Schema de validação para o formulário de matriz curricular
+ * Remove o campo idCurso pois será identificado automaticamente pelo backend
  */
 const formSchema = matrizesCurricularesControllerCreateBody.pick({
   nome: true,
-  idCurso: true,
   disciplinasIds: true,
 })
 
@@ -89,8 +81,6 @@ export function CreateEditMatrizCurricularFormDialog({
   const [selectedDisciplinas, setSelectedDisciplinas] = useState<string[]>([])
   const [commandOpen, setCommandOpen] = useState(false)
 
-  const { toast } = useToast()
-  const { data: cursosData } = useCursosControllerFindAll()
   const { data: disciplinasData } = useDisciplinasControllerFindAll()
   const { data: matrizCurricularData } =
     useMatrizesCurricularesControllerFindAll()
@@ -105,7 +95,6 @@ export function CreateEditMatrizCurricularFormDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nome: "",
-      idCurso: "",
       disciplinasIds: [],
     },
   })
@@ -119,11 +108,10 @@ export function CreateEditMatrizCurricularFormDialog({
 
       if (!matrizCurricular) return
 
-      const { nome, idCurso, disciplinas } = matrizCurricular
+      const { nome, disciplinas } = matrizCurricular
 
       form.reset({
         nome,
-        idCurso,
         disciplinasIds: disciplinas.map((d) => d.id),
       })
 
@@ -141,17 +129,13 @@ export function CreateEditMatrizCurricularFormDialog({
           id: matrizCurricularId,
           data: {
             nome: data.nome,
-            idCurso: data.idCurso,
             disciplinasIds: data.disciplinasIds,
           },
         },
         {
           onSuccess: () => {
             console.log("Matriz curricular atualizada com sucesso")
-            toast({
-              title: "Matriz curricular atualizada com sucesso",
-              description: `A matriz curricular "${data.nome}" foi atualizada.`,
-            })
+            toast.success(`A matriz curricular "${data.nome}" foi atualizada.`)
             queryClient.invalidateQueries({
               queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
             })
@@ -159,12 +143,7 @@ export function CreateEditMatrizCurricularFormDialog({
             form.reset()
           },
           onError: (error) => {
-            toast({
-              title: "Erro ao atualizar matriz curricular",
-              description:
-                error?.message || "Erro ao atualizar matriz curricular",
-              variant: "destructive",
-            })
+            toast.error(error?.message || "Erro ao atualizar matriz curricular")
           },
         },
       )
@@ -173,16 +152,14 @@ export function CreateEditMatrizCurricularFormDialog({
         {
           data: {
             nome: data.nome,
-            idCurso: data.idCurso,
             disciplinasIds: data.disciplinasIds,
           },
         },
         {
           onSuccess: () => {
-            toast({
-              title: "Matriz curricular criada com sucesso",
-              description: `A matriz curricular "${data.nome}" foi criada.`,
-            })
+            toast.success(
+              `A matriz curricular "${data.nome}" foi criada para o seu curso.`,
+            )
             queryClient.invalidateQueries({
               queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
             })
@@ -190,11 +167,7 @@ export function CreateEditMatrizCurricularFormDialog({
             form.reset()
           },
           onError: (error) => {
-            toast({
-              title: "Erro ao criar matriz curricular",
-              description: error?.message || "Erro ao criar matriz curricular",
-              variant: "destructive",
-            })
+            toast.error(error?.message || "Erro ao criar matriz curricular")
           },
         },
       )
@@ -259,7 +232,8 @@ export function CreateEditMatrizCurricularFormDialog({
             <DialogDescription>
               {isEditMode ?
                 "Edite os dados da matriz curricular existente."
-              : "Preencha os campos para criar uma nova matriz curricular."}
+              : "Preencha os campos para criar uma nova matriz curricular. O curso será identificado automaticamente."
+              }
             </DialogDescription>
           </div>
         </DialogHeader>
@@ -281,38 +255,6 @@ export function CreateEditMatrizCurricularFormDialog({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="idCurso"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Curso</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione um curso" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {cursosData?.map((curso) => (
-                        <SelectItem
-                          key={curso.id}
-                          value={curso.id}
-                        >
-                          {curso.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

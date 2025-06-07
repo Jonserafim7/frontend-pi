@@ -1,56 +1,25 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router"
 import {
-  ChevronLeft,
-  BookOpenCheck,
-  GraduationCap,
-  BookOpen,
-  Clock,
-  FileText,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { useMatrizesCurricularesControllerFindAll } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
-import { useCursosControllerFindAll } from "@/api-generated/client/cursos/cursos"
-import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { HeaderIconContainer } from "@/components/icon-container"
-// Interfaces para tipagem
-interface Disciplina {
-  id: string
-  nome: string
-  codigo: string
-  cargaHoraria: number
-}
-
-interface MatrizCurricular {
-  id: string
-  nome: string
-  idCurso: string
-  disciplinas: Disciplina[]
-}
-
-interface Curso {
-  id: string
-  nome: string
-  codigo: string
-}
+import {
+  BookOpenCheck,
+  ChevronLeft,
+  GraduationCap,
+  FileText,
+  Clock,
+} from "lucide-react"
+import { useMatrizesCurricularesControllerFindAll } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
+import type { MatrizCurricularResponseDto } from "@/api-generated/model/matriz-curricular-response-dto"
 
 /**
  * Página de detalhes da Matriz Curricular
@@ -62,52 +31,23 @@ export function MatrizCurricularDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [matrizCurricular, setMatrizCurricular] =
-    useState<MatrizCurricular | null>(null)
-  const [curso, setCurso] = useState<Curso | null>(null)
+    useState<MatrizCurricularResponseDto | null>(null)
 
   const { data: matrizesCurriculares, isPending: isLoadingMatrizes } =
     useMatrizesCurricularesControllerFindAll()
 
-  const { data: cursos, isPending: isLoadingCursos } =
-    useCursosControllerFindAll()
-
-  // Carrega os dados da matriz curricular e do curso associado
+  // Carrega os dados da matriz curricular
   useEffect(() => {
-    if (matrizesCurriculares && cursos && id) {
+    if (matrizesCurriculares && id) {
       const matriz = matrizesCurriculares.find((m) => m.id === id)
-
       if (matriz) {
-        // Converter para nosso tipo interno
-        const matrizTipada: MatrizCurricular = {
-          id: matriz.id,
-          nome: matriz.nome,
-          idCurso: matriz.idCurso,
-          disciplinas: matriz.disciplinas.map((d) => ({
-            id: d.id,
-            nome: d.nome,
-            codigo: d.codigo || "",
-            cargaHoraria: d.cargaHoraria,
-          })),
-        }
-
-        setMatrizCurricular(matrizTipada)
-
-        const cursoAssociado = cursos.find((c) => c.id === matriz.idCurso)
-        if (cursoAssociado) {
-          // Converter para nosso tipo interno
-          const cursoTipado: Curso = {
-            id: cursoAssociado.id,
-            nome: cursoAssociado.nome,
-            codigo: cursoAssociado.codigo,
-          }
-          setCurso(cursoTipado)
-        }
+        setMatrizCurricular(matriz)
       }
     }
-  }, [matrizesCurriculares, cursos, id])
+  }, [matrizesCurriculares, id])
 
   // Verifica se está carregando
-  const isLoading = isLoadingMatrizes || isLoadingCursos
+  const isLoading = isLoadingMatrizes
 
   // Verifica se a matriz curricular não foi encontrada
   const matrizNotFound = !isLoading && !matrizCurricular
@@ -129,6 +69,13 @@ export function MatrizCurricularDetailsPage() {
       </div>
     )
   }
+
+  // Calcula a carga horária total
+  const cargaHorariaTotal =
+    matrizCurricular?.disciplinas.reduce(
+      (total, disciplina) => total + disciplina.cargaHoraria,
+      0,
+    ) || 0
 
   return (
     <div className="container mx-auto space-y-8 px-4 py-6">
@@ -166,16 +113,16 @@ export function MatrizCurricularDetailsPage() {
           <Separator className="my-6" />
 
           {/* Resumo Geral */}
-          <div className="mb-6 grid gap-4 md:grid-cols-2">
+          <div className="mb-6 grid gap-4 md:grid-cols-3">
             <Card className="border-l-primary/50 border-l-4">
               <CardHeader className="flex flex-row items-center gap-2">
                 <GraduationCap className="text-primary mr-1 h-5 w-5" />
-                <CardTitle className="text-lg">Curso Associado</CardTitle>
+                <CardTitle className="text-lg">Curso</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-2">
-                <p className="font-medium">{curso?.nome || "Não disponível"}</p>
+                <p className="font-medium">{matrizCurricular?.nomeCurso}</p>
                 <p className="text-muted-foreground text-sm">
-                  Código: {curso?.codigo || "N/A"}
+                  Curso associado à matriz
                 </p>
               </CardContent>
             </Card>
@@ -190,8 +137,19 @@ export function MatrizCurricularDetailsPage() {
                   {matrizCurricular?.disciplinas?.length || 0}
                 </p>
                 <p className="text-muted-foreground text-sm">
-                  Total de disciplinas nesta matriz
+                  Total de disciplinas
                 </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-primary/50 border-l-4">
+              <CardHeader className="flex flex-row items-center gap-2">
+                <Clock className="text-primary mr-1 h-5 w-5" />
+                <CardTitle className="text-lg">Carga Horária</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2">
+                <p className="font-medium">{cargaHorariaTotal}h</p>
+                <p className="text-muted-foreground text-sm">Total da matriz</p>
               </CardContent>
             </Card>
           </div>
@@ -204,31 +162,21 @@ export function MatrizCurricularDetailsPage() {
                   <GraduationCap className="text-primary h-5 w-5" />
                 </div>
                 <div>
-                  <CardTitle>Detalhes do Curso</CardTitle>
+                  <CardTitle>Informações do Curso</CardTitle>
                   <CardDescription>
-                    Informações sobre o curso associado a esta matriz curricular
+                    Curso ao qual esta matriz curricular está associada
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="">
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <h3 className="text-muted-foreground text-sm font-medium">
-                    Nome do Curso
-                  </h3>
-                  <p className="text-lg font-medium">
-                    {curso?.nome || "Não disponível"}
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-muted-foreground text-sm font-medium">
-                    Código do Curso
-                  </h3>
-                  <p className="text-lg font-medium">
-                    {curso?.codigo || "Não disponível"}
-                  </p>
-                </div>
+            <CardContent>
+              <div className="space-y-2">
+                <h3 className="text-muted-foreground text-sm font-medium">
+                  Nome do Curso
+                </h3>
+                <p className="text-lg font-medium">
+                  {matrizCurricular?.nomeCurso}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -238,74 +186,65 @@ export function MatrizCurricularDetailsPage() {
             <CardHeader className="from-primary/10 bg-gradient-to-r to-transparent pt-4 pb-2">
               <div className="flex items-center gap-3">
                 <div className="bg-primary/20 flex items-center justify-center rounded-full p-2">
-                  <BookOpen className="text-primary h-5 w-5" />
+                  <FileText className="text-primary h-5 w-5" />
                 </div>
                 <div>
-                  <CardTitle>Disciplinas</CardTitle>
+                  <CardTitle>Disciplinas da Matriz</CardTitle>
                   <CardDescription>
-                    Disciplinas incluídas nesta matriz curricular
+                    Lista completa das disciplinas que compõem esta matriz
+                    curricular
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-2">
-              {matrizCurricular && matrizCurricular?.disciplinas?.length > 0 ?
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-muted/50">
-                        <TableHead className="font-semibold">Nome</TableHead>
-                        <TableHead className="font-semibold">Código</TableHead>
-                        <TableHead className="font-semibold">
-                          Carga Horária
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {matrizCurricular?.disciplinas.map(
-                        (disciplina: Disciplina) => (
-                          <TableRow
-                            key={disciplina.id}
-                            className="hover:bg-muted/60 transition-colors"
-                          >
-                            <TableCell className="font-medium">
+            <CardContent>
+              {(
+                matrizCurricular?.disciplinas &&
+                matrizCurricular.disciplinas.length > 0
+              ) ?
+                <div className="space-y-4">
+                  {matrizCurricular.disciplinas.map((disciplina) => (
+                    <Card
+                      key={disciplina.id}
+                      className="border-l-primary/30 border-l-4 transition-all duration-200 hover:shadow-sm"
+                    >
+                      <CardContent className="pt-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="text-lg font-semibold">
                               {disciplina.nome}
-                            </TableCell>
-                            <TableCell className="text-muted-foreground text-sm">
-                              {disciplina.codigo}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant="outline"
-                                className="bg-primary/10 border-primary/30 text-primary flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium"
-                              >
-                                <Clock className="h-3 w-3" />
-                                {disciplina.cargaHoraria}h
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ),
-                      )}
-                    </TableBody>
-                  </Table>
+                            </h4>
+                            {disciplina.codigo && (
+                              <p className="text-muted-foreground text-sm">
+                                Código: {disciplina.codigo}
+                              </p>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium">
+                              {disciplina.cargaHoraria}h
+                            </p>
+                            <p className="text-muted-foreground text-sm">
+                              Carga horária
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-              : <div className="bg-muted/20 flex flex-col items-center justify-center rounded-lg py-12 text-center">
-                  <BookOpen className="text-muted-foreground mb-4 h-12 w-12 opacity-40" />
-                  <p className="text-muted-foreground mb-2 text-lg font-medium">
-                    Nenhuma disciplina cadastrada
+              : <div className="text-muted-foreground flex flex-col items-center justify-center py-12">
+                  <FileText className="mb-4 h-12 w-12" />
+                  <p className="text-lg font-medium">
+                    Nenhuma disciplina encontrada
                   </p>
-                  <p className="text-muted-foreground max-w-md text-sm">
+                  <p className="text-sm">
                     Esta matriz curricular ainda não possui disciplinas
                     associadas.
                   </p>
                 </div>
               }
             </CardContent>
-            <CardFooter className="bg-muted/10 flex justify-between border-t">
-              <div className="text-muted-foreground text-sm">
-                Total: {matrizCurricular?.disciplinas?.length || 0} disciplinas
-              </div>
-            </CardFooter>
           </Card>
         </>
       }

@@ -1,15 +1,12 @@
-import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
+  DialogHeader,
 } from "@/components/ui/dialog"
 import { HeaderIconContainer } from "@/components/icon-container"
 import {
@@ -37,6 +34,7 @@ import {
 import { useUsuariosControllerFindAll } from "@/api-generated/client/usuarios/usuarios"
 import type { TurmaResponseDto } from "@/api-generated/model"
 import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 /**
  * Schema de validação para atribuição de professor
@@ -63,7 +61,6 @@ export function AtribuirProfessorDialog({
   turma,
   onSuccess,
 }: AtribuirProfessorDialogProps) {
-  const { toast } = useToast()
   const queryClient = useQueryClient()
 
   // Buscar professores disponíveis
@@ -100,10 +97,9 @@ export function AtribuirProfessorDialog({
           const professor = professores.find(
             (p) => p.id === data.idUsuarioProfessor,
           )
-          toast({
-            title: "Professor atribuído",
-            description: `O professor ${professor?.nome} foi atribuído à turma ${turma.codigoDaTurma} com sucesso.`,
-          })
+          toast.success(
+            `O professor ${professor?.nome} foi atribuído à turma ${turma.codigoDaTurma} com sucesso.`,
+          )
           queryClient.invalidateQueries({
             queryKey: getTurmasControllerFindAllQueryKey(),
           })
@@ -112,12 +108,9 @@ export function AtribuirProfessorDialog({
           onSuccess?.()
         },
         onError: (error) => {
-          toast({
-            title: "Erro ao atribuir professor",
-            description:
-              error?.message || "Ocorreu um erro ao atribuir o professor.",
-            variant: "destructive",
-          })
+          toast.error(
+            error?.message || "Ocorreu um erro ao atribuir o professor.",
+          )
         },
       },
     )
