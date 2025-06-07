@@ -17,14 +17,8 @@ import { useAuth } from "@/features/auth/contexts/auth-context"
 import { ScheduleGrid } from "../components/schedule-grid"
 import { PropostasList } from "../components/propostas-list"
 import { usePropostaDraftAtiva } from "../hooks/use-proposta-draft-ativa"
-import {
-  usePropostasHorarioControllerFindMinhasPropostas,
-  usePropostasHorarioControllerFindAll,
-  usePropostasHorarioControllerCreate,
-  usePropostasHorarioControllerEnviar,
-  usePropostasHorarioControllerAprovar,
-  usePropostasHorarioControllerRejeitar,
-} from "@/api-generated/client/propostas-horario/propostas-horario"
+import { useMinhasPropostas } from "../hooks/use-minhas-propostas"
+import { useProposalOperations } from "../hooks/use-proposal-operations"
 import type { PropostaHorarioResponseDto } from "@/api-generated/model"
 import { PropostaHorarioResponseDtoStatus } from "@/api-generated/model"
 import { toast } from "sonner"
@@ -62,36 +56,23 @@ export function PropostasHorarioPage() {
   const [justificativaRejeicao, setJustificativaRejeicao] = useState("")
 
   // Determinação de permissões baseada no papel
-  const canViewAll = isDiretor() || isAdmin()
   const showCoordenadorActions = isCoordenador()
   const showDiretorActions = isDiretor() || isAdmin()
 
-  // Hooks para buscar dados
+  // Hook para buscar propostas usando nosso hook personalizado
   const {
-    data: minhasPropostas = [],
-    isLoading: isLoadingMinhas,
-    refetch: refetchMinhas,
-  } = usePropostasHorarioControllerFindMinhasPropostas(
-    undefined, // sem filtros específicos
-    {
-      query: {
-        enabled: isCoordenador(),
-      },
-    },
-  )
-
-  const {
-    data: todasPropostas = [],
-    isLoading: isLoadingTodas,
-    refetch: refetchTodas,
-  } = usePropostasHorarioControllerFindAll(
-    undefined, // sem filtros específicos
-    {
-      query: {
-        enabled: canViewAll,
-      },
-    },
-  )
+    isLoading,
+    canViewAll,
+    refetch,
+    propostasDraft,
+    propostasPendentes,
+    propostasAprovadas,
+    propostasRejeitadas,
+    contadores,
+  } = useMinhasPropostas({
+    enabled: !!user,
+    staleTime: 2 * 60 * 1000, // 2 minutos
+  })
 
   // Hook para proposta draft ativa (coordenadores)
   // TODO: Implementar busca do curso do coordenador via API específica
@@ -105,81 +86,87 @@ export function PropostasHorarioPage() {
     enabled: false, // Desabilitado temporariamente até implementar busca do curso
   })
 
-  // Mutations para ações
-  const createMutation = usePropostasHorarioControllerCreate()
-  const enviarMutation = usePropostasHorarioControllerEnviar()
-  const aprovarMutation = usePropostasHorarioControllerAprovar()
-  const rejeitarMutation = usePropostasHorarioControllerRejeitar()
-
-  // Dados a serem exibidos baseados no papel
-  const propostas = canViewAll ? todasPropostas : minhasPropostas
-  const isLoading = canViewAll ? isLoadingTodas : isLoadingMinhas
+  // Hook para operações (criar, enviar, aprovar, rejeitar)
+  const {
+    createProposta,
+    submitProposta,
+    approveProposta,
+    rejectProposta,
+    isCreating,
+    isSubmitting,
+    isApproving,
+    isRejecting,
+  } = useProposalOperations({
+    showToasts: true,
+    autoInvalidate: true,
+    onSuccess: {
+      create: () => {
+        setActiveTab("draft")
+        refetch()
+      },
+      submit: () => {
+        refetch()
+      },
+      approve: () => {
+        refetch()
+      },
+      reject: () => {
+        refetch()
+      },
+    },
+  })
 
   /**
-   * Agrupa propostas por status
+   * Propostas agrupadas por status - usando dados do hook
    */
   const propostasByStatus = {
-    [PropostaHorarioResponseDtoStatus.DRAFT]: propostas.filter(
-      (p) => p.status === PropostaHorarioResponseDtoStatus.DRAFT,
-    ),
-    [PropostaHorarioResponseDtoStatus.PENDENTE_APROVACAO]: propostas.filter(
-      (p) => p.status === PropostaHorarioResponseDtoStatus.PENDENTE_APROVACAO,
-    ),
-    [PropostaHorarioResponseDtoStatus.APROVADA]: propostas.filter(
-      (p) => p.status === PropostaHorarioResponseDtoStatus.APROVADA,
-    ),
-    [PropostaHorarioResponseDtoStatus.REJEITADA]: propostas.filter(
-      (p) => p.status === PropostaHorarioResponseDtoStatus.REJEITADA,
-    ),
+    [PropostaHorarioResponseDtoStatus.DRAFT]: propostasDraft,
+    [PropostaHorarioResponseDtoStatus.PENDENTE_APROVACAO]: propostasPendentes,
+    [PropostaHorarioResponseDtoStatus.APROVADA]: propostasAprovadas,
+    [PropostaHorarioResponseDtoStatus.REJEITADA]: propostasRejeitadas,
   }
 
   /**
-   * Configuração das abas com ícones e contadores
+   * Configuração das abas com ícones e contadores - usando dados do hook
    */
   const tabsConfig = [
     {
       value: "draft",
       label: "Rascunhos",
       icon: FileText,
-      count: propostasByStatus[PropostaHorarioResponseDtoStatus.DRAFT].length,
+      count: contadores.draft,
       color: "text-yellow-600",
     },
     {
       value: "pendente",
       label: "Pendentes",
       icon: Clock,
-      count:
-        propostasByStatus[PropostaHorarioResponseDtoStatus.PENDENTE_APROVACAO]
-          .length,
+      count: contadores.pendentes,
       color: "text-blue-600",
     },
     {
       value: "aprovada",
       label: "Aprovadas",
       icon: CheckCircle,
-      count: propostasByStatus[PropostaHorarioResponseDtoStatus.APROVADA].length,
+      count: contadores.aprovadas,
       color: "text-green-600",
     },
     {
       value: "rejeitada",
       label: "Rejeitadas",
       icon: XCircle,
-      count: propostasByStatus[PropostaHorarioResponseDtoStatus.REJEITADA].length,
+      count: contadores.rejeitadas,
       color: "text-red-600",
     },
   ]
 
   /**
-   * Handlers para ações
+   * Handlers para ações - usando novos hooks
    */
   const handleRefresh = useCallback(() => {
-    if (canViewAll) {
-      refetchTodas()
-    } else {
-      refetchMinhas()
-    }
+    refetch()
     refetchDraft()
-  }, [canViewAll, refetchTodas, refetchMinhas, refetchDraft])
+  }, [refetch, refetchDraft])
 
   const handleCreateNova = useCallback(async () => {
     // TODO: Implementar busca do curso do coordenador via API específica
@@ -196,35 +183,29 @@ export function PropostasHorarioPage() {
     }
 
     try {
-      await createMutation.mutateAsync({
-        data: {
-          idCurso: "curso-temporario", // TODO: usar curso real do coordenador
-          idPeriodoLetivo: "periodo-atual", // TODO: buscar período ativo
-          observacoesCoordenador: "Nova proposta criada",
-        },
+      await createProposta({
+        idCurso: "curso-temporario", // TODO: usar curso real do coordenador
+        idPeriodoLetivo: "periodo-atual", // TODO: buscar período ativo
+        observacoesCoordenador: "Nova proposta criada",
       })
-
-      toast.success("Nova proposta criada")
-      handleRefresh()
-      setActiveTab("draft")
+      // Success é tratado pelo hook com toast e navigation
     } catch (error) {
-      toast.error("Erro ao criar proposta")
+      // Error é tratado pelo hook com toast
       console.error(error)
     }
-  }, [user, createMutation, handleRefresh])
+  }, [user, createProposta])
 
   const handleEnviar = useCallback(
     async (proposta: PropostaHorarioResponseDto) => {
       try {
-        await enviarMutation.mutateAsync({ id: proposta.id })
-        toast.success("Proposta enviada para aprovação")
-        handleRefresh()
+        await submitProposta(proposta.id)
+        // Success é tratado pelo hook com toast e refetch
       } catch (error) {
-        toast.error("Erro ao enviar proposta")
+        // Error é tratado pelo hook com toast
         console.error(error)
       }
     },
-    [enviarMutation, handleRefresh],
+    [submitProposta],
   )
 
   const handleAprovar = useCallback((proposta: PropostaHorarioResponseDto) => {
@@ -237,22 +218,19 @@ export function PropostasHorarioPage() {
     if (!selectedProposta) return
 
     try {
-      await aprovarMutation.mutateAsync({
+      await approveProposta({
         id: selectedProposta.id,
-        data: {
-          observacoesDiretor: observacoesDiretor || undefined,
-        },
+        observacoesDiretor: observacoesDiretor || undefined,
       })
 
-      toast.success("Proposta aprovada")
-      handleRefresh()
+      // Success é tratado pelo hook com toast e refetch
       setIsApprovalDialogOpen(false)
       setSelectedProposta(null)
     } catch (error) {
-      toast.error("Erro ao aprovar proposta")
+      // Error é tratado pelo hook com toast
       console.error(error)
     }
-  }, [selectedProposta, observacoesDiretor, aprovarMutation, handleRefresh])
+  }, [selectedProposta, observacoesDiretor, approveProposta])
 
   const handleRejeitar = useCallback((proposta: PropostaHorarioResponseDto) => {
     setSelectedProposta(proposta)
@@ -267,22 +245,19 @@ export function PropostasHorarioPage() {
     }
 
     try {
-      await rejeitarMutation.mutateAsync({
+      await rejectProposta({
         id: selectedProposta.id,
-        data: {
-          justificativaRejeicao,
-        },
+        justificativaRejeicao,
       })
 
-      toast.success("Proposta rejeitada")
-      handleRefresh()
+      // Success é tratado pelo hook com toast e refetch
       setIsRejectionDialogOpen(false)
       setSelectedProposta(null)
     } catch (error) {
-      toast.error("Erro ao rejeitar proposta")
+      // Error é tratado pelo hook com toast
       console.error(error)
     }
-  }, [selectedProposta, justificativaRejeicao, rejeitarMutation, handleRefresh])
+  }, [selectedProposta, justificativaRejeicao, rejectProposta])
 
   const handleView = useCallback((proposta: PropostaHorarioResponseDto) => {
     // TODO: Implementar navegação para página de visualização detalhada
@@ -375,7 +350,7 @@ export function PropostasHorarioPage() {
               </div>
               <Button
                 onClick={handleCreateNova}
-                disabled={createMutation.isPending}
+                disabled={isCreating}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Nova Proposta
@@ -401,7 +376,7 @@ export function PropostasHorarioPage() {
                 <div className="mt-4 flex justify-end">
                   <Button
                     onClick={() => handleEnviar(propostaDraftAtiva)}
-                    disabled={enviarMutation.isPending}
+                    disabled={isSubmitting}
                   >
                     <AlertCircle className="mr-2 h-4 w-4" />
                     Enviar para Aprovação
@@ -513,12 +488,10 @@ export function PropostasHorarioPage() {
             </Button>
             <Button
               onClick={handleConfirmAprovar}
-              disabled={aprovarMutation.isPending}
+              disabled={isApproving}
               className="bg-green-600 hover:bg-green-700"
             >
-              {aprovarMutation.isPending && (
-                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {isApproving && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
               Aprovar
             </Button>
           </DialogFooter>
@@ -565,13 +538,9 @@ export function PropostasHorarioPage() {
             <Button
               variant="destructive"
               onClick={handleConfirmRejeitar}
-              disabled={
-                rejeitarMutation.isPending || !justificativaRejeicao.trim()
-              }
+              disabled={isRejecting || !justificativaRejeicao.trim()}
             >
-              {rejeitarMutation.isPending && (
-                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {isRejecting && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
               Rejeitar
             </Button>
           </DialogFooter>
