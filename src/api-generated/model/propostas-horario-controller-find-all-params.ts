@@ -8,20 +8,8 @@
 import type { PropostasHorarioControllerFindAllStatus } from "./propostas-horario-controller-find-all-status"
 
 export type PropostasHorarioControllerFindAllParams = {
-  /**
-   * Filtrar por status
-   */
   status?: PropostasHorarioControllerFindAllStatus
-  /**
-   * Filtrar por curso
-   */
   idCurso?: string
-  /**
-   * Filtrar por período letivo
-   */
   idPeriodoLetivo?: string
-  /**
-   * Filtrar por coordenador
-   */
   idCoordenador?: string
 }

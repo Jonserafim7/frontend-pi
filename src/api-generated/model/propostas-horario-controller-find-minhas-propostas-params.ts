@@ -8,20 +8,8 @@
 import type { PropostasHorarioControllerFindMinhasPropostasStatus } from "./propostas-horario-controller-find-minhas-propostas-status"
 
 export type PropostasHorarioControllerFindMinhasPropostasParams = {
-  /**
-   * Filtrar por status
-   */
   status?: PropostasHorarioControllerFindMinhasPropostasStatus
-  /**
-   * Filtrar por curso
-   */
   idCurso?: string
-  /**
-   * Filtrar por período letivo
-   */
   idPeriodoLetivo?: string
-  /**
-   * Filtrar por ID do coordenador
-   */
   idCoordenador?: string
 }

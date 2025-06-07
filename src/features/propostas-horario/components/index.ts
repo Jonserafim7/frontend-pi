@@ -1,6 +1,5 @@
 export * from "./proposta-card"
-export * from "./propostas-list"
-export * from "./schedule-allocation-dialog"
+export * from "./alocacao-dialog"
 export * from "./schedule-cell-view"
 export * from "./schedule-grid"
 export * from "./schedule-grid-types"

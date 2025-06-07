@@ -25,7 +25,6 @@ import type {
   AprovarPropostaDto,
   CreatePropostaHorarioDto,
   PropostaHorarioResponseDto,
-  PropostasHorarioControllerCalcularCompletude200,
   PropostasHorarioControllerFindAllParams,
   PropostasHorarioControllerFindDraftAtivaParams,
   PropostasHorarioControllerFindMinhasPropostasParams,
@@ -38,7 +37,6 @@ import type { ErrorType, BodyType } from "../../../lib/orval-axios-instance"
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
- * Cria uma nova proposta de horário em estado DRAFT para o coordenador autenticado
  * @summary Criar nova proposta de horário
  */
 export const propostasHorarioControllerCreate = (
@@ -135,7 +133,6 @@ export const usePropostasHorarioControllerCreate = <
   return useMutation(mutationOptions, queryClient)
 }
 /**
- * Lista todas as propostas de horário (disponível apenas para diretores e admins)
  * @summary Listar todas as propostas
  */
 export const propostasHorarioControllerFindAll = (
@@ -301,7 +298,6 @@ export function usePropostasHorarioControllerFindAll<
 }
 
 /**
- * Busca a proposta em estado DRAFT ativa para o coordenador autenticado
  * @summary Buscar proposta DRAFT ativa
  */
 export const propostasHorarioControllerFindDraftAtiva = (
@@ -327,7 +323,7 @@ export const getPropostasHorarioControllerFindDraftAtivaQueryKey = (
 
 export const getPropostasHorarioControllerFindDraftAtivaQueryOptions = <
   TData = Awaited<ReturnType<typeof propostasHorarioControllerFindDraftAtiva>>,
-  TError = ErrorType<void>,
+  TError = ErrorType<unknown>,
 >(
   params: PropostasHorarioControllerFindDraftAtivaParams,
   options?: {
@@ -362,11 +358,12 @@ export const getPropostasHorarioControllerFindDraftAtivaQueryOptions = <
 export type PropostasHorarioControllerFindDraftAtivaQueryResult = NonNullable<
   Awaited<ReturnType<typeof propostasHorarioControllerFindDraftAtiva>>
 >
-export type PropostasHorarioControllerFindDraftAtivaQueryError = ErrorType<void>
+export type PropostasHorarioControllerFindDraftAtivaQueryError =
+  ErrorType<unknown>
 
 export function usePropostasHorarioControllerFindDraftAtiva<
   TData = Awaited<ReturnType<typeof propostasHorarioControllerFindDraftAtiva>>,
-  TError = ErrorType<void>,
+  TError = ErrorType<unknown>,
 >(
   params: PropostasHorarioControllerFindDraftAtivaParams,
   options: {
@@ -393,7 +390,7 @@ export function usePropostasHorarioControllerFindDraftAtiva<
 }
 export function usePropostasHorarioControllerFindDraftAtiva<
   TData = Awaited<ReturnType<typeof propostasHorarioControllerFindDraftAtiva>>,
-  TError = ErrorType<void>,
+  TError = ErrorType<unknown>,
 >(
   params: PropostasHorarioControllerFindDraftAtivaParams,
   options?: {
@@ -418,7 +415,7 @@ export function usePropostasHorarioControllerFindDraftAtiva<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function usePropostasHorarioControllerFindDraftAtiva<
   TData = Awaited<ReturnType<typeof propostasHorarioControllerFindDraftAtiva>>,
-  TError = ErrorType<void>,
+  TError = ErrorType<unknown>,
 >(
   params: PropostasHorarioControllerFindDraftAtivaParams,
   options?: {
@@ -439,7 +436,7 @@ export function usePropostasHorarioControllerFindDraftAtiva<
 
 export function usePropostasHorarioControllerFindDraftAtiva<
   TData = Awaited<ReturnType<typeof propostasHorarioControllerFindDraftAtiva>>,
-  TError = ErrorType<void>,
+  TError = ErrorType<unknown>,
 >(
   params: PropostasHorarioControllerFindDraftAtivaParams,
   options?: {
@@ -472,7 +469,6 @@ export function usePropostasHorarioControllerFindDraftAtiva<
 }
 
 /**
- * Lista todas as propostas de horário do coordenador autenticado
  * @summary Listar minhas propostas
  */
 export const propostasHorarioControllerFindMinhasPropostas = (
@@ -657,7 +653,6 @@ export function usePropostasHorarioControllerFindMinhasPropostas<
 }
 
 /**
- * Busca uma proposta de horário específica pelo ID
  * @summary Buscar proposta por ID
  */
 export const propostasHorarioControllerFindOne = (
@@ -821,7 +816,6 @@ export function usePropostasHorarioControllerFindOne<
 }
 
 /**
- * Envia uma proposta em estado DRAFT para aprovação (muda status para PENDENTE_APROVACAO)
  * @summary Enviar proposta para aprovação
  */
 export const propostasHorarioControllerEnviar = (
@@ -911,7 +905,6 @@ export const usePropostasHorarioControllerEnviar = <
   return useMutation(mutationOptions, queryClient)
 }
 /**
- * Aprova uma proposta em estado PENDENTE_APROVACAO (muda status para APROVADA)
  * @summary Aprovar proposta
  */
 export const propostasHorarioControllerAprovar = (
@@ -1009,187 +1002,6 @@ export const usePropostasHorarioControllerAprovar = <
   return useMutation(mutationOptions, queryClient)
 }
 /**
- * Calcula o percentual de completude de uma proposta baseado nas alocações
- * @summary Calcular completude da proposta
- */
-export const propostasHorarioControllerCalcularCompletude = (
-  id: string,
-  options?: SecondParameter<typeof orvalCustomInstance>,
-  signal?: AbortSignal,
-) => {
-  return orvalCustomInstance<PropostasHorarioControllerCalcularCompletude200>(
-    { url: `/propostas-horario/${id}/completude`, method: "GET", signal },
-    options,
-  )
-}
-
-export const getPropostasHorarioControllerCalcularCompletudeQueryKey = (
-  id: string,
-) => {
-  return ["propostas-horario", id, "completude"] as const
-}
-
-export const getPropostasHorarioControllerCalcularCompletudeQueryOptions = <
-  TData = Awaited<
-    ReturnType<typeof propostasHorarioControllerCalcularCompletude>
-  >,
-  TError = ErrorType<void>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>,
-        TError,
-        TData
-      >
-    >
-    request?: SecondParameter<typeof orvalCustomInstance>
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getPropostasHorarioControllerCalcularCompletudeQueryKey(id)
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>
-  > = ({ signal }) =>
-    propostasHorarioControllerCalcularCompletude(id, requestOptions, signal)
-
-  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type PropostasHorarioControllerCalcularCompletudeQueryResult = NonNullable<
-  Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>
->
-export type PropostasHorarioControllerCalcularCompletudeQueryError =
-  ErrorType<void>
-
-export function usePropostasHorarioControllerCalcularCompletude<
-  TData = Awaited<
-    ReturnType<typeof propostasHorarioControllerCalcularCompletude>
-  >,
-  TError = ErrorType<void>,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof propostasHorarioControllerCalcularCompletude>
-          >,
-          TError,
-          Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>
-        >,
-        "initialData"
-      >
-    request?: SecondParameter<typeof orvalCustomInstance>
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
-export function usePropostasHorarioControllerCalcularCompletude<
-  TData = Awaited<
-    ReturnType<typeof propostasHorarioControllerCalcularCompletude>
-  >,
-  TError = ErrorType<void>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof propostasHorarioControllerCalcularCompletude>
-          >,
-          TError,
-          Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>
-        >,
-        "initialData"
-      >
-    request?: SecondParameter<typeof orvalCustomInstance>
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function usePropostasHorarioControllerCalcularCompletude<
-  TData = Awaited<
-    ReturnType<typeof propostasHorarioControllerCalcularCompletude>
-  >,
-  TError = ErrorType<void>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>,
-        TError,
-        TData
-      >
-    >
-    request?: SecondParameter<typeof orvalCustomInstance>
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Calcular completude da proposta
- */
-
-export function usePropostasHorarioControllerCalcularCompletude<
-  TData = Awaited<
-    ReturnType<typeof propostasHorarioControllerCalcularCompletude>
-  >,
-  TError = ErrorType<void>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof propostasHorarioControllerCalcularCompletude>>,
-        TError,
-        TData
-      >
-    >
-    request?: SecondParameter<typeof orvalCustomInstance>
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getPropostasHorarioControllerCalcularCompletudeQueryOptions(id, options)
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-
-  query.queryKey = queryOptions.queryKey
-
-  return query
-}
-
-/**
- * Rejeita uma proposta em estado PENDENTE_APROVACAO (muda status para REJEITADA)
  * @summary Rejeitar proposta
  */
 export const propostasHorarioControllerRejeitar = (

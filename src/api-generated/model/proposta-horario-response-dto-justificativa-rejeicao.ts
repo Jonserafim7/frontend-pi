@@ -7,7 +7,6 @@
  */
 
 /**
- * Justificativa de rejeição
  * @nullable
  */
 export type PropostaHorarioResponseDtoJustificativaRejeicao = {

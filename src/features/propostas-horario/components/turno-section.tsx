@@ -3,24 +3,6 @@ import { ScheduleCellContainer } from "./schedule-cell-container"
 import type { TurnoSectionProps } from "./schedule-grid-types"
 import { DIAS_SEMANA } from "./schedule-grid-types"
 
-/**
- * Componente que representa uma seção da grade de horários para um turno específico (manhã, tarde ou noite).
- *
- * Renderiza o cabeçalho do turno, os horários e as células para cada dia da semana.
- * Cada célula pode exibir uma alocação existente ou um botão para adicionar nova alocação.
- *
- * @param {TurnoSectionProps} props
- * @returns {JSX.Element}
- *
- * @example
- * <TurnoSection
- *   titulo="Manhã"
- *   aulas={aulasManha}
- *   inicio="07:00"
- *   fim="12:00"
- *   alocacoesMap={alocacoesMap}
- * />
- */
 export function TurnoSection({
   titulo,
   aulas,
@@ -28,7 +10,6 @@ export function TurnoSection({
   fim,
   alocacoesMap,
   propostaId,
-  todasAlocacoes,
 }: TurnoSectionProps) {
   return (
     <div>
@@ -77,7 +58,6 @@ export function TurnoSection({
             {DIAS_SEMANA.map((dia) => {
               const chaveAlocacao = `${dia.key}_${aula.inicio}`
               const alocacoesEncontradas = alocacoesMap.get(chaveAlocacao) || []
-              // Mantém compatibilidade com código existente
               const primeiraAlocacao = alocacoesEncontradas[0]
 
               return (
@@ -88,7 +68,6 @@ export function TurnoSection({
                   alocacao={primeiraAlocacao}
                   alocacoes={alocacoesEncontradas}
                   propostaId={propostaId}
-                  todasAlocacoes={todasAlocacoes}
                 />
               )
             })}

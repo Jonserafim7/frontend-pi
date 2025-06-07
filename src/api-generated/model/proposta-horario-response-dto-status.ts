@@ -6,9 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 
-/**
- * Status da proposta
- */
 export type PropostaHorarioResponseDtoStatus =
   (typeof PropostaHorarioResponseDtoStatus)[keyof typeof PropostaHorarioResponseDtoStatus]
 

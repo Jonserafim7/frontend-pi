@@ -7,12 +7,6 @@
  */
 
 export type PropostasHorarioControllerFindDraftAtivaParams = {
-  /**
-   * ID do curso
-   */
   idCurso: string
-  /**
-   * ID do período letivo
-   */
   idPeriodoLetivo: string
 }

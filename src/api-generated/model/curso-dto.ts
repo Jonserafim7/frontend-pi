@@ -5,9 +5,11 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { ProfessorDto } from "./professor-dto"
+import type { CursoDtoCodigo } from "./curso-dto-codigo"
 
-/**
- * @nullable
- */
-export type TurmaDtoProfessorAlocado = ProfessorDto | null
+export interface CursoDto {
+  id: string
+  nome: string
+  /** @nullable */
+  codigo: CursoDtoCodigo
+}

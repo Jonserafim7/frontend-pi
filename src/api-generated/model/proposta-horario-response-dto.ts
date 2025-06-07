@@ -11,51 +11,28 @@ import type { PropostaHorarioResponseDtoDataAprovacaoRejeicao } from "./proposta
 import type { PropostaHorarioResponseDtoJustificativaRejeicao } from "./proposta-horario-response-dto-justificativa-rejeicao"
 import type { PropostaHorarioResponseDtoObservacoesCoordenador } from "./proposta-horario-response-dto-observacoes-coordenador"
 import type { PropostaHorarioResponseDtoObservacoesDiretor } from "./proposta-horario-response-dto-observacoes-diretor"
-import type { CursoSimplificadoDto } from "./curso-simplificado-dto"
-import type { PeriodoLetivoSimplificadoDto } from "./periodo-letivo-simplificado-dto"
-import type { CoordenadorSimplificadoDto } from "./coordenador-simplificado-dto"
+import type { CursoDto } from "./curso-dto"
+import type { PeriodoLetivoDto } from "./periodo-letivo-dto"
+import type { CoordenadorDto } from "./coordenador-dto"
 import type { AlocacaoHorarioDto } from "./alocacao-horario-dto"
 
 export interface PropostaHorarioResponseDto {
-  /** ID da proposta */
   id: string
-  /** Status da proposta */
   status: PropostaHorarioResponseDtoStatus
-  /**
-   * Data de submissão
-   * @nullable
-   */
+  /** @nullable */
   dataSubmissao: PropostaHorarioResponseDtoDataSubmissao
-  /**
-   * Data de aprovação ou rejeição
-   * @nullable
-   */
+  /** @nullable */
   dataAprovacaoRejeicao: PropostaHorarioResponseDtoDataAprovacaoRejeicao
-  /**
-   * Justificativa de rejeição
-   * @nullable
-   */
+  /** @nullable */
   justificativaRejeicao: PropostaHorarioResponseDtoJustificativaRejeicao
-  /**
-   * Observações do coordenador
-   * @nullable
-   */
+  /** @nullable */
   observacoesCoordenador: PropostaHorarioResponseDtoObservacoesCoordenador
-  /**
-   * Observações do diretor
-   * @nullable
-   */
+  /** @nullable */
   observacoesDiretor: PropostaHorarioResponseDtoObservacoesDiretor
-  /** Data de criação */
   dataCriacao: string
-  /** Data de atualização */
   dataAtualizacao: string
-  /** Curso */
-  curso: CursoSimplificadoDto
-  /** Período letivo */
-  periodoLetivo: PeriodoLetivoSimplificadoDto
-  /** Coordenador que submeteu */
-  coordenadorQueSubmeteu: CoordenadorSimplificadoDto
-  /** Alocações propostas */
+  curso: CursoDto
+  periodoLetivo: PeriodoLetivoDto
+  coordenadorQueSubmeteu: CoordenadorDto
   alocacoesPropostas: AlocacaoHorarioDto[]
 }

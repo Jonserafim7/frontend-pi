@@ -3,96 +3,64 @@ import { useQueryClient } from "@tanstack/react-query"
 import {
   useAlocacoesHorariosControllerCreate,
   useAlocacoesHorariosControllerDelete,
-  useAlocacoesHorariosControllerValidate,
   getAlocacoesHorariosControllerFindManyQueryKey,
 } from "@/api-generated/client/alocações-de-horário/alocações-de-horário"
 import {
   getPropostasHorarioControllerFindDraftAtivaQueryKey,
   getPropostasHorarioControllerFindAllQueryKey,
   getPropostasHorarioControllerFindMinhasPropostasQueryKey,
-  getPropostasHorarioControllerFindOneQueryKey,
 } from "@/api-generated/client/propostas-horario/propostas-horario"
 import { useTurmasControllerFindAll } from "@/api-generated/client/turmas/turmas"
 import { usePeriodosLetivosControllerFindPeriodoAtivo } from "@/api-generated/client/períodos-letivos/períodos-letivos"
-import { useDisponibilidadeProfessorControllerFindByPeriodo } from "@/api-generated/client/disponibilidade-de-professores/disponibilidade-de-professores"
 import { usePropostaDraftAtiva } from "./use-proposta-draft-ativa"
-import { useAuth } from "@/features/auth/contexts/auth-context"
 import type {
   CreateAlocacaoHorarioDto,
-  ValidateAlocacaoDto,
   AlocacaoHorarioResponseDto,
   TurmaResponseDto,
-  DisponibilidadeResponseDto,
 } from "@/api-generated/model"
 import type { DiaSemanaKey } from "../components/schedule-grid-types"
 
 export interface UseScheduleAllocationOptions {
-  /**
-   * ID da proposta específica (opcional)
-   */
+  /** ID da proposta específica (opcional) */
   propostaId?: string
-  /**
-   * ID do curso para buscar proposta draft ativa
-   */
+  /** ID do curso para buscar proposta draft ativa */
   cursoId?: string
-  /**
-   * ID do período letivo para buscar proposta draft ativa
-   */
+  /** ID do período letivo para buscar proposta draft ativa */
   periodoId?: string
 }
 
 /**
- * Hook customizado para gerenciar alocações de horários com validações completas.
+ * Hook simplificado para gerenciar alocações de horários
  *
- * Fornece funções para:
- * - Buscar turmas disponíveis
- * - Criar novas alocações com auto-associação a propostas draft
+ * Funcionalidades essenciais:
+ * - Criar novas alocações
  * - Remover alocações existentes
- * - Validar conflitos antes de alocar
- * - Verificar disponibilidade de professores
- * - Invalidar cache para atualizar a UI (incluindo propostas)
+ * - Verificar turmas disponíveis (validação básica)
+ * - Invalidar cache para atualizar a UI
  */
 export function useScheduleAllocation(
   options: UseScheduleAllocationOptions = {},
 ) {
   const { propostaId, cursoId, periodoId } = options
   const queryClient = useQueryClient()
-  const { isCoordenador } = useAuth()
 
   // Mutations para alocações
   const createAlocacaoMutation = useAlocacoesHorariosControllerCreate()
   const deleteAlocacaoMutation = useAlocacoesHorariosControllerDelete()
-  const validateAlocacaoMutation = useAlocacoesHorariosControllerValidate()
 
   // Buscar período ativo
   const { data: periodoAtivo } = usePeriodosLetivosControllerFindPeriodoAtivo()
 
-  // Hook para proposta draft ativa (apenas para coordenadores)
+  // Hook para proposta draft ativa
   const {
     data: propostaDraftAtiva,
     hasDraftAtiva,
     isLoading: isLoadingDraft,
-    invalidate: invalidateDraft,
   } = usePropostaDraftAtiva({
     cursoId,
     periodoId: periodoId || periodoAtivo?.id,
-    enabled:
-      isCoordenador() && Boolean(cursoId && (periodoId || periodoAtivo?.id)),
+    enabled: Boolean(cursoId && (periodoId || periodoAtivo?.id)),
   })
-
-  // Buscar disponibilidades do período ativo
-  const { data: disponibilidades = [], isLoading: isLoadingDisponibilidades } =
-    useDisponibilidadeProfessorControllerFindByPeriodo(
-      periodoAtivo?.id || "",
-      {
-        status: "DISPONIVEL",
-      },
-      {
-        query: {
-          enabled: !!periodoAtivo?.id,
-        },
-      },
-    )
 
   // Query para buscar todas as turmas disponíveis
   const { data: turmas = [], isLoading: isLoadingTurmas } =
@@ -126,92 +94,124 @@ export function useScheduleAllocation(
   )
 
   /**
-   * Verificar se dois horários têm sobreposição
+   * Converter horário string para minutos para comparação
    */
-  const temSobreposicaoHorario = useCallback(
+  const horarioParaMinutos = useCallback((horario: string): number => {
+    const [horas, minutos] = horario.split(":").map(Number)
+    return horas * 60 + minutos
+  }, [])
+
+  /**
+   * Verificar se dois horários se sobrepõem
+   */
+  const horariosSesobrepom = useCallback(
     (inicio1: string, fim1: string, inicio2: string, fim2: string): boolean => {
-      // Converter horários para minutos para facilitar comparação
-      const converterParaMinutos = (horario: string): number => {
-        const [horas, minutos] = horario.split(":").map(Number)
-        return horas * 60 + minutos
-      }
+      const inicioMin1 = horarioParaMinutos(inicio1)
+      const fimMin1 = horarioParaMinutos(fim1)
+      const inicioMin2 = horarioParaMinutos(inicio2)
+      const fimMin2 = horarioParaMinutos(fim2)
 
-      const inicio1Min = converterParaMinutos(inicio1)
-      const fim1Min = converterParaMinutos(fim1)
-      const inicio2Min = converterParaMinutos(inicio2)
-      const fim2Min = converterParaMinutos(fim2)
-
-      // Verificar sobreposição: não há sobreposição se um termina antes do outro começar
-      return !(fim1Min <= inicio2Min || fim2Min <= inicio1Min)
+      return inicioMin1 < fimMin2 && inicioMin2 < fimMin1
     },
-    [],
+    [horarioParaMinutos],
   )
 
   /**
-   * Verificar conflitos de horário para uma turma específica
+   * Verificar conflito básico de turma (mesma turma, mesmo dia, mesmo horário)
    */
-  const temConflitoHorario = useCallback(
+  const temConflitoBasico = useCallback(
     (
       turma: TurmaResponseDto,
       dia: DiaSemanaKey,
       horaInicio: string,
       horaFim: string,
-      todasAlocacoes: AlocacaoHorarioResponseDto[],
-    ): { temConflito: boolean; motivo?: string } => {
-      // 1. Verificar se a turma já está alocada em outro horário no mesmo dia
-      const alocacoesTurmaMesmoDia = todasAlocacoes.filter(
+      alocacoesExistentes: AlocacaoHorarioResponseDto[],
+    ): boolean => {
+      return alocacoesExistentes.some(
         (alocacao) =>
-          alocacao.idTurma === turma.id && alocacao.diaDaSemana === dia,
+          alocacao.idTurma === turma.id &&
+          alocacao.diaDaSemana === dia &&
+          alocacao.horaInicio === horaInicio &&
+          alocacao.horaFim === horaFim,
       )
-
-      for (const alocacao of alocacoesTurmaMesmoDia) {
-        if (
-          temSobreposicaoHorario(
-            horaInicio,
-            horaFim,
-            alocacao.horaInicio,
-            alocacao.horaFim,
-          )
-        ) {
-          return {
-            temConflito: true,
-            motivo: `Turma ${turma.codigoDaTurma} já está alocada das ${alocacao.horaInicio} às ${alocacao.horaFim}`,
-          }
-        }
-      }
-
-      // 2. Verificar se o professor já está alocado em outro horário no mesmo dia/horário
-      if (turma.professorAlocado) {
-        const alocacoesProfessorMesmoDiaHorario = todasAlocacoes.filter(
-          (alocacao) =>
-            alocacao.turma.professorAlocado?.id === turma.professorAlocado?.id &&
-            alocacao.diaDaSemana === dia,
-        )
-
-        for (const alocacao of alocacoesProfessorMesmoDiaHorario) {
-          if (
-            temSobreposicaoHorario(
-              horaInicio,
-              horaFim,
-              alocacao.horaInicio,
-              alocacao.horaFim,
-            )
-          ) {
-            return {
-              temConflito: true,
-              motivo: `Professor ${turma.professorAlocado.nome} já está alocado das ${alocacao.horaInicio} às ${alocacao.horaFim} com a turma ${alocacao.turma.codigoDaTurma}`,
-            }
-          }
-        }
-      }
-
-      return { temConflito: false }
     },
-    [temSobreposicaoHorario],
+    [],
   )
 
   /**
-   * Filtrar turmas que não possuem conflitos para o slot especificado
+   * Verificar conflito de professor (mesmo professor em horários sobrepostos)
+   */
+  const temConflitoProfessor = useCallback(
+    (
+      turma: TurmaResponseDto,
+      dia: DiaSemanaKey,
+      horaInicio: string,
+      horaFim: string,
+      alocacoesExistentes: AlocacaoHorarioResponseDto[],
+    ): boolean => {
+      if (!turma.professorAlocado) return false
+
+      return alocacoesExistentes.some(
+        (alocacao) =>
+          alocacao.turma.professorAlocado?.id === turma.professorAlocado?.id &&
+          alocacao.diaDaSemana === dia &&
+          horariosSesobrepom(
+            alocacao.horaInicio,
+            alocacao.horaFim,
+            horaInicio,
+            horaFim,
+          ),
+      )
+    },
+    [horariosSesobrepom],
+  )
+
+  /**
+   * Verificar conflitos de horário (validação completa)
+   */
+  const verificarConflitos = useCallback(
+    (
+      turma: TurmaResponseDto,
+      dia: DiaSemanaKey,
+      horaInicio: string,
+      horaFim: string,
+      alocacoesExistentes: AlocacaoHorarioResponseDto[],
+    ) => {
+      const conflitos = {
+        basico: temConflitoBasico(
+          turma,
+          dia,
+          horaInicio,
+          horaFim,
+          alocacoesExistentes,
+        ),
+        professor: temConflitoProfessor(
+          turma,
+          dia,
+          horaInicio,
+          horaFim,
+          alocacoesExistentes,
+        ),
+        mensagens: [] as string[],
+      }
+
+      if (conflitos.basico) {
+        conflitos.mensagens.push("Turma já está alocada neste horário")
+      }
+
+      if (conflitos.professor) {
+        conflitos.mensagens.push(
+          `Professor ${turma.professorAlocado?.nome} já tem aula neste horário`,
+        )
+      }
+
+      return conflitos
+    },
+    [temConflitoBasico, temConflitoProfessor],
+  )
+
+  /**
+   * Filtrar turmas disponíveis com validações robustas
    */
   const getTurmasDisponiveis = useCallback(
     (
@@ -219,199 +219,95 @@ export function useScheduleAllocation(
       horaInicio: string,
       horaFim: string,
       alocacoesExistentes: AlocacaoHorarioResponseDto[] = [],
-      todasAlocacoes: AlocacaoHorarioResponseDto[] = [],
     ) => {
-      // IDs das turmas já alocadas neste slot específico
-      const turmasAlocadasIds = new Set(
-        alocacoesExistentes.map((alocacao) => alocacao.idTurma),
-      )
-
-      // Filtrar turmas aplicando todas as validações
       return turmas.filter((turma) => {
-        // 1. Não pode estar já alocada neste slot
-        if (turmasAlocadasIds.has(turma.id)) {
-          return false
-        }
-
-        // 2. Não pode ter professor sem atribuição
+        // 1. Deve ter professor atribuído
         if (!turma.professorAlocado) {
           return false
         }
 
-        // 3. Verificar se o professor está disponível no horário
-        const professorDisponivel = isProfessorDisponivel(
-          turma.professorAlocado.id,
-          dia,
-          horaInicio,
-          horaFim,
-          disponibilidades,
-        )
-
-        if (!professorDisponivel) {
-          return false
-        }
-
-        // 4. Verificar conflitos de horário
-        const { temConflito } = temConflitoHorario(
+        // 2. Verificar conflitos
+        const conflitos = verificarConflitos(
           turma,
           dia,
           horaInicio,
           horaFim,
-          todasAlocacoes,
+          alocacoesExistentes,
         )
 
-        return !temConflito
+        // 3. Retornar apenas turmas sem conflitos
+        return !conflitos.basico && !conflitos.professor
       })
     },
-    [turmas, temConflitoHorario, disponibilidades],
+    [turmas, verificarConflitos],
   )
 
   /**
-   * Obter motivos pelos quais uma turma não está disponível
+   * Obter informações de conflitos para uma turma específica
    */
-  const getMotivosIndisponibilidade = useCallback(
+  const getConflitosParaTurma = useCallback(
     (
       turma: TurmaResponseDto,
       dia: DiaSemanaKey,
       horaInicio: string,
       horaFim: string,
       alocacoesExistentes: AlocacaoHorarioResponseDto[] = [],
-      todasAlocacoes: AlocacaoHorarioResponseDto[] = [],
-    ): string[] => {
-      const motivos: string[] = []
-
-      // Verificar se já está alocada neste slot
-      const jaAlocadaNesteSlot = alocacoesExistentes.some(
-        (alocacao) => alocacao.idTurma === turma.id,
-      )
-      if (jaAlocadaNesteSlot) {
-        motivos.push("Já alocada neste horário")
-      }
-
-      // Verificar se tem professor atribuído
-      if (!turma.professorAlocado) {
-        motivos.push("Professor não atribuído")
-      } else {
-        // Verificar disponibilidade do professor
-        const professorDisponivel = isProfessorDisponivel(
-          turma.professorAlocado.id,
-          dia,
-          horaInicio,
-          horaFim,
-          disponibilidades,
-        )
-
-        if (!professorDisponivel) {
-          motivos.push(
-            `Professor ${turma.professorAlocado.nome} não está disponível neste horário`,
-          )
-        }
-      }
-
-      // Verificar conflitos de horário
-      const { temConflito, motivo } = temConflitoHorario(
+    ) => {
+      return verificarConflitos(
         turma,
         dia,
         horaInicio,
         horaFim,
-        todasAlocacoes,
+        alocacoesExistentes,
       )
-      if (temConflito && motivo) {
-        motivos.push(motivo)
-      }
-
-      return motivos
     },
-    [temConflitoHorario, disponibilidades],
+    [verificarConflitos],
   )
 
   /**
-   * Validar se uma turma pode ser alocada no slot
+   * Invalidar cache básico
    */
-  const validateAlocacao = useCallback(
-    async (
-      idTurma: string,
-      dia: DiaSemanaKey,
-      horaInicio: string,
-      horaFim: string,
-    ) => {
-      const validateData: ValidateAlocacaoDto = {
-        idTurma,
-        diaDaSemana: mapDiaSemanaToDtoEnum(dia),
-        horaInicio,
-        horaFim,
-      }
+  const invalidateCache = useCallback(async () => {
+    console.log("🔄 [invalidateCache] Iniciando invalidação com parâmetros:", {
+      cursoId,
+      periodoId,
+      periodoAtivoId: periodoAtivo?.id,
+    })
 
-      try {
-        const result = await validateAlocacaoMutation.mutateAsync({
-          data: validateData,
-        })
-        return result
-      } catch (error) {
-        console.error("Erro ao validar alocação:", error)
-        throw error
-      }
-    },
-    [validateAlocacaoMutation, mapDiaSemanaToDtoEnum],
-  )
-
-  /**
-   * Invalidar todas as queries relacionadas às propostas
-   */
-  const invalidatePropostasQueries = useCallback(async () => {
-    const invalidationPromises = []
-
-    // Invalidar lista geral de propostas
-    invalidationPromises.push(
+    await Promise.all([
+      // Invalidar todas as queries de alocações (diferentes variações)
+      queryClient.invalidateQueries({
+        queryKey: getAlocacoesHorariosControllerFindManyQueryKey({}),
+      }),
+      // Invalidar queries mais amplas para garantir atualização
+      queryClient.invalidateQueries({
+        queryKey: ["alocações-de-horário"], // Invalidar namespace completo
+      }),
+      // Invalidar propostas
       queryClient.invalidateQueries({
         queryKey: getPropostasHorarioControllerFindAllQueryKey(),
       }),
-    )
-
-    // Invalidar minhas propostas
-    invalidationPromises.push(
       queryClient.invalidateQueries({
         queryKey: getPropostasHorarioControllerFindMinhasPropostasQueryKey(),
       }),
-    )
-
-    // Invalidar proposta draft ativa se disponível
-    if (cursoId && (periodoId || periodoAtivo?.id)) {
-      invalidationPromises.push(
-        queryClient.invalidateQueries({
-          queryKey: getPropostasHorarioControllerFindDraftAtivaQueryKey({
-            idCurso: cursoId,
-            idPeriodoLetivo: periodoId || periodoAtivo?.id || "",
-          }),
-        }),
-      )
-    }
-
-    // Invalidar proposta específica se fornecida
-    if (propostaId || propostaDraftAtiva?.id) {
-      const targetPropostaId = propostaId || propostaDraftAtiva?.id
-      if (targetPropostaId) {
-        invalidationPromises.push(
+      // Invalidar draft ativa se disponível
+      ...(cursoId && (periodoId || periodoAtivo?.id) ?
+        [
           queryClient.invalidateQueries({
-            queryKey:
-              getPropostasHorarioControllerFindOneQueryKey(targetPropostaId),
+            queryKey: getPropostasHorarioControllerFindDraftAtivaQueryKey({
+              idCurso: cursoId,
+              idPeriodoLetivo: periodoId || periodoAtivo?.id || "",
+            }),
           }),
-        )
-      }
-    }
+        ]
+      : []),
+    ])
 
-    await Promise.all(invalidationPromises)
-  }, [
-    queryClient,
-    cursoId,
-    periodoId,
-    periodoAtivo?.id,
-    propostaId,
-    propostaDraftAtiva?.id,
-  ])
+    console.log("✅ [invalidateCache] Invalidação concluída")
+  }, [queryClient, cursoId, periodoId, periodoAtivo?.id])
 
   /**
-   * Criar nova alocação
+   * Criar nova alocação (simplificado)
    */
   const criarAlocacao = useCallback(
     async (
@@ -420,12 +316,12 @@ export function useScheduleAllocation(
       horaInicio: string,
       horaFim: string,
     ) => {
-      // Primeiro validar a alocação
-      const validation = await validateAlocacao(idTurma, dia, horaInicio, horaFim)
-
-      if (!validation.valid) {
-        throw new Error(validation.error || "Alocação inválida")
-      }
+      console.log("🚀 [useScheduleAllocation] Iniciando criação de alocação:", {
+        idTurma,
+        dia,
+        horaInicio,
+        horaFim,
+      })
 
       const createData: CreateAlocacaoHorarioDto = {
         idTurma,
@@ -435,31 +331,28 @@ export function useScheduleAllocation(
       }
 
       try {
+        console.log(
+          "⏳ [useScheduleAllocation] Chamando API para criar alocação...",
+        )
         const result = await createAlocacaoMutation.mutateAsync({
           data: createData,
         })
+        console.log(
+          "✅ [useScheduleAllocation] Alocação criada com sucesso:",
+          result,
+        )
 
-        // Invalidar cache para atualizar a lista de alocações
-        await queryClient.invalidateQueries({
-          queryKey: getAlocacoesHorariosControllerFindManyQueryKey({}),
-        })
-
-        // Invalidar queries relacionadas às propostas
-        await invalidatePropostasQueries()
+        console.log("🔄 [useScheduleAllocation] Invalidando cache...")
+        await invalidateCache()
+        console.log("✅ [useScheduleAllocation] Cache invalidado")
 
         return result
       } catch (error) {
-        console.error("Erro ao criar alocação:", error)
+        console.error("❌ [useScheduleAllocation] Erro ao criar alocação:", error)
         throw error
       }
     },
-    [
-      validateAlocacao,
-      createAlocacaoMutation,
-      mapDiaSemanaToDtoEnum,
-      queryClient,
-      invalidatePropostasQueries,
-    ],
+    [createAlocacaoMutation, mapDiaSemanaToDtoEnum, invalidateCache],
   )
 
   /**
@@ -469,45 +362,15 @@ export function useScheduleAllocation(
     async (alocacaoId: string) => {
       try {
         await deleteAlocacaoMutation.mutateAsync({ id: alocacaoId })
-
-        // Invalidar cache para atualizar a lista de alocações
-        await queryClient.invalidateQueries({
-          queryKey: getAlocacoesHorariosControllerFindManyQueryKey({}),
-        })
-
-        // Invalidar queries relacionadas às propostas
-        await invalidatePropostasQueries()
-
+        await invalidateCache()
         return true
       } catch (error) {
         console.error("Erro ao remover alocação:", error)
         throw error
       }
     },
-    [deleteAlocacaoMutation, queryClient, invalidatePropostasQueries],
+    [deleteAlocacaoMutation, invalidateCache],
   )
-
-  /**
-   * Verifica se um professor está disponível em um horário específico
-   */
-  function isProfessorDisponivel(
-    professorId: string,
-    diaSemana: DiaSemanaKey,
-    horaInicio: string,
-    horaFim: string,
-    disponibilidades: DisponibilidadeResponseDto[],
-  ): boolean {
-    const disponibilidade = disponibilidades.find(
-      (d) =>
-        d.usuarioProfessor.id === professorId &&
-        d.diaDaSemana === diaSemana &&
-        d.horaInicio <= horaInicio &&
-        d.horaFim >= horaFim &&
-        d.status === "DISPONIVEL",
-    )
-
-    return !!disponibilidade
-  }
 
   return {
     // Data
@@ -517,33 +380,26 @@ export function useScheduleAllocation(
     // States das mutations
     isCreating: createAlocacaoMutation.isPending,
     isDeleting: deleteAlocacaoMutation.isPending,
-    isValidating: validateAlocacaoMutation.isPending,
 
     // Functions
     getTurmasDisponiveis,
-    getMotivosIndisponibilidade,
-    validateAlocacao,
+    getConflitosParaTurma,
     criarAlocacao,
     removerAlocacao,
 
-    // Utility functions
-    temSobreposicaoHorario,
-    temConflitoHorario,
+    // Validation helpers
+    verificarConflitos,
+    horariosSesobrepom,
 
-    // Period and availability data
+    // Period data
     periodoAtivo,
-    isLoadingDisponibilidades,
-    disponibilidades,
 
     // Draft proposta integration
     propostaDraftAtiva,
     hasDraftAtiva,
     isLoadingDraft,
-    invalidateDraft,
-    invalidatePropostasQueries,
 
-    // Proposal-aware status
-    isProposalModeEnabled: isCoordenador() && hasDraftAtiva,
+    // Status
     activePropostaId: propostaDraftAtiva?.id || propostaId,
   }
 }

@@ -6,9 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 
-/**
- * Dia da semana
- */
 export type AlocacaoHorarioDtoDiaDaSemana =
   (typeof AlocacaoHorarioDtoDiaDaSemana)[keyof typeof AlocacaoHorarioDtoDiaDaSemana]
 

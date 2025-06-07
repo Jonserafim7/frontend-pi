@@ -7,10 +7,7 @@
  */
 
 export interface CreatePropostaHorarioDto {
-  /** ID do curso para o qual a proposta será criada */
   idCurso: string
-  /** ID do período letivo para o qual a proposta será criada */
   idPeriodoLetivo: string
-  /** Observações opcionais do coordenador sobre a proposta */
   observacoesCoordenador?: string
 }

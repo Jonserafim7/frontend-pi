@@ -1,8 +1,8 @@
 import * as React from "react"
-import { Check, ChevronsUpDown, X } from "lucide-react"
-
+import { Check, ChevronsUpDown, X, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Command,
   CommandEmpty,
@@ -27,99 +27,51 @@ import type {
 import type { DiaSemanaKey } from "./schedule-grid-types"
 import { useScheduleAllocation } from "../hooks/use-schedule-allocation"
 
-interface ScheduleAllocationDialogProps {
-  /**
-   * ID da proposta de horário
-   */
+interface AlocacaoDialogProps {
   propostaId: string
-  /**
-   * Controla se o dialog está aberto ou fechado
-   */
   open: boolean
-  /**
-   * Callback para quando o estado do dialog muda
-   */
   onOpenChange: (open: boolean) => void
-  /**
-   * Dia da semana da célula selecionada
-   */
   dia: DiaSemanaKey
-  /**
-   * Horário da célula selecionada
-   */
   horario: AulaHorarioDto
-  /**
-   * Alocações existentes para esta célula
-   */
   alocacoesExistentes?: AlocacaoHorarioResponseDto[]
-  /**
-   * Todas as alocações da proposta (para verificar conflitos)
-   */
-  todasAlocacoes?: AlocacaoHorarioResponseDto[]
 }
 
-/**
- * Dialog para gerenciar alocações de turmas em um slot específico da grade de horários.
- *
- * Permite:
- * - Visualizar alocações existentes no slot
- * - Adicionar novas turmas ao slot via combobox
- * - Remover alocações existentes
- * - Validação de conflitos de horários
- *
- * @example
- * <ScheduleAllocationDialog
- *   open={isOpen}
- *   onOpenChange={setIsOpen}
- *   dia="SEGUNDA"
- *   horario={{ inicio: "08:00", fim: "08:50" }}
- *   alocacoesExistentes={alocacoes}
- *   turmasDisponiveis={turmas}
- *   onAlocarTurma={handleAlocar}
- *   onRemoverAlocacao={handleRemover}
- * />
- */
-export function ScheduleAllocationDialog({
+const diaLabels: Record<DiaSemanaKey, string> = {
+  SEGUNDA: "Segunda-feira",
+  TERCA: "Terça-feira",
+  QUARTA: "Quarta-feira",
+  QUINTA: "Quinta-feira",
+  SEXTA: "Sexta-feira",
+  SABADO: "Sábado",
+}
+
+export function AlocacaoDialog({
   propostaId,
   open,
   onOpenChange,
   dia,
   horario,
   alocacoesExistentes = [],
-  todasAlocacoes = [],
-}: ScheduleAllocationDialogProps) {
+}: AlocacaoDialogProps) {
   const [openCombobox, setOpenCombobox] = React.useState(false)
   const [selectedTurma, setSelectedTurma] = React.useState("")
 
-  // Hook para gerenciar alocações
   const {
+    turmas,
     getTurmasDisponiveis,
+    getConflitosParaTurma,
     criarAlocacao,
     removerAlocacao,
     isCreating,
     isDeleting,
   } = useScheduleAllocation({ propostaId })
 
-  // Mapear dias da semana para labels em português
-  const diaLabels: Record<DiaSemanaKey, string> = {
-    SEGUNDA: "Segunda-feira",
-    TERCA: "Terça-feira",
-    QUARTA: "Quarta-feira",
-    QUINTA: "Quinta-feira",
-    SEXTA: "Sexta-feira",
-    SABADO: "Sábado",
-  }
-
-  /**
-   * Obter turmas disponíveis baseado na disponibilidade do professor
-   */
   const turmasDisponiveis = React.useMemo(() => {
     return getTurmasDisponiveis(
       dia,
       horario.inicio,
       horario.fim,
       alocacoesExistentes,
-      todasAlocacoes,
     )
   }, [
     getTurmasDisponiveis,
@@ -127,12 +79,8 @@ export function ScheduleAllocationDialog({
     horario.inicio,
     horario.fim,
     alocacoesExistentes,
-    todasAlocacoes,
   ])
 
-  /**
-   * Filtra turmas que não estão alocadas neste slot
-   */
   const turmasNaoAlocadas = React.useMemo(() => {
     const idsAlocados = new Set(
       alocacoesExistentes.map((alocacao) => alocacao.idTurma),
@@ -140,32 +88,50 @@ export function ScheduleAllocationDialog({
     return turmasDisponiveis.filter((turma) => !idsAlocados.has(turma.id))
   }, [turmasDisponiveis, alocacoesExistentes])
 
-  /**
-   * Adiciona uma turma ao slot
-   */
   const handleAdicionarTurma = async () => {
     if (selectedTurma) {
+      console.log("🎯 [AlocacaoDialog] Iniciando criação de alocação:", {
+        selectedTurma,
+        dia,
+        horario: `${horario.inicio} - ${horario.fim}`,
+        propostaId,
+      })
+
+      const turmaEscolhida = turmas.find((t) => t.id === selectedTurma)
+      if (turmaEscolhida) {
+        // Verificar conflitos antes de criar
+        const conflitos = getConflitosParaTurma(
+          turmaEscolhida,
+          dia,
+          horario.inicio,
+          horario.fim,
+          alocacoesExistentes,
+        )
+
+        if (conflitos.basico || conflitos.professor) {
+          // Por enquanto vamos apenas logar os conflitos, mas permitir a criação
+          console.warn(
+            "⚠️ [AlocacaoDialog] Conflitos detectados:",
+            conflitos.mensagens,
+          )
+        }
+      }
+
       try {
+        console.log("📞 [AlocacaoDialog] Chamando criarAlocacao...")
         await criarAlocacao(selectedTurma, dia, horario.inicio, horario.fim)
+        console.log("✅ [AlocacaoDialog] Alocação criada com sucesso")
+
         setSelectedTurma("")
         setOpenCombobox(false)
       } catch (error) {
-        console.error("Erro ao adicionar turma:", error)
-        // Aqui você pode adicionar um toast ou notificação de erro
+        console.error("❌ [AlocacaoDialog] Erro ao criar alocação:", error)
       }
     }
   }
 
-  /**
-   * Remove uma alocação do slot
-   */
   const handleRemoverAlocacao = async (alocacaoId: string) => {
-    try {
-      await removerAlocacao(alocacaoId)
-    } catch (error) {
-      console.error("Erro ao remover alocação:", error)
-      // Aqui você pode adicionar um toast ou notificação de erro
-    }
+    await removerAlocacao(alocacaoId)
   }
 
   return (
@@ -183,7 +149,6 @@ export function ScheduleAllocationDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Alocações existentes */}
           {alocacoesExistentes.length > 0 && (
             <div>
               <h4 className="mb-2 text-sm font-medium">Turmas Alocadas:</h4>
@@ -209,9 +174,9 @@ export function ScheduleAllocationDialog({
                       onClick={() => handleRemoverAlocacao(alocacao.id)}
                       disabled={isDeleting}
                       className="h-8 w-8 p-0"
+                      data-testid={`btn-remover-alocacao-${alocacao.turma.codigoDaTurma}`}
                     >
                       <X className="h-4 w-4" />
-                      <span className="sr-only">Remover alocação</span>
                     </Button>
                   </div>
                 ))}
@@ -219,10 +184,39 @@ export function ScheduleAllocationDialog({
             </div>
           )}
 
-          {/* Combobox para adicionar nova turma */}
           {turmasNaoAlocadas.length > 0 && (
             <div>
               <h4 className="mb-2 text-sm font-medium">Adicionar Turma:</h4>
+
+              {/* Mostrar alerta se turma selecionada tem conflitos */}
+              {selectedTurma &&
+                (() => {
+                  const turmaEscolhida = turmas.find(
+                    (t) => t.id === selectedTurma,
+                  )
+                  if (turmaEscolhida) {
+                    const conflitos = getConflitosParaTurma(
+                      turmaEscolhida,
+                      dia,
+                      horario.inicio,
+                      horario.fim,
+                      alocacoesExistentes,
+                    )
+                    if (conflitos.basico || conflitos.professor) {
+                      return (
+                        <Alert className="mb-3 border-amber-200 bg-amber-50">
+                          <AlertTriangle className="h-4 w-4 text-amber-600" />
+                          <AlertDescription className="text-amber-800">
+                            <strong>Conflito detectado:</strong>{" "}
+                            {conflitos.mensagens.join(", ")}
+                          </AlertDescription>
+                        </Alert>
+                      )
+                    }
+                  }
+                  return null
+                })()}
+
               <div className="flex gap-2">
                 <Popover
                   open={openCombobox}
@@ -232,8 +226,8 @@ export function ScheduleAllocationDialog({
                     <Button
                       variant="outline"
                       role="combobox"
-                      aria-expanded={openCombobox}
                       className="flex-1 justify-between"
+                      data-testid="btn-selecionar-turma"
                     >
                       {selectedTurma ?
                         turmasNaoAlocadas.find(
@@ -249,40 +243,65 @@ export function ScheduleAllocationDialog({
                       <CommandList>
                         <CommandEmpty>Nenhuma turma encontrada.</CommandEmpty>
                         <CommandGroup>
-                          {turmasNaoAlocadas.map((turma) => (
-                            <CommandItem
-                              key={turma.id}
-                              value={turma.id}
-                              onSelect={(currentValue) => {
-                                setSelectedTurma(
-                                  currentValue === selectedTurma ? "" : (
-                                    currentValue
-                                  ),
-                                )
-                                setOpenCombobox(false)
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  selectedTurma === turma.id ?
-                                    "opacity-100"
-                                  : "opacity-0",
-                                )}
-                              />
-                              <div className="flex-1">
-                                <div className="font-medium">
-                                  {turma.codigoDaTurma}
+                          {turmasNaoAlocadas.map((turma) => {
+                            // Verificar conflitos potenciais para mostrar avisos
+                            const conflitos = getConflitosParaTurma(
+                              turma,
+                              dia,
+                              horario.inicio,
+                              horario.fim,
+                              alocacoesExistentes,
+                            )
+                            const temConflitos =
+                              conflitos.basico || conflitos.professor
+
+                            return (
+                              <CommandItem
+                                key={turma.id}
+                                value={turma.id}
+                                onSelect={(currentValue) => {
+                                  setSelectedTurma(
+                                    currentValue === selectedTurma ? "" : (
+                                      currentValue
+                                    ),
+                                  )
+                                  setOpenCombobox(false)
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedTurma === turma.id ?
+                                      "opacity-100"
+                                    : "opacity-0",
+                                  )}
+                                />
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <div className="font-medium">
+                                      {turma.codigoDaTurma}
+                                    </div>
+                                    {temConflitos && (
+                                      <AlertTriangle className="h-4 w-4 text-amber-500" />
+                                    )}
+                                  </div>
+                                  <div className="text-muted-foreground text-sm">
+                                    {turma.disciplinaOfertada?.disciplina?.nome}
+                                  </div>
+                                  {turma.professorAlocado && (
+                                    <div className="text-muted-foreground text-xs">
+                                      Prof: {turma.professorAlocado.nome}
+                                    </div>
+                                  )}
+                                  {temConflitos && (
+                                    <div className="mt-1 text-xs text-amber-600">
+                                      ⚠️ {conflitos.mensagens.join(", ")}
+                                    </div>
+                                  )}
                                 </div>
-                                <div className="text-muted-foreground text-sm">
-                                  {turma.disciplinaOfertada?.disciplina?.nome ||
-                                    "Disciplina não informada"}
-                                  {turma.professorAlocado?.nome &&
-                                    ` - ${turma.professorAlocado.nome}`}
-                                </div>
-                              </div>
-                            </CommandItem>
-                          ))}
+                              </CommandItem>
+                            )
+                          })}
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -291,6 +310,7 @@ export function ScheduleAllocationDialog({
                 <Button
                   onClick={handleAdicionarTurma}
                   disabled={!selectedTurma || isCreating}
+                  data-testid="btn-adicionar-turma-dialog"
                 >
                   {isCreating ? "Adicionando..." : "Adicionar"}
                 </Button>
@@ -298,16 +318,9 @@ export function ScheduleAllocationDialog({
             </div>
           )}
 
-          {/* Mensagem quando não há turmas disponíveis */}
           {turmasNaoAlocadas.length === 0 && alocacoesExistentes.length === 0 && (
             <div className="text-muted-foreground py-4 text-center">
               Nenhuma turma disponível para este horário.
-            </div>
-          )}
-
-          {turmasNaoAlocadas.length === 0 && alocacoesExistentes.length > 0 && (
-            <div className="text-muted-foreground py-2 text-center text-sm">
-              Todas as turmas disponíveis já estão alocadas neste horário.
             </div>
           )}
         </div>
@@ -316,6 +329,7 @@ export function ScheduleAllocationDialog({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
+            data-testid="btn-fechar-dialog"
           >
             Fechar
           </Button>

@@ -9,15 +9,9 @@ import type { DisciplinaOfertadaDto } from "./disciplina-ofertada-dto"
 import type { TurmaDtoProfessorAlocado } from "./turma-dto-professor-alocado"
 
 export interface TurmaDto {
-  /** ID da turma */
   id: string
-  /** Código da turma */
   codigoDaTurma: string
-  /** Disciplina ofertada */
   disciplinaOfertada: DisciplinaOfertadaDto
-  /**
-   * Professor alocado
-   * @nullable
-   */
+  /** @nullable */
   professorAlocado: TurmaDtoProfessorAlocado
 }

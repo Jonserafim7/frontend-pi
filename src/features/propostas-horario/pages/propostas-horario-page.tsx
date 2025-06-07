@@ -1,303 +1,97 @@
 import { useState, useCallback } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import {
-  CalendarDays,
-  Plus,
-  RefreshCw,
-  AlertCircle,
-  Clock,
-  CheckCircle,
-  XCircle,
-  FileText,
-} from "lucide-react"
+import { CalendarDays, RefreshCw } from "lucide-react"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { useAuth } from "@/features/auth/contexts/auth-context"
-import { ScheduleGrid } from "../components/schedule-grid"
-import { PropostasList } from "../components/propostas-list"
-import { usePropostaDraftAtiva } from "../hooks/use-proposta-draft-ativa"
-import { useMinhasPropostas } from "../hooks/use-minhas-propostas"
-import { useProposalOperations } from "../hooks/use-proposal-operations"
-import { useCoordenadorCursos } from "../hooks/use-coordenador-cursos"
-import { usePeriodoAtivoId } from "../hooks/use-periodo-ativo"
+import { usePropostas } from "../hooks/use-propostas"
+import { useActions } from "../hooks/use-actions"
+
 import type { PropostaHorarioResponseDto } from "@/api-generated/model"
-import { PropostaHorarioResponseDtoStatus } from "@/api-generated/model"
-import { toast } from "sonner"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { ApproveModal } from "../components/modals/approve-modal"
+import { RejectModal } from "../components/modals/reject-modal"
+import { PropostasTabs } from "../components/propostas-tabs"
+import { DraftEditor } from "../components/draft-editor"
+import { PropostasList } from "../components/propostas-list"
+import { CourseFilter } from "../components/course-filter"
 
 /**
- * Página principal para montagem e gerenciamento de propostas de horário.
- *
- * Características:
- * - Sistema de abas por status (DRAFT, PENDENTE, APROVADA, REJEITADA)
- * - Ações contextuais baseadas no papel do usuário
- * - Integração com ScheduleGrid para edição de propostas DRAFT
- * - Lista de propostas para outros status
- * - Dialogs para ações de aprovação/rejeição
+ * Página simplificada com componentes independentes.
+ * Cada componente faz suas próprias queries (React Query cache automático).
  */
 export function PropostasHorarioPage() {
-  const { user, isCoordenador, isDiretor, isAdmin } = useAuth()
+  const { user } = useAuth()
 
-  // Estados locais
+  // Estados mínimos da página
   const [activeTab, setActiveTab] = useState("draft")
+  const [filterCourse, setFilterCourse] = useState<string>("")
+
+  // Estados dos modais
+  const [approveModalOpen, setApproveModalOpen] = useState(false)
+  const [rejectModalOpen, setRejectModalOpen] = useState(false)
   const [selectedProposta, setSelectedProposta] =
     useState<PropostaHorarioResponseDto | null>(null)
-  const [isApprovalDialogOpen, setIsApprovalDialogOpen] = useState(false)
-  const [isRejectionDialogOpen, setIsRejectionDialogOpen] = useState(false)
-  const [observacoesDiretor, setObservacoesDiretor] = useState("")
-  const [justificativaRejeicao, setJustificativaRejeicao] = useState("")
 
-  // Determinação de permissões baseada no papel
-  const showCoordenadorActions = isCoordenador()
-  const showDiretorActions = isDiretor() || isAdmin()
+  // Hooks mínimos
+  const { canViewAll, refetch } = usePropostas({ enabled: !!user })
+  const { approveProposta, rejectProposta } = useActions()
 
-  // Hook para buscar propostas usando nosso hook personalizado
-  const {
-    isLoading,
-    canViewAll,
-    refetch,
-    propostasDraft,
-    propostasPendentes,
-    propostasAprovadas,
-    propostasRejeitadas,
-    contadores,
-  } = useMinhasPropostas({
-    enabled: !!user,
-    staleTime: 2 * 60 * 1000, // 2 minutos
-  })
-
-  // Hook para buscar cursos do coordenador
-  const {
-    cursoPrincipalId,
-    hasCursos,
-    isLoading: isLoadingCursos,
-    cursoPrincipal,
-  } = useCoordenadorCursos({
-    enabled: isCoordenador() && !!user,
-  })
-
-  // Hook para buscar período letivo ativo
-  const periodoAtivoId = usePeriodoAtivoId(!!user)
-
-  // Hook para proposta draft ativa (coordenadores)
-  const {
-    data: propostaDraftAtiva,
-    hasDraftAtiva,
-    refetch: refetchDraft,
-  } = usePropostaDraftAtiva({
-    cursoId: cursoPrincipalId, // Usando o curso principal do coordenador
-    periodoId: periodoAtivoId, // Período letivo ativo real
-    enabled: isCoordenador() && !!cursoPrincipalId && !!periodoAtivoId, // Habilitado quando temos curso e período
-  })
-
-  // Hook para operações (criar, enviar, aprovar, rejeitar)
-  const {
-    createProposta,
-    submitProposta,
-    approveProposta,
-    rejectProposta,
-    isCreating,
-    isSubmitting,
-    isApproving,
-    isRejecting,
-  } = useProposalOperations({
-    showToasts: true,
-    autoInvalidate: true,
-    onSuccess: {
-      create: () => {
-        setActiveTab("draft")
-        refetch()
-      },
-      submit: () => {
-        refetch()
-      },
-      approve: () => {
-        refetch()
-      },
-      reject: () => {
-        refetch()
-      },
-    },
-  })
-
-  /**
-   * Propostas agrupadas por status - usando dados do hook
-   */
-  const propostasByStatus = {
-    [PropostaHorarioResponseDtoStatus.DRAFT]: propostasDraft,
-    [PropostaHorarioResponseDtoStatus.PENDENTE_APROVACAO]: propostasPendentes,
-    [PropostaHorarioResponseDtoStatus.APROVADA]: propostasAprovadas,
-    [PropostaHorarioResponseDtoStatus.REJEITADA]: propostasRejeitadas,
-  }
-
-  /**
-   * Configuração das abas com ícones e contadores - usando dados do hook
-   */
-  const tabsConfig = [
-    {
-      value: "draft",
-      label: "Rascunhos",
-      icon: FileText,
-      count: contadores.draft,
-      color: "text-yellow-600",
-    },
-    {
-      value: "pendente",
-      label: "Pendentes",
-      icon: Clock,
-      count: contadores.pendentes,
-      color: "text-blue-600",
-    },
-    {
-      value: "aprovada",
-      label: "Aprovadas",
-      icon: CheckCircle,
-      count: contadores.aprovadas,
-      color: "text-green-600",
-    },
-    {
-      value: "rejeitada",
-      label: "Rejeitadas",
-      icon: XCircle,
-      count: contadores.rejeitadas,
-      color: "text-red-600",
-    },
-  ]
-
-  /**
-   * Handlers para ações - usando novos hooks
-   */
+  // Handlers básicos
   const handleRefresh = useCallback(() => {
     refetch()
-    refetchDraft()
-  }, [refetch, refetchDraft])
+  }, [refetch])
 
-  const handleCreateNova = useCallback(async () => {
-    if (!user) {
-      toast.error("Erro: Usuário não encontrado")
-      return
-    }
+  const handleTabChange = useCallback((value: string) => {
+    setActiveTab(value)
+  }, [])
 
-    if (!cursoPrincipalId) {
-      toast.error(
-        "Não foi possível encontrar o curso associado ao seu perfil. Entre em contato com o administrador.",
-      )
-      return
-    }
+  const handleFilterChange = useCallback((value: string) => {
+    setFilterCourse(value)
+  }, [])
 
-    if (isLoadingCursos) {
-      toast.error("Aguarde o carregamento dos dados do curso...")
-      return
-    }
-
-    if (!periodoAtivoId) {
-      toast.error(
-        "Não foi possível encontrar o período letivo ativo. Entre em contato com o administrador.",
-      )
-      return
-    }
-
-    try {
-      await createProposta({
-        idCurso: cursoPrincipalId,
-        idPeriodoLetivo: periodoAtivoId, // Período letivo ativo real
-        observacoesCoordenador: "Nova proposta criada",
-      })
-      // Success é tratado pelo hook com toast e navigation
-    } catch (error) {
-      // Error é tratado pelo hook com toast
-      console.error(error)
-    }
-  }, [user, cursoPrincipalId, isLoadingCursos, createProposta])
-
-  const handleEnviar = useCallback(
-    async (proposta: PropostaHorarioResponseDto) => {
-      try {
-        await submitProposta(proposta.id)
-        // Success é tratado pelo hook com toast e refetch
-      } catch (error) {
-        // Error é tratado pelo hook com toast
-        console.error(error)
-      }
+  // Handlers dos modais (simplificados)
+  const handleOpenApproveModal = useCallback(
+    (proposta: PropostaHorarioResponseDto) => {
+      setSelectedProposta(proposta)
+      setApproveModalOpen(true)
     },
-    [submitProposta],
+    [],
   )
 
-  const handleAprovar = useCallback((proposta: PropostaHorarioResponseDto) => {
-    setSelectedProposta(proposta)
-    setObservacoesDiretor("")
-    setIsApprovalDialogOpen(true)
-  }, [])
+  const handleOpenRejectModal = useCallback(
+    (proposta: PropostaHorarioResponseDto) => {
+      setSelectedProposta(proposta)
+      setRejectModalOpen(true)
+    },
+    [],
+  )
 
-  const handleConfirmAprovar = useCallback(async () => {
-    if (!selectedProposta) return
+  const handleApprove = useCallback(
+    async (observacoes: string) => {
+      if (!selectedProposta) return
 
-    try {
       await approveProposta({
         id: selectedProposta.id,
-        observacoesDiretor: observacoesDiretor || undefined,
+        observacoesDiretor: observacoes || undefined,
       })
+      refetch()
+    },
+    [selectedProposta, approveProposta, refetch],
+  )
 
-      // Success é tratado pelo hook com toast e refetch
-      setIsApprovalDialogOpen(false)
-      setSelectedProposta(null)
-    } catch (error) {
-      // Error é tratado pelo hook com toast
-      console.error(error)
-    }
-  }, [selectedProposta, observacoesDiretor, approveProposta])
+  const handleReject = useCallback(
+    async (justificativa: string, observacoes: string) => {
+      if (!selectedProposta) return
 
-  const handleRejeitar = useCallback((proposta: PropostaHorarioResponseDto) => {
-    setSelectedProposta(proposta)
-    setJustificativaRejeicao("")
-    setIsRejectionDialogOpen(true)
-  }, [])
-
-  const handleConfirmRejeitar = useCallback(async () => {
-    if (!selectedProposta || !justificativaRejeicao.trim()) {
-      toast.error("Justificativa é obrigatória")
-      return
-    }
-
-    try {
       await rejectProposta({
         id: selectedProposta.id,
-        justificativaRejeicao,
+        justificativaRejeicao: justificativa,
+        observacoesDiretor: observacoes || undefined,
       })
-
-      // Success é tratado pelo hook com toast e refetch
-      setIsRejectionDialogOpen(false)
-      setSelectedProposta(null)
-    } catch (error) {
-      // Error é tratado pelo hook com toast
-      console.error(error)
-    }
-  }, [selectedProposta, justificativaRejeicao, rejectProposta])
-
-  const handleView = useCallback((proposta: PropostaHorarioResponseDto) => {
-    // TODO: Implementar navegação para página de visualização detalhada
-    console.log("Visualizar proposta:", proposta)
-  }, [])
-
-  const handleEdit = useCallback((proposta: PropostaHorarioResponseDto) => {
-    // TODO: Implementar navegação para edição da proposta
-    console.log("Editar proposta:", proposta)
-  }, [])
-
-  const handleDelete = useCallback((proposta: PropostaHorarioResponseDto) => {
-    // TODO: Implementar exclusão de proposta
-    console.log("Excluir proposta:", proposta)
-  }, [])
+      refetch()
+    },
+    [selectedProposta, rejectProposta, refetch],
+  )
 
   return (
     <div className="container mx-auto flex flex-col gap-8 p-6">
@@ -322,279 +116,118 @@ export function PropostasHorarioPage() {
             variant="outline"
             size="icon"
             onClick={handleRefresh}
-            disabled={isLoading}
           >
-            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      {/* Sistema de abas */}
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-6"
-      >
-        <TabsList className="grid w-full grid-cols-4">
-          {tabsConfig.map((tab) => {
-            const Icon = tab.icon
-            return (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="flex items-center gap-2"
-              >
-                <Icon className={`h-4 w-4 ${tab.color}`} />
-                <span>{tab.label}</span>
-                {tab.count > 0 && (
-                  <Badge
-                    variant="secondary"
-                    className="ml-1"
-                  >
-                    {tab.count}
-                  </Badge>
-                )}
-              </TabsTrigger>
-            )
-          })}
-        </TabsList>
+      {/* Sistema de abas independente */}
+      <div className="space-y-6">
+        <PropostasTabs
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
 
-        {/* Aba de Rascunhos */}
-        <TabsContent
-          value="draft"
-          className="space-y-6"
+        {/* Filtro para Diretores (independente) */}
+        {canViewAll && activeTab !== "draft" && (
+          <CourseFilter
+            selectedCourse={filterCourse}
+            onCourseChange={handleFilterChange}
+          />
+        )}
+
+        {/* Conteúdo das abas - componentes independentes */}
+        <Tabs
+          value={activeTab}
+          onValueChange={handleTabChange}
         >
-          {/* Cabeçalho com ação de criar proposta */}
-          {isCoordenador() && (
+          {/* Aba de Rascunhos - componente completamente independente */}
+          <TabsContent
+            value="draft"
+            className="space-y-6"
+          >
+            <DraftEditor />
+          </TabsContent>
+
+          {/* Aba de Propostas Pendentes - componente independente */}
+          <TabsContent
+            value="pendente"
+            className="space-y-6"
+          >
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold">Propostas em Rascunho</h2>
+                <h2 className="text-xl font-semibold">Propostas Pendentes</h2>
                 <p className="text-muted-foreground text-sm">
-                  Propostas que ainda estão sendo elaboradas
-                  {cursoPrincipal && (
-                    <span className="ml-2 font-medium text-blue-600">
-                      • {cursoPrincipal.nome}
-                    </span>
-                  )}
+                  Propostas aguardando aprovação da diretoria
                 </p>
               </div>
-              <Button
-                onClick={handleCreateNova}
-                disabled={isCreating || isLoadingCursos || !hasCursos}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Nova Proposta
-              </Button>
             </div>
-          )}
 
-          {/* Aviso quando o coordenador não tem curso associado */}
-          {isCoordenador() && !isLoadingCursos && !hasCursos && (
-            <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
-              <div className="flex">
-                <AlertCircle className="h-5 w-5 text-orange-600" />
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-orange-800">
-                    Nenhum curso associado
-                  </h3>
-                  <p className="mt-1 text-sm text-orange-700">
-                    Você não possui cursos associados ao seu perfil. Entre em
-                    contato com o administrador para vincular um curso ao seu
-                    perfil de coordenador.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-          {isCoordenador() && hasDraftAtiva && propostaDraftAtiva ?
-            <div className="space-y-4">
-              <div className="bg-card rounded-lg border p-4">
-                <h3 className="mb-2 text-lg font-semibold">
-                  Editando: {propostaDraftAtiva.curso.nome}
-                </h3>
-                <p className="text-muted-foreground mb-4 text-sm">
-                  Período: {propostaDraftAtiva.periodoLetivo.ano}/
-                  {propostaDraftAtiva.periodoLetivo.semestre}
-                </p>
-
-                <ScheduleGrid
-                  className="w-full"
-                  propostaId={propostaDraftAtiva.id}
-                />
-
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    onClick={() => handleEnviar(propostaDraftAtiva)}
-                    disabled={isSubmitting}
-                  >
-                    <AlertCircle className="mr-2 h-4 w-4" />
-                    Enviar para Aprovação
-                  </Button>
-                </div>
-              </div>
-            </div>
-          : <PropostasList
-              propostas={
-                propostasByStatus[PropostaHorarioResponseDtoStatus.DRAFT]
-              }
-              isLoading={isLoading}
-              showCoordenadorActions={showCoordenadorActions}
-              showDiretorActions={showDiretorActions}
-              onView={handleView}
-              onEdit={handleEdit}
-              onEnviar={handleEnviar}
-              onDelete={handleDelete}
-              showStatusTabs={false}
+            <PropostasList
+              tabType="pendente"
+              courseFilter={filterCourse}
+              onAprovar={handleOpenApproveModal}
+              onRejeitar={handleOpenRejectModal}
             />
-          }
-        </TabsContent>
+          </TabsContent>
 
-        {/* Aba de Pendentes */}
-        <TabsContent value="pendente">
-          <PropostasList
-            propostas={
-              propostasByStatus[
-                PropostaHorarioResponseDtoStatus.PENDENTE_APROVACAO
-              ]
-            }
-            isLoading={isLoading}
-            showCoordenadorActions={showCoordenadorActions}
-            showDiretorActions={showDiretorActions}
-            onView={handleView}
-            onAprovar={handleAprovar}
-            onRejeitar={handleRejeitar}
-            showStatusTabs={false}
-            title="Propostas Pendentes"
-            description="Propostas aguardando aprovação da direção"
-          />
-        </TabsContent>
-
-        {/* Aba de Aprovadas */}
-        <TabsContent value="aprovada">
-          <PropostasList
-            propostas={
-              propostasByStatus[PropostaHorarioResponseDtoStatus.APROVADA]
-            }
-            isLoading={isLoading}
-            showCoordenadorActions={showCoordenadorActions}
-            showDiretorActions={showDiretorActions}
-            onView={handleView}
-            showStatusTabs={false}
-            title="Propostas Aprovadas"
-            description="Propostas que foram aprovadas pela direção"
-          />
-        </TabsContent>
-
-        {/* Aba de Rejeitadas */}
-        <TabsContent value="rejeitada">
-          <PropostasList
-            propostas={
-              propostasByStatus[PropostaHorarioResponseDtoStatus.REJEITADA]
-            }
-            isLoading={isLoading}
-            showCoordenadorActions={showCoordenadorActions}
-            showDiretorActions={showDiretorActions}
-            onView={handleView}
-            showStatusTabs={false}
-            title="Propostas Rejeitadas"
-            description="Propostas que foram rejeitadas pela direção"
-          />
-        </TabsContent>
-      </Tabs>
-
-      {/* Dialog de Aprovação */}
-      <Dialog
-        open={isApprovalDialogOpen}
-        onOpenChange={setIsApprovalDialogOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Aprovar Proposta</DialogTitle>
-            <DialogDescription>
-              Confirme a aprovação da proposta {selectedProposta?.curso.nome}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="observacoes">Observações (opcional)</Label>
-              <Textarea
-                id="observacoes"
-                placeholder="Adicione observações sobre a aprovação..."
-                value={observacoesDiretor}
-                onChange={(e) => setObservacoesDiretor(e.target.value)}
-                className="mt-2"
-              />
+          {/* Aba de Propostas Aprovadas - componente independente */}
+          <TabsContent
+            value="aprovada"
+            className="space-y-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">Propostas Aprovadas</h2>
+                <p className="text-muted-foreground text-sm">
+                  Propostas aprovadas pela diretoria
+                </p>
+              </div>
             </div>
-          </div>
 
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsApprovalDialogOpen(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleConfirmAprovar}
-              disabled={isApproving}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              {isApproving && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
-              Aprovar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <PropostasList
+              tabType="aprovada"
+              courseFilter={filterCourse}
+            />
+          </TabsContent>
 
-      {/* Dialog de Rejeição */}
-      <Dialog
-        open={isRejectionDialogOpen}
-        onOpenChange={setIsRejectionDialogOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rejeitar Proposta</DialogTitle>
-            <DialogDescription>
-              Informe a justificativa para rejeição da proposta{" "}
-              {selectedProposta?.curso.nome}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="justificativa">
-                Justificativa <span className="text-red-500">*</span>
-              </Label>
-              <Textarea
-                id="justificativa"
-                placeholder="Explique os motivos da rejeição..."
-                value={justificativaRejeicao}
-                onChange={(e) => setJustificativaRejeicao(e.target.value)}
-                className="mt-2"
-                required
-              />
+          {/* Aba de Propostas Rejeitadas - componente independente */}
+          <TabsContent
+            value="rejeitada"
+            className="space-y-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">Propostas Rejeitadas</h2>
+                <p className="text-muted-foreground text-sm">
+                  Propostas rejeitadas pela diretoria com justificativa
+                </p>
+              </div>
             </div>
-          </div>
 
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsRejectionDialogOpen(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleConfirmRejeitar}
-              disabled={isRejecting || !justificativaRejeicao.trim()}
-            >
-              {isRejecting && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
-              Rejeitar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <PropostasList
+              tabType="rejeitada"
+              courseFilter={filterCourse}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Modais de aprovação e rejeição */}
+      <ApproveModal
+        open={approveModalOpen}
+        onOpenChange={setApproveModalOpen}
+        proposta={selectedProposta}
+        onConfirm={handleApprove}
+      />
+
+      <RejectModal
+        open={rejectModalOpen}
+        onOpenChange={setRejectModalOpen}
+        proposta={selectedProposta}
+        onConfirm={handleReject}
+      />
     </div>
   )
 }

@@ -5,9 +5,8 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { DisciplinaSimplificadaDto } from "./disciplina-simplificada-dto"
+import type { DisciplinaDto } from "./disciplina-dto"
 
 export interface DisciplinaOfertadaDto {
-  /** Disciplina */
-  disciplina: DisciplinaSimplificadaDto
+  disciplina: DisciplinaDto
 }

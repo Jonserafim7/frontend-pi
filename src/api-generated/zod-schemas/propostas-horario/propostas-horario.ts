@@ -11,405 +11,388 @@ import {
 
 
 /**
- * Cria uma nova proposta de horário em estado DRAFT para o coordenador autenticado
  * @summary Criar nova proposta de horário
  */
 export const propostasHorarioControllerCreateBody = zod.object({
-  "idCurso": zod.string().describe('ID do curso para o qual a proposta será criada'),
-  "idPeriodoLetivo": zod.string().describe('ID do período letivo para o qual a proposta será criada'),
-  "observacoesCoordenador": zod.string().optional().describe('Observações opcionais do coordenador sobre a proposta')
+  "idCurso": zod.string(),
+  "idPeriodoLetivo": zod.string(),
+  "observacoesCoordenador": zod.string().optional()
 })
 
 /**
- * Lista todas as propostas de horário (disponível apenas para diretores e admins)
  * @summary Listar todas as propostas
  */
 export const propostasHorarioControllerFindAllQueryParams = zod.object({
-  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).optional().describe('Filtrar por status'),
-  "idCurso": zod.string().optional().describe('Filtrar por curso'),
-  "idPeriodoLetivo": zod.string().optional().describe('Filtrar por período letivo'),
-  "idCoordenador": zod.string().optional().describe('Filtrar por coordenador')
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).optional(),
+  "idCurso": zod.string().optional(),
+  "idPeriodoLetivo": zod.string().optional(),
+  "idCoordenador": zod.string().optional()
 })
 
 export const propostasHorarioControllerFindAllResponseItem = zod.object({
-  "id": zod.string().describe('ID da proposta'),
-  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status da proposta'),
+  "id": zod.string(),
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']),
   "dataSubmissao": zod.object({
 
-}).nullable().describe('Data de submissão'),
+}).nullable(),
   "dataAprovacaoRejeicao": zod.object({
 
-}).nullable().describe('Data de aprovação ou rejeição'),
+}).nullable(),
   "justificativaRejeicao": zod.object({
 
-}).nullable().describe('Justificativa de rejeição'),
+}).nullable(),
   "observacoesCoordenador": zod.object({
 
-}).nullable().describe('Observações do coordenador'),
+}).nullable(),
   "observacoesDiretor": zod.object({
 
-}).nullable().describe('Observações do diretor'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização'),
+}).nullable(),
+  "dataCriacao": zod.string().datetime({}),
+  "dataAtualizacao": zod.string().datetime({}),
   "curso": zod.object({
-  "id": zod.string().describe('ID do curso'),
-  "nome": zod.string().describe('Nome do curso'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código do curso')
-}).describe('Curso'),
+}).nullable()
+}),
   "periodoLetivo": zod.object({
-  "id": zod.string().describe('ID do período letivo'),
-  "ano": zod.number().describe('Ano do período'),
-  "semestre": zod.number().describe('Semestre do período'),
-  "status": zod.string().describe('Status do período letivo')
-}).describe('Período letivo'),
+  "id": zod.string(),
+  "ano": zod.number(),
+  "semestre": zod.number(),
+  "status": zod.string()
+}),
   "coordenadorQueSubmeteu": zod.object({
-  "id": zod.string().describe('ID único do coordenador no formato UUID v4'),
-  "nome": zod.string().describe('Nome completo do coordenador'),
-  "email": zod.string().describe('Email do coordenador')
-}).describe('Coordenador que submeteu'),
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}),
   "alocacoesPropostas": zod.array(zod.object({
-  "id": zod.string().describe('ID da alocação'),
-  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
-  "horaInicio": zod.string().describe('Hora de início'),
-  "horaFim": zod.string().describe('Hora de fim'),
+  "id": zod.string(),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']),
+  "horaInicio": zod.string(),
+  "horaFim": zod.string(),
   "turma": zod.object({
-  "id": zod.string().describe('ID da turma'),
-  "codigoDaTurma": zod.string().describe('Código da turma'),
+  "id": zod.string(),
+  "codigoDaTurma": zod.string(),
   "disciplinaOfertada": zod.object({
   "disciplina": zod.object({
-  "id": zod.string().describe('ID da disciplina'),
-  "nome": zod.string().describe('Nome da disciplina'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código da disciplina'),
-  "cargaHoraria": zod.number().describe('Carga horária da disciplina')
-}).describe('Disciplina')
-}).describe('Disciplina ofertada'),
+}).nullable(),
+  "cargaHoraria": zod.number()
+})
+}),
   "professorAlocado": zod.object({
-  "id": zod.string().describe('ID do professor'),
-  "nome": zod.string().describe('Nome do professor'),
-  "email": zod.string().describe('Email do professor')
-}).nullable().describe('Professor alocado')
-}).describe('Turma'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização')
-})).describe('Alocações propostas')
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}).nullable()
+})
+}))
 })
 export const propostasHorarioControllerFindAllResponse = zod.array(propostasHorarioControllerFindAllResponseItem)
 
 /**
- * Busca a proposta em estado DRAFT ativa para o coordenador autenticado
  * @summary Buscar proposta DRAFT ativa
  */
 export const propostasHorarioControllerFindDraftAtivaQueryParams = zod.object({
-  "idCurso": zod.string().describe('ID do curso'),
-  "idPeriodoLetivo": zod.string().describe('ID do período letivo')
+  "idCurso": zod.string(),
+  "idPeriodoLetivo": zod.string()
 })
 
 export const propostasHorarioControllerFindDraftAtivaResponse = zod.object({
-  "id": zod.string().describe('ID da proposta'),
-  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status da proposta'),
+  "id": zod.string(),
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']),
   "dataSubmissao": zod.object({
 
-}).nullable().describe('Data de submissão'),
+}).nullable(),
   "dataAprovacaoRejeicao": zod.object({
 
-}).nullable().describe('Data de aprovação ou rejeição'),
+}).nullable(),
   "justificativaRejeicao": zod.object({
 
-}).nullable().describe('Justificativa de rejeição'),
+}).nullable(),
   "observacoesCoordenador": zod.object({
 
-}).nullable().describe('Observações do coordenador'),
+}).nullable(),
   "observacoesDiretor": zod.object({
 
-}).nullable().describe('Observações do diretor'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização'),
+}).nullable(),
+  "dataCriacao": zod.string().datetime({}),
+  "dataAtualizacao": zod.string().datetime({}),
   "curso": zod.object({
-  "id": zod.string().describe('ID do curso'),
-  "nome": zod.string().describe('Nome do curso'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código do curso')
-}).describe('Curso'),
+}).nullable()
+}),
   "periodoLetivo": zod.object({
-  "id": zod.string().describe('ID do período letivo'),
-  "ano": zod.number().describe('Ano do período'),
-  "semestre": zod.number().describe('Semestre do período'),
-  "status": zod.string().describe('Status do período letivo')
-}).describe('Período letivo'),
+  "id": zod.string(),
+  "ano": zod.number(),
+  "semestre": zod.number(),
+  "status": zod.string()
+}),
   "coordenadorQueSubmeteu": zod.object({
-  "id": zod.string().describe('ID único do coordenador no formato UUID v4'),
-  "nome": zod.string().describe('Nome completo do coordenador'),
-  "email": zod.string().describe('Email do coordenador')
-}).describe('Coordenador que submeteu'),
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}),
   "alocacoesPropostas": zod.array(zod.object({
-  "id": zod.string().describe('ID da alocação'),
-  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
-  "horaInicio": zod.string().describe('Hora de início'),
-  "horaFim": zod.string().describe('Hora de fim'),
+  "id": zod.string(),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']),
+  "horaInicio": zod.string(),
+  "horaFim": zod.string(),
   "turma": zod.object({
-  "id": zod.string().describe('ID da turma'),
-  "codigoDaTurma": zod.string().describe('Código da turma'),
+  "id": zod.string(),
+  "codigoDaTurma": zod.string(),
   "disciplinaOfertada": zod.object({
   "disciplina": zod.object({
-  "id": zod.string().describe('ID da disciplina'),
-  "nome": zod.string().describe('Nome da disciplina'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código da disciplina'),
-  "cargaHoraria": zod.number().describe('Carga horária da disciplina')
-}).describe('Disciplina')
-}).describe('Disciplina ofertada'),
+}).nullable(),
+  "cargaHoraria": zod.number()
+})
+}),
   "professorAlocado": zod.object({
-  "id": zod.string().describe('ID do professor'),
-  "nome": zod.string().describe('Nome do professor'),
-  "email": zod.string().describe('Email do professor')
-}).nullable().describe('Professor alocado')
-}).describe('Turma'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização')
-})).describe('Alocações propostas')
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}).nullable()
+})
+}))
 })
 
 /**
- * Lista todas as propostas de horário do coordenador autenticado
  * @summary Listar minhas propostas
  */
 export const propostasHorarioControllerFindMinhasPropostasQueryParams = zod.object({
-  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).optional().describe('Filtrar por status'),
-  "idCurso": zod.string().optional().describe('Filtrar por curso'),
-  "idPeriodoLetivo": zod.string().optional().describe('Filtrar por período letivo'),
-  "idCoordenador": zod.string().optional().describe('Filtrar por ID do coordenador')
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).optional(),
+  "idCurso": zod.string().optional(),
+  "idPeriodoLetivo": zod.string().optional(),
+  "idCoordenador": zod.string().optional()
 })
 
 export const propostasHorarioControllerFindMinhasPropostasResponseItem = zod.object({
-  "id": zod.string().describe('ID da proposta'),
-  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status da proposta'),
+  "id": zod.string(),
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']),
   "dataSubmissao": zod.object({
 
-}).nullable().describe('Data de submissão'),
+}).nullable(),
   "dataAprovacaoRejeicao": zod.object({
 
-}).nullable().describe('Data de aprovação ou rejeição'),
+}).nullable(),
   "justificativaRejeicao": zod.object({
 
-}).nullable().describe('Justificativa de rejeição'),
+}).nullable(),
   "observacoesCoordenador": zod.object({
 
-}).nullable().describe('Observações do coordenador'),
+}).nullable(),
   "observacoesDiretor": zod.object({
 
-}).nullable().describe('Observações do diretor'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização'),
+}).nullable(),
+  "dataCriacao": zod.string().datetime({}),
+  "dataAtualizacao": zod.string().datetime({}),
   "curso": zod.object({
-  "id": zod.string().describe('ID do curso'),
-  "nome": zod.string().describe('Nome do curso'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código do curso')
-}).describe('Curso'),
+}).nullable()
+}),
   "periodoLetivo": zod.object({
-  "id": zod.string().describe('ID do período letivo'),
-  "ano": zod.number().describe('Ano do período'),
-  "semestre": zod.number().describe('Semestre do período'),
-  "status": zod.string().describe('Status do período letivo')
-}).describe('Período letivo'),
+  "id": zod.string(),
+  "ano": zod.number(),
+  "semestre": zod.number(),
+  "status": zod.string()
+}),
   "coordenadorQueSubmeteu": zod.object({
-  "id": zod.string().describe('ID único do coordenador no formato UUID v4'),
-  "nome": zod.string().describe('Nome completo do coordenador'),
-  "email": zod.string().describe('Email do coordenador')
-}).describe('Coordenador que submeteu'),
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}),
   "alocacoesPropostas": zod.array(zod.object({
-  "id": zod.string().describe('ID da alocação'),
-  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
-  "horaInicio": zod.string().describe('Hora de início'),
-  "horaFim": zod.string().describe('Hora de fim'),
+  "id": zod.string(),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']),
+  "horaInicio": zod.string(),
+  "horaFim": zod.string(),
   "turma": zod.object({
-  "id": zod.string().describe('ID da turma'),
-  "codigoDaTurma": zod.string().describe('Código da turma'),
+  "id": zod.string(),
+  "codigoDaTurma": zod.string(),
   "disciplinaOfertada": zod.object({
   "disciplina": zod.object({
-  "id": zod.string().describe('ID da disciplina'),
-  "nome": zod.string().describe('Nome da disciplina'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código da disciplina'),
-  "cargaHoraria": zod.number().describe('Carga horária da disciplina')
-}).describe('Disciplina')
-}).describe('Disciplina ofertada'),
+}).nullable(),
+  "cargaHoraria": zod.number()
+})
+}),
   "professorAlocado": zod.object({
-  "id": zod.string().describe('ID do professor'),
-  "nome": zod.string().describe('Nome do professor'),
-  "email": zod.string().describe('Email do professor')
-}).nullable().describe('Professor alocado')
-}).describe('Turma'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização')
-})).describe('Alocações propostas')
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}).nullable()
+})
+}))
 })
 export const propostasHorarioControllerFindMinhasPropostasResponse = zod.array(propostasHorarioControllerFindMinhasPropostasResponseItem)
 
 /**
- * Busca uma proposta de horário específica pelo ID
  * @summary Buscar proposta por ID
  */
 export const propostasHorarioControllerFindOneParams = zod.object({
-  "id": zod.string().describe('ID da proposta')
+  "id": zod.string()
 })
 
 export const propostasHorarioControllerFindOneResponse = zod.object({
-  "id": zod.string().describe('ID da proposta'),
-  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status da proposta'),
+  "id": zod.string(),
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']),
   "dataSubmissao": zod.object({
 
-}).nullable().describe('Data de submissão'),
+}).nullable(),
   "dataAprovacaoRejeicao": zod.object({
 
-}).nullable().describe('Data de aprovação ou rejeição'),
+}).nullable(),
   "justificativaRejeicao": zod.object({
 
-}).nullable().describe('Justificativa de rejeição'),
+}).nullable(),
   "observacoesCoordenador": zod.object({
 
-}).nullable().describe('Observações do coordenador'),
+}).nullable(),
   "observacoesDiretor": zod.object({
 
-}).nullable().describe('Observações do diretor'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização'),
+}).nullable(),
+  "dataCriacao": zod.string().datetime({}),
+  "dataAtualizacao": zod.string().datetime({}),
   "curso": zod.object({
-  "id": zod.string().describe('ID do curso'),
-  "nome": zod.string().describe('Nome do curso'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código do curso')
-}).describe('Curso'),
+}).nullable()
+}),
   "periodoLetivo": zod.object({
-  "id": zod.string().describe('ID do período letivo'),
-  "ano": zod.number().describe('Ano do período'),
-  "semestre": zod.number().describe('Semestre do período'),
-  "status": zod.string().describe('Status do período letivo')
-}).describe('Período letivo'),
+  "id": zod.string(),
+  "ano": zod.number(),
+  "semestre": zod.number(),
+  "status": zod.string()
+}),
   "coordenadorQueSubmeteu": zod.object({
-  "id": zod.string().describe('ID único do coordenador no formato UUID v4'),
-  "nome": zod.string().describe('Nome completo do coordenador'),
-  "email": zod.string().describe('Email do coordenador')
-}).describe('Coordenador que submeteu'),
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}),
   "alocacoesPropostas": zod.array(zod.object({
-  "id": zod.string().describe('ID da alocação'),
-  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
-  "horaInicio": zod.string().describe('Hora de início'),
-  "horaFim": zod.string().describe('Hora de fim'),
+  "id": zod.string(),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']),
+  "horaInicio": zod.string(),
+  "horaFim": zod.string(),
   "turma": zod.object({
-  "id": zod.string().describe('ID da turma'),
-  "codigoDaTurma": zod.string().describe('Código da turma'),
+  "id": zod.string(),
+  "codigoDaTurma": zod.string(),
   "disciplinaOfertada": zod.object({
   "disciplina": zod.object({
-  "id": zod.string().describe('ID da disciplina'),
-  "nome": zod.string().describe('Nome da disciplina'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código da disciplina'),
-  "cargaHoraria": zod.number().describe('Carga horária da disciplina')
-}).describe('Disciplina')
-}).describe('Disciplina ofertada'),
+}).nullable(),
+  "cargaHoraria": zod.number()
+})
+}),
   "professorAlocado": zod.object({
-  "id": zod.string().describe('ID do professor'),
-  "nome": zod.string().describe('Nome do professor'),
-  "email": zod.string().describe('Email do professor')
-}).nullable().describe('Professor alocado')
-}).describe('Turma'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização')
-})).describe('Alocações propostas')
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}).nullable()
+})
+}))
 })
 
 /**
- * Envia uma proposta em estado DRAFT para aprovação (muda status para PENDENTE_APROVACAO)
  * @summary Enviar proposta para aprovação
  */
 export const propostasHorarioControllerEnviarParams = zod.object({
-  "id": zod.string().describe('ID da proposta')
+  "id": zod.string()
 })
 
 export const propostasHorarioControllerEnviarResponse = zod.object({
-  "id": zod.string().describe('ID da proposta'),
-  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status da proposta'),
+  "id": zod.string(),
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']),
   "dataSubmissao": zod.object({
 
-}).nullable().describe('Data de submissão'),
+}).nullable(),
   "dataAprovacaoRejeicao": zod.object({
 
-}).nullable().describe('Data de aprovação ou rejeição'),
+}).nullable(),
   "justificativaRejeicao": zod.object({
 
-}).nullable().describe('Justificativa de rejeição'),
+}).nullable(),
   "observacoesCoordenador": zod.object({
 
-}).nullable().describe('Observações do coordenador'),
+}).nullable(),
   "observacoesDiretor": zod.object({
 
-}).nullable().describe('Observações do diretor'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização'),
+}).nullable(),
+  "dataCriacao": zod.string().datetime({}),
+  "dataAtualizacao": zod.string().datetime({}),
   "curso": zod.object({
-  "id": zod.string().describe('ID do curso'),
-  "nome": zod.string().describe('Nome do curso'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código do curso')
-}).describe('Curso'),
+}).nullable()
+}),
   "periodoLetivo": zod.object({
-  "id": zod.string().describe('ID do período letivo'),
-  "ano": zod.number().describe('Ano do período'),
-  "semestre": zod.number().describe('Semestre do período'),
-  "status": zod.string().describe('Status do período letivo')
-}).describe('Período letivo'),
+  "id": zod.string(),
+  "ano": zod.number(),
+  "semestre": zod.number(),
+  "status": zod.string()
+}),
   "coordenadorQueSubmeteu": zod.object({
-  "id": zod.string().describe('ID único do coordenador no formato UUID v4'),
-  "nome": zod.string().describe('Nome completo do coordenador'),
-  "email": zod.string().describe('Email do coordenador')
-}).describe('Coordenador que submeteu'),
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}),
   "alocacoesPropostas": zod.array(zod.object({
-  "id": zod.string().describe('ID da alocação'),
-  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
-  "horaInicio": zod.string().describe('Hora de início'),
-  "horaFim": zod.string().describe('Hora de fim'),
+  "id": zod.string(),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']),
+  "horaInicio": zod.string(),
+  "horaFim": zod.string(),
   "turma": zod.object({
-  "id": zod.string().describe('ID da turma'),
-  "codigoDaTurma": zod.string().describe('Código da turma'),
+  "id": zod.string(),
+  "codigoDaTurma": zod.string(),
   "disciplinaOfertada": zod.object({
   "disciplina": zod.object({
-  "id": zod.string().describe('ID da disciplina'),
-  "nome": zod.string().describe('Nome da disciplina'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código da disciplina'),
-  "cargaHoraria": zod.number().describe('Carga horária da disciplina')
-}).describe('Disciplina')
-}).describe('Disciplina ofertada'),
+}).nullable(),
+  "cargaHoraria": zod.number()
+})
+}),
   "professorAlocado": zod.object({
-  "id": zod.string().describe('ID do professor'),
-  "nome": zod.string().describe('Nome do professor'),
-  "email": zod.string().describe('Email do professor')
-}).nullable().describe('Professor alocado')
-}).describe('Turma'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização')
-})).describe('Alocações propostas')
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}).nullable()
+})
+}))
 })
 
 /**
- * Aprova uma proposta em estado PENDENTE_APROVACAO (muda status para APROVADA)
  * @summary Aprovar proposta
  */
 export const propostasHorarioControllerAprovarParams = zod.object({
-  "id": zod.string().describe('ID da proposta')
+  "id": zod.string()
 })
 
 export const propostasHorarioControllerAprovarBody = zod.object({
@@ -417,164 +400,144 @@ export const propostasHorarioControllerAprovarBody = zod.object({
 })
 
 export const propostasHorarioControllerAprovarResponse = zod.object({
-  "id": zod.string().describe('ID da proposta'),
-  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status da proposta'),
+  "id": zod.string(),
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']),
   "dataSubmissao": zod.object({
 
-}).nullable().describe('Data de submissão'),
+}).nullable(),
   "dataAprovacaoRejeicao": zod.object({
 
-}).nullable().describe('Data de aprovação ou rejeição'),
+}).nullable(),
   "justificativaRejeicao": zod.object({
 
-}).nullable().describe('Justificativa de rejeição'),
+}).nullable(),
   "observacoesCoordenador": zod.object({
 
-}).nullable().describe('Observações do coordenador'),
+}).nullable(),
   "observacoesDiretor": zod.object({
 
-}).nullable().describe('Observações do diretor'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização'),
+}).nullable(),
+  "dataCriacao": zod.string().datetime({}),
+  "dataAtualizacao": zod.string().datetime({}),
   "curso": zod.object({
-  "id": zod.string().describe('ID do curso'),
-  "nome": zod.string().describe('Nome do curso'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código do curso')
-}).describe('Curso'),
+}).nullable()
+}),
   "periodoLetivo": zod.object({
-  "id": zod.string().describe('ID do período letivo'),
-  "ano": zod.number().describe('Ano do período'),
-  "semestre": zod.number().describe('Semestre do período'),
-  "status": zod.string().describe('Status do período letivo')
-}).describe('Período letivo'),
+  "id": zod.string(),
+  "ano": zod.number(),
+  "semestre": zod.number(),
+  "status": zod.string()
+}),
   "coordenadorQueSubmeteu": zod.object({
-  "id": zod.string().describe('ID único do coordenador no formato UUID v4'),
-  "nome": zod.string().describe('Nome completo do coordenador'),
-  "email": zod.string().describe('Email do coordenador')
-}).describe('Coordenador que submeteu'),
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}),
   "alocacoesPropostas": zod.array(zod.object({
-  "id": zod.string().describe('ID da alocação'),
-  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
-  "horaInicio": zod.string().describe('Hora de início'),
-  "horaFim": zod.string().describe('Hora de fim'),
+  "id": zod.string(),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']),
+  "horaInicio": zod.string(),
+  "horaFim": zod.string(),
   "turma": zod.object({
-  "id": zod.string().describe('ID da turma'),
-  "codigoDaTurma": zod.string().describe('Código da turma'),
+  "id": zod.string(),
+  "codigoDaTurma": zod.string(),
   "disciplinaOfertada": zod.object({
   "disciplina": zod.object({
-  "id": zod.string().describe('ID da disciplina'),
-  "nome": zod.string().describe('Nome da disciplina'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código da disciplina'),
-  "cargaHoraria": zod.number().describe('Carga horária da disciplina')
-}).describe('Disciplina')
-}).describe('Disciplina ofertada'),
+}).nullable(),
+  "cargaHoraria": zod.number()
+})
+}),
   "professorAlocado": zod.object({
-  "id": zod.string().describe('ID do professor'),
-  "nome": zod.string().describe('Nome do professor'),
-  "email": zod.string().describe('Email do professor')
-}).nullable().describe('Professor alocado')
-}).describe('Turma'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização')
-})).describe('Alocações propostas')
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}).nullable()
+})
+}))
 })
 
 /**
- * Calcula o percentual de completude de uma proposta baseado nas alocações
- * @summary Calcular completude da proposta
- */
-export const propostasHorarioControllerCalcularCompletudeParams = zod.object({
-  "id": zod.string().describe('ID da proposta')
-})
-
-export const propostasHorarioControllerCalcularCompletudeResponse = zod.object({
-  "totalAulasNecessarias": zod.number().optional().describe('Total de aulas necessárias'),
-  "aulasAlocadas": zod.number().optional().describe('Número de aulas já alocadas'),
-  "percentualCompleto": zod.number().optional().describe('Percentual de completude'),
-  "disciplinasSemAlocacao": zod.array(zod.string()).optional().describe('Disciplinas que ainda não têm alocações')
-})
-
-/**
- * Rejeita uma proposta em estado PENDENTE_APROVACAO (muda status para REJEITADA)
  * @summary Rejeitar proposta
  */
 export const propostasHorarioControllerRejeitarParams = zod.object({
-  "id": zod.string().describe('ID da proposta')
+  "id": zod.string()
 })
 
 export const propostasHorarioControllerRejeitarBody = zod.object({
-  "justificativaRejeicao": zod.string().describe('Justificativa obrigatória para a rejeição'),
-  "observacoesDiretor": zod.string().optional().describe('Observações opcionais do diretor sobre a rejeição')
+  "justificativaRejeicao": zod.string(),
+  "observacoesDiretor": zod.string().optional()
 })
 
 export const propostasHorarioControllerRejeitarResponse = zod.object({
-  "id": zod.string().describe('ID da proposta'),
-  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status da proposta'),
+  "id": zod.string(),
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']),
   "dataSubmissao": zod.object({
 
-}).nullable().describe('Data de submissão'),
+}).nullable(),
   "dataAprovacaoRejeicao": zod.object({
 
-}).nullable().describe('Data de aprovação ou rejeição'),
+}).nullable(),
   "justificativaRejeicao": zod.object({
 
-}).nullable().describe('Justificativa de rejeição'),
+}).nullable(),
   "observacoesCoordenador": zod.object({
 
-}).nullable().describe('Observações do coordenador'),
+}).nullable(),
   "observacoesDiretor": zod.object({
 
-}).nullable().describe('Observações do diretor'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização'),
+}).nullable(),
+  "dataCriacao": zod.string().datetime({}),
+  "dataAtualizacao": zod.string().datetime({}),
   "curso": zod.object({
-  "id": zod.string().describe('ID do curso'),
-  "nome": zod.string().describe('Nome do curso'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código do curso')
-}).describe('Curso'),
+}).nullable()
+}),
   "periodoLetivo": zod.object({
-  "id": zod.string().describe('ID do período letivo'),
-  "ano": zod.number().describe('Ano do período'),
-  "semestre": zod.number().describe('Semestre do período'),
-  "status": zod.string().describe('Status do período letivo')
-}).describe('Período letivo'),
+  "id": zod.string(),
+  "ano": zod.number(),
+  "semestre": zod.number(),
+  "status": zod.string()
+}),
   "coordenadorQueSubmeteu": zod.object({
-  "id": zod.string().describe('ID único do coordenador no formato UUID v4'),
-  "nome": zod.string().describe('Nome completo do coordenador'),
-  "email": zod.string().describe('Email do coordenador')
-}).describe('Coordenador que submeteu'),
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}),
   "alocacoesPropostas": zod.array(zod.object({
-  "id": zod.string().describe('ID da alocação'),
-  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana'),
-  "horaInicio": zod.string().describe('Hora de início'),
-  "horaFim": zod.string().describe('Hora de fim'),
+  "id": zod.string(),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']),
+  "horaInicio": zod.string(),
+  "horaFim": zod.string(),
   "turma": zod.object({
-  "id": zod.string().describe('ID da turma'),
-  "codigoDaTurma": zod.string().describe('Código da turma'),
+  "id": zod.string(),
+  "codigoDaTurma": zod.string(),
   "disciplinaOfertada": zod.object({
   "disciplina": zod.object({
-  "id": zod.string().describe('ID da disciplina'),
-  "nome": zod.string().describe('Nome da disciplina'),
+  "id": zod.string(),
+  "nome": zod.string(),
   "codigo": zod.object({
 
-}).describe('Código da disciplina'),
-  "cargaHoraria": zod.number().describe('Carga horária da disciplina')
-}).describe('Disciplina')
-}).describe('Disciplina ofertada'),
+}).nullable(),
+  "cargaHoraria": zod.number()
+})
+}),
   "professorAlocado": zod.object({
-  "id": zod.string().describe('ID do professor'),
-  "nome": zod.string().describe('Nome do professor'),
-  "email": zod.string().describe('Email do professor')
-}).nullable().describe('Professor alocado')
-}).describe('Turma'),
-  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
-  "dataAtualizacao": zod.string().datetime({}).describe('Data de atualização')
-})).describe('Alocações propostas')
+  "id": zod.string(),
+  "nome": zod.string(),
+  "email": zod.string()
+}).nullable()
+})
+}))
 })
 

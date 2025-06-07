@@ -7,7 +7,6 @@
  */
 
 /**
- * Observações do coordenador
  * @nullable
  */
 export type PropostaHorarioResponseDtoObservacoesCoordenador = {

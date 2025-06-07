@@ -1,33 +1,18 @@
 import * as React from "react"
 import { toast } from "sonner"
 import { ScheduleCellView } from "./schedule-cell-view"
-import { ScheduleAllocationDialog } from "./schedule-allocation-dialog"
+import { AlocacaoDialog } from "./alocacao-dialog"
 import { useScheduleAllocation } from "../hooks/use-schedule-allocation"
 import type { ScheduleCellProps } from "./schedule-grid-types"
 
-/**
- * Container que gerencia estado e lógica para uma célula da grade de horários.
- *
- * Responsabilidades:
- * - Gerenciar estado do dialog de alocações
- * - Integrar com hooks de API para alocações
- * - Preparar dados para o combobox de turmas
- * - Tratar callbacks de criação/remoção de alocações
- * - Gerenciar estados de loading e error
- * - Suportar múltiplas alocações por célula
- *
- * @component
- */
 export function ScheduleCellContainer({
   dia,
   horario,
   alocacao,
   alocacoes = [],
   propostaId,
-  todasAlocacoes = [],
 }: ScheduleCellProps & {
   propostaId: string
-  todasAlocacoes?: any[]
   alocacoes?: any[]
 }) {
   const [dialogOpen, setDialogOpen] = React.useState(false)
@@ -35,15 +20,7 @@ export function ScheduleCellContainer({
   const { isLoadingTurmas, isCreating, isDeleting, removerAlocacao } =
     useScheduleAllocation({ propostaId })
 
-  /**
-   * Determinar se há operação em andamento
-   */
   const isLoading = isCreating || isDeleting || isLoadingTurmas
-
-  /**
-   * Preparar lista de alocações existentes para o slot
-   * Prioriza array de alocacoes, mas mantém compatibilidade com alocacao única
-   */
   const alocacoesExistentes = React.useMemo(() => {
     if (alocacoes && alocacoes.length > 0) {
       return alocacoes
@@ -51,16 +28,9 @@ export function ScheduleCellContainer({
     return alocacao ? [alocacao] : []
   }, [alocacoes, alocacao])
 
-  /**
-   * Abre o dialog para adicionar nova alocação
-   */
   const handleAddClick = React.useCallback(() => {
     setDialogOpen(true)
   }, [])
-
-  /**
-   * Remove uma alocação específica
-   */
   const handleRemoveAlocacao = React.useCallback(
     async (alocacaoId: string) => {
       try {
@@ -80,7 +50,7 @@ export function ScheduleCellContainer({
   )
 
   return (
-    <>
+    <div data-testid={`celula-${dia}-${horario.inicio.replace(":", "")}`}>
       {/* Componente de apresentação */}
       <ScheduleCellView
         alocacoes={alocacoesExistentes}
@@ -90,15 +60,14 @@ export function ScheduleCellContainer({
       />
 
       {/* Dialog para gerenciar alocações */}
-      <ScheduleAllocationDialog
+      <AlocacaoDialog
         propostaId={propostaId}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         dia={dia}
         horario={horario}
         alocacoesExistentes={alocacoesExistentes}
-        todasAlocacoes={todasAlocacoes}
       />
-    </>
+    </div>
   )
 }

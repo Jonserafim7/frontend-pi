@@ -7,7 +7,6 @@
  */
 
 /**
- * Data de aprovação ou rejeição
  * @nullable
  */
 export type PropostaHorarioResponseDtoDataAprovacaoRejeicao = {

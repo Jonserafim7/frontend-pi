@@ -7,8 +7,6 @@
  */
 
 export interface RejeitarPropostaDto {
-  /** Justificativa obrigatória para a rejeição */
   justificativaRejeicao: string
-  /** Observações opcionais do diretor sobre a rejeição */
   observacoesDiretor?: string
 }

@@ -60,6 +60,7 @@ function TurmaCard({
           disabled={isLoading}
           className="hover:bg-destructive/10 hover:text-destructive absolute top-1/2 right-1 h-5 w-5 -translate-y-1/2 p-0 opacity-0 transition-opacity group-hover/card:opacity-100"
           aria-label={`Remover ${alocacao.turma.codigoDaTurma}`}
+          data-testid={`btn-remover-${alocacao.turma.codigoDaTurma}`}
         >
           <X className="h-3 w-3" />
         </Button>
@@ -102,6 +103,7 @@ export function ScheduleCellView({
         disabled={isLoading}
         className="hover:bg-primary/10 absolute top-1 right-1 z-10 h-6 w-6 rounded-full p-0 opacity-0 transition-opacity group-hover:opacity-100"
         aria-label="Adicionar alocação"
+        data-testid="btn-adicionar-alocacao"
       >
         <Plus className="h-3 w-3" />
       </Button>
@@ -125,6 +127,7 @@ export function ScheduleCellView({
             className={`border-muted-foreground/10 hover:border-muted-foreground/20 flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed transition-colors ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
+            data-testid="area-adicionar-alocacao"
           >
             <div className="text-muted-foreground/50 text-center text-xs">
               Clique para adicionar

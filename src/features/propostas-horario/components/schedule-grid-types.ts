@@ -45,7 +45,6 @@ export interface ScheduleGridProps {
  * @property fim Horário de término do turno.
  * @property alocacoesMap Mapa para busca rápida das alocações por dia e horário.
  * @property propostaId ID da proposta de horário.
- * @property todasAlocacoes Lista completa de alocações para verificar conflitos.
  */
 export interface TurnoSectionProps {
   titulo: string
@@ -54,7 +53,6 @@ export interface TurnoSectionProps {
   fim: string
   alocacoesMap: Map<string, AlocacaoHorarioResponseDto[]>
   propostaId: string
-  todasAlocacoes: AlocacaoHorarioResponseDto[]
 }
 
 /**

@@ -9,18 +9,9 @@ import type { AlocacaoHorarioDtoDiaDaSemana } from "./alocacao-horario-dto-dia-d
 import type { TurmaDto } from "./turma-dto"
 
 export interface AlocacaoHorarioDto {
-  /** ID da alocação */
   id: string
-  /** Dia da semana */
   diaDaSemana: AlocacaoHorarioDtoDiaDaSemana
-  /** Hora de início */
   horaInicio: string
-  /** Hora de fim */
   horaFim: string
-  /** Turma */
   turma: TurmaDto
-  /** Data de criação */
-  dataCriacao: string
-  /** Data de atualização */
-  dataAtualizacao: string
 }

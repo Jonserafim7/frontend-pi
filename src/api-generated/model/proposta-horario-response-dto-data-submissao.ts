@@ -7,7 +7,6 @@
  */
 
 /**
- * Data de submissão
  * @nullable
  */
 export type PropostaHorarioResponseDtoDataSubmissao = {

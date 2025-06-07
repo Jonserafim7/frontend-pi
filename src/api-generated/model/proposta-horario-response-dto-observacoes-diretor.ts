@@ -7,7 +7,6 @@
  */
 
 /**
- * Observações do diretor
  * @nullable
  */
 export type PropostaHorarioResponseDtoObservacoesDiretor = {

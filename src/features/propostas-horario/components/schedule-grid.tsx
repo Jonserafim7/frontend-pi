@@ -9,10 +9,6 @@ import { useMemo } from "react"
 import { TurnoSection } from "./turno-section"
 import type { ScheduleGridProps } from "./schedule-grid-types"
 
-/**
- * Componente da grade de horários que exibe a estrutura visual
- * baseada na configuração de horários do sistema
- */
 export function ScheduleGrid({ className, propostaId }: ScheduleGridProps) {
   const {
     data: configuracao,
@@ -20,29 +16,22 @@ export function ScheduleGrid({ className, propostaId }: ScheduleGridProps) {
     error: errorConfig,
   } = useConfiguracoesHorarioControllerGet()
 
-  // Buscar todas as alocações existentes
   const {
     data: alocacoes,
     isLoading: isLoadingAlocacoes,
     error: errorAlocacoes,
   } = useAlocacoesHorariosControllerFindMany({})
 
-  // Criar um mapa otimizado para busca rápida de alocações
   const alocacoesMap = useMemo(() => {
-    if (!alocacoes) {
-      return new Map()
-    }
+    if (!alocacoes) return new Map()
 
     const map = new Map<string, AlocacaoHorarioResponseDto[]>()
     alocacoes.forEach((alocacao) => {
-      // Criar chave única: diaDaSemana_horaInicio
       const key = `${alocacao.diaDaSemana}_${alocacao.horaInicio}`
 
-      // Se já existe uma entrada para esta chave, adiciona à lista
       if (map.has(key)) {
         map.get(key)!.push(alocacao)
       } else {
-        // Senão, cria uma nova lista com esta alocação
         map.set(key, [alocacao])
       }
     })
@@ -52,14 +41,6 @@ export function ScheduleGrid({ className, propostaId }: ScheduleGridProps) {
 
   const isLoading = isLoadingConfig || isLoadingAlocacoes
   const error = errorConfig || errorAlocacoes
-
-  // Debug: Log da configuração quando ela carrega
-  if (configuracao) {
-    console.log(`⚙️ Configuração carregada:`, configuracao)
-    console.log(`🌅 Turno Manhã - Aulas:`, configuracao.aulasTurnoManha)
-    console.log(`🌞 Turno Tarde - Aulas:`, configuracao.aulasTurnoTarde)
-    console.log(`🌙 Turno Noite - Aulas:`, configuracao.aulasTurnoNoite)
-  }
 
   if (isLoading) {
     return (
@@ -126,7 +107,6 @@ export function ScheduleGrid({ className, propostaId }: ScheduleGridProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Turno da Manhã */}
           <TurnoSection
             titulo="Manhã"
             aulas={configuracao.aulasTurnoManha}
@@ -134,10 +114,8 @@ export function ScheduleGrid({ className, propostaId }: ScheduleGridProps) {
             fim={configuracao.fimTurnoManhaCalculado}
             alocacoesMap={alocacoesMap}
             propostaId={propostaId}
-            todasAlocacoes={alocacoes || []}
           />
 
-          {/* Turno da Tarde */}
           <TurnoSection
             titulo="Tarde"
             aulas={configuracao.aulasTurnoTarde}
@@ -145,10 +123,8 @@ export function ScheduleGrid({ className, propostaId }: ScheduleGridProps) {
             fim={configuracao.fimTurnoTardeCalculado}
             alocacoesMap={alocacoesMap}
             propostaId={propostaId}
-            todasAlocacoes={alocacoes || []}
           />
 
-          {/* Turno da Noite */}
           <TurnoSection
             titulo="Noite"
             aulas={configuracao.aulasTurnoNoite}
@@ -156,7 +132,6 @@ export function ScheduleGrid({ className, propostaId }: ScheduleGridProps) {
             fim={configuracao.fimTurnoNoiteCalculado}
             alocacoesMap={alocacoesMap}
             propostaId={propostaId}
-            todasAlocacoes={alocacoes || []}
           />
         </CardContent>
       </Card>
