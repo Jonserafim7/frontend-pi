@@ -98,7 +98,7 @@ export function ScheduleAllocationDialog({
     removerAlocacao,
     isCreating,
     isDeleting,
-  } = useScheduleAllocation(propostaId)
+  } = useScheduleAllocation({ propostaId })
 
   // Mapear dias da semana para labels em português
   const diaLabels: Record<DiaSemanaKey, string> = {

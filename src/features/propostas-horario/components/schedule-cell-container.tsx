@@ -33,7 +33,7 @@ export function ScheduleCellContainer({
   const [dialogOpen, setDialogOpen] = React.useState(false)
 
   const { isLoadingTurmas, isCreating, isDeleting, removerAlocacao } =
-    useScheduleAllocation(propostaId)
+    useScheduleAllocation({ propostaId })
 
   /**
    * Determinar se há operação em andamento

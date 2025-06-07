@@ -6,9 +6,17 @@ import {
   useAlocacoesHorariosControllerValidate,
   getAlocacoesHorariosControllerFindManyQueryKey,
 } from "@/api-generated/client/alocações-de-horário/alocações-de-horário"
+import {
+  getPropostasHorarioControllerFindDraftAtivaQueryKey,
+  getPropostasHorarioControllerFindAllQueryKey,
+  getPropostasHorarioControllerFindMinhasPropostasQueryKey,
+  getPropostasHorarioControllerFindOneQueryKey,
+} from "@/api-generated/client/propostas-horario/propostas-horario"
 import { useTurmasControllerFindAll } from "@/api-generated/client/turmas/turmas"
 import { usePeriodosLetivosControllerFindPeriodoAtivo } from "@/api-generated/client/períodos-letivos/períodos-letivos"
 import { useDisponibilidadeProfessorControllerFindByPeriodo } from "@/api-generated/client/disponibilidade-de-professores/disponibilidade-de-professores"
+import { usePropostaDraftAtiva } from "./use-proposta-draft-ativa"
+import { useAuth } from "@/features/auth/contexts/auth-context"
 import type {
   CreateAlocacaoHorarioDto,
   ValidateAlocacaoDto,
@@ -18,19 +26,38 @@ import type {
 } from "@/api-generated/model"
 import type { DiaSemanaKey } from "../components/schedule-grid-types"
 
+export interface UseScheduleAllocationOptions {
+  /**
+   * ID da proposta específica (opcional)
+   */
+  propostaId?: string
+  /**
+   * ID do curso para buscar proposta draft ativa
+   */
+  cursoId?: string
+  /**
+   * ID do período letivo para buscar proposta draft ativa
+   */
+  periodoId?: string
+}
+
 /**
  * Hook customizado para gerenciar alocações de horários com validações completas.
  *
  * Fornece funções para:
  * - Buscar turmas disponíveis
- * - Criar novas alocações
+ * - Criar novas alocações com auto-associação a propostas draft
  * - Remover alocações existentes
  * - Validar conflitos antes de alocar
  * - Verificar disponibilidade de professores
- * - Invalidar cache para atualizar a UI
+ * - Invalidar cache para atualizar a UI (incluindo propostas)
  */
-export function useScheduleAllocation(_propostaId?: string) {
+export function useScheduleAllocation(
+  options: UseScheduleAllocationOptions = {},
+) {
+  const { propostaId, cursoId, periodoId } = options
   const queryClient = useQueryClient()
+  const { isCoordenador } = useAuth()
 
   // Mutations para alocações
   const createAlocacaoMutation = useAlocacoesHorariosControllerCreate()
@@ -39,6 +66,19 @@ export function useScheduleAllocation(_propostaId?: string) {
 
   // Buscar período ativo
   const { data: periodoAtivo } = usePeriodosLetivosControllerFindPeriodoAtivo()
+
+  // Hook para proposta draft ativa (apenas para coordenadores)
+  const {
+    data: propostaDraftAtiva,
+    hasDraftAtiva,
+    isLoading: isLoadingDraft,
+    invalidate: invalidateDraft,
+  } = usePropostaDraftAtiva({
+    cursoId,
+    periodoId: periodoId || periodoAtivo?.id,
+    enabled:
+      isCoordenador() && Boolean(cursoId && (periodoId || periodoAtivo?.id)),
+  })
 
   // Buscar disponibilidades do período ativo
   const { data: disponibilidades = [], isLoading: isLoadingDisponibilidades } =
@@ -316,6 +356,61 @@ export function useScheduleAllocation(_propostaId?: string) {
   )
 
   /**
+   * Invalidar todas as queries relacionadas às propostas
+   */
+  const invalidatePropostasQueries = useCallback(async () => {
+    const invalidationPromises = []
+
+    // Invalidar lista geral de propostas
+    invalidationPromises.push(
+      queryClient.invalidateQueries({
+        queryKey: getPropostasHorarioControllerFindAllQueryKey(),
+      }),
+    )
+
+    // Invalidar minhas propostas
+    invalidationPromises.push(
+      queryClient.invalidateQueries({
+        queryKey: getPropostasHorarioControllerFindMinhasPropostasQueryKey(),
+      }),
+    )
+
+    // Invalidar proposta draft ativa se disponível
+    if (cursoId && (periodoId || periodoAtivo?.id)) {
+      invalidationPromises.push(
+        queryClient.invalidateQueries({
+          queryKey: getPropostasHorarioControllerFindDraftAtivaQueryKey({
+            idCurso: cursoId,
+            idPeriodoLetivo: periodoId || periodoAtivo?.id || "",
+          }),
+        }),
+      )
+    }
+
+    // Invalidar proposta específica se fornecida
+    if (propostaId || propostaDraftAtiva?.id) {
+      const targetPropostaId = propostaId || propostaDraftAtiva?.id
+      if (targetPropostaId) {
+        invalidationPromises.push(
+          queryClient.invalidateQueries({
+            queryKey:
+              getPropostasHorarioControllerFindOneQueryKey(targetPropostaId),
+          }),
+        )
+      }
+    }
+
+    await Promise.all(invalidationPromises)
+  }, [
+    queryClient,
+    cursoId,
+    periodoId,
+    periodoAtivo?.id,
+    propostaId,
+    propostaDraftAtiva?.id,
+  ])
+
+  /**
    * Criar nova alocação
    */
   const criarAlocacao = useCallback(
@@ -349,6 +444,9 @@ export function useScheduleAllocation(_propostaId?: string) {
           queryKey: getAlocacoesHorariosControllerFindManyQueryKey({}),
         })
 
+        // Invalidar queries relacionadas às propostas
+        await invalidatePropostasQueries()
+
         return result
       } catch (error) {
         console.error("Erro ao criar alocação:", error)
@@ -360,6 +458,7 @@ export function useScheduleAllocation(_propostaId?: string) {
       createAlocacaoMutation,
       mapDiaSemanaToDtoEnum,
       queryClient,
+      invalidatePropostasQueries,
     ],
   )
 
@@ -376,13 +475,16 @@ export function useScheduleAllocation(_propostaId?: string) {
           queryKey: getAlocacoesHorariosControllerFindManyQueryKey({}),
         })
 
+        // Invalidar queries relacionadas às propostas
+        await invalidatePropostasQueries()
+
         return true
       } catch (error) {
         console.error("Erro ao remover alocação:", error)
         throw error
       }
     },
-    [deleteAlocacaoMutation, queryClient],
+    [deleteAlocacaoMutation, queryClient, invalidatePropostasQueries],
   )
 
   /**
@@ -428,9 +530,20 @@ export function useScheduleAllocation(_propostaId?: string) {
     temSobreposicaoHorario,
     temConflitoHorario,
 
-    // New data
+    // Period and availability data
     periodoAtivo,
     isLoadingDisponibilidades,
     disponibilidades,
+
+    // Draft proposta integration
+    propostaDraftAtiva,
+    hasDraftAtiva,
+    isLoadingDraft,
+    invalidateDraft,
+    invalidatePropostasQueries,
+
+    // Proposal-aware status
+    isProposalModeEnabled: isCoordenador() && hasDraftAtiva,
+    activePropostaId: propostaDraftAtiva?.id || propostaId,
   }
 }
