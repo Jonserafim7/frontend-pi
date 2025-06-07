@@ -12,6 +12,7 @@ import {
   CalendarDays,
   Clock,
   Users,
+  CalendarCheck,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 import {
