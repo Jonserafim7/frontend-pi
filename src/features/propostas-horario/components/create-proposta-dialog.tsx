@@ -102,10 +102,26 @@ export function CreatePropostaDialog({
     )
   }
 
-  // Filtra apenas períodos letivos ativos
-  const periodosAtivos = periodosLetivos.filter(
-    (periodo) => periodo.status === "ATIVO",
-  )
+  // Filtra apenas períodos letivos ativos e vigentes (dentro das datas)
+  const periodosAtivos = periodosLetivos.filter((periodo) => {
+    // Primeiro, deve ter status ATIVO
+    if (periodo.status !== "ATIVO") return false
+
+    // Verificar se o período está vigente (pode criar propostas)
+    const hoje = new Date()
+    const dataInicio = new Date(periodo.dataInicio)
+    const dataFim = new Date(periodo.dataFim)
+
+    // Permitir criação de propostas se:
+    // - O período já começou OU começará em até 30 dias
+    // - O período ainda não terminou
+    const diasAteInicio = Math.ceil(
+      (dataInicio.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24),
+    )
+    const jaTerminou = dataFim.getTime() < hoje.getTime()
+
+    return !jaTerminou && diasAteInicio <= 30
+  })
 
   // Filtra cursos para mostrar apenas aqueles em que o coordenador logado é responsável
   const cursosDisponiveis = cursos.filter((curso) => {
@@ -168,7 +184,7 @@ export function CreatePropostaDialog({
                         <SelectValue placeholder="Selecione um curso..." />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="w-full">
                       {isLoadingCursos ?
                         <SelectItem
                           value=""
@@ -229,7 +245,7 @@ export function CreatePropostaDialog({
                         <SelectValue placeholder="Selecione um período letivo..." />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="w-full">
                       {isLoadingPeriodos ?
                         <SelectItem
                           value=""
@@ -245,35 +261,67 @@ export function CreatePropostaDialog({
                           value=""
                           disabled
                         >
-                          Nenhum período ativo encontrado
+                          Nenhum período ativo disponível para criação de
+                          propostas
                         </SelectItem>
-                      : periodosOrdenados.map((periodo) => (
-                          <SelectItem
-                            key={periodo.id}
-                            value={periodo.id}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">
-                                {periodo.ano}/{periodo.semestre}º Semestre
-                              </span>
-                              <span className="text-muted-foreground text-xs">
-                                {new Date(periodo.dataInicio).toLocaleDateString(
-                                  "pt-BR",
-                                )}{" "}
-                                -{" "}
-                                {new Date(periodo.dataFim).toLocaleDateString(
-                                  "pt-BR",
+                      : periodosOrdenados.map((periodo) => {
+                          const hoje = new Date()
+                          const dataInicio = new Date(periodo.dataInicio)
+                          const dataFim = new Date(periodo.dataFim)
+                          const diasAteInicio = Math.ceil(
+                            (dataInicio.getTime() - hoje.getTime()) /
+                              (1000 * 60 * 60 * 24),
+                          )
+
+                          let statusIndicator = ""
+                          let statusColor = "text-muted-foreground"
+
+                          if (diasAteInicio > 0) {
+                            statusIndicator = `Inicia em ${diasAteInicio} dias`
+                            statusColor = "text-blue-600"
+                          } else if (dataFim.getTime() > hoje.getTime()) {
+                            statusIndicator = "Em andamento"
+                            statusColor = "text-green-600"
+                          }
+
+                          return (
+                            <SelectItem
+                              key={periodo.id}
+                              value={periodo.id}
+                            >
+                              <div className="flex w-full items-center justify-between gap-4">
+                                <div className="flex flex-col">
+                                  <span className="font-medium">
+                                    {periodo.ano}/{periodo.semestre}º Semestre
+                                  </span>
+                                  <span className="text-muted-foreground text-xs">
+                                    {new Date(
+                                      periodo.dataInicio,
+                                    ).toLocaleDateString("pt-BR")}{" "}
+                                    -{" "}
+                                    {new Date(periodo.dataFim).toLocaleDateString(
+                                      "pt-BR",
+                                    )}
+                                  </span>
+                                </div>
+                                {statusIndicator && (
+                                  <span
+                                    className={`text-xs font-medium ${statusColor}`}
+                                  >
+                                    {statusIndicator}
+                                  </span>
                                 )}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))
+                              </div>
+                            </SelectItem>
+                          )
+                        })
                       }
                     </SelectContent>
                   </Select>
                   <FormDescription>
                     Selecione o período letivo para o qual a proposta será criada.
-                    Apenas períodos ativos são exibidos.
+                    Apenas períodos ativos e vigentes (que não terminaram e
+                    começam em até 30 dias) são exibidos.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
