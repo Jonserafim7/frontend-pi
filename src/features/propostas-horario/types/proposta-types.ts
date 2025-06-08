@@ -22,6 +22,7 @@ export const PROPOSTA_STATUS_CONFIG = {
     canReopen: false,
     canApprove: false,
     canReject: false,
+    canSendBack: false,
   },
   PENDENTE_APROVACAO: {
     label: "Pendente",
@@ -33,6 +34,7 @@ export const PROPOSTA_STATUS_CONFIG = {
     canReopen: false,
     canApprove: true,
     canReject: true,
+    canSendBack: false,
   },
   APROVADA: {
     label: "Aprovada",
@@ -44,6 +46,7 @@ export const PROPOSTA_STATUS_CONFIG = {
     canReopen: false,
     canApprove: false,
     canReject: false,
+    canSendBack: true,
   },
   REJEITADA: {
     label: "Rejeitada",
@@ -55,6 +58,7 @@ export const PROPOSTA_STATUS_CONFIG = {
     canReopen: true,
     canApprove: false,
     canReject: false,
+    canSendBack: false,
   },
 } as const
 
@@ -213,6 +217,13 @@ export interface ApprovePropostaData {
 export interface RejectPropostaData {
   justificativaRejeicao: string
   observacoesDiretor?: string
+}
+
+/**
+ * Dados para devolução de proposta aprovada para edição
+ */
+export interface SendBackPropostaData {
+  motivoDevolucao: string
 }
 
 /**

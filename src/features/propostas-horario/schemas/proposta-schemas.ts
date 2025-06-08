@@ -229,6 +229,29 @@ export const reopenPropostaFormSchema = z.object({
 export type ReopenPropostaFormData = z.infer<typeof reopenPropostaFormSchema>
 
 /**
+ * Schema para devolução de proposta aprovada para edição
+ */
+export const sendBackPropostaFormSchema = z.object({
+  motivoDevolucao: z
+    .string()
+    .min(10, "O motivo deve ter pelo menos 10 caracteres")
+    .max(500, "O motivo não pode exceder 500 caracteres")
+    .refine(
+      (val) => val.trim().length >= 10,
+      "O motivo não pode ser apenas espaços em branco",
+    ),
+  // Campo adicional para confirmação (não enviado para API)
+  confirmaDevolucao: z
+    .boolean()
+    .refine((val) => val === true, {
+      message: "Você deve confirmar a devolução da proposta",
+    })
+    .optional(),
+})
+
+export type SendBackPropostaFormData = z.infer<typeof sendBackPropostaFormSchema>
+
+/**
  * Schema para seleção de curso (usado em dropdowns/selects)
  */
 export const cursoSelectSchema = z.object({

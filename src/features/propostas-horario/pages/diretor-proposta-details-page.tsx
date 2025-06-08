@@ -10,6 +10,7 @@ import {
   User,
   Eye,
   Lock,
+  Undo,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,6 +24,7 @@ import {
   ApprovePropostaDialog,
   RejectPropostaDialog,
 } from "../components/approve-reject-dialogs"
+import { SendBackDialog } from "../components/send-back-dialog"
 
 /**
  * Página de detalhes de uma proposta de horário para diretores
@@ -142,6 +144,22 @@ export function DiretorPropostaDetailsPage() {
                   Rejeitar Proposta
                 </Button>
               </RejectPropostaDialog>
+            </div>
+          )}
+
+          {/* Botão de Devolver para Edição - apenas para APROVADA */}
+          {proposta.status === "APROVADA" && (
+            <div className="flex gap-3">
+              <SendBackDialog
+                propostaId={proposta.id}
+                cursoNome={proposta.curso.nome}
+                coordenadorNome={proposta.coordenadorQueSubmeteu.nome}
+              >
+                <Button className="bg-chart-2 hover:bg-chart-2/90 gap-2">
+                  <Undo className="h-4 w-4" />
+                  Devolver para Edição
+                </Button>
+              </SendBackDialog>
             </div>
           )}
         </div>

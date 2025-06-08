@@ -118,6 +118,7 @@ export {
   ApprovePropostaDialog,
   RejectPropostaDialog,
 } from "./components/approve-reject-dialogs"
+export { SendBackDialog } from "./components/send-back-dialog"
 
 // -----------------------------------------------------------------------------
 // Components - UI Elements

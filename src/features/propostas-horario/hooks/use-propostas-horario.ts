@@ -8,6 +8,7 @@ import {
   usePropostasHorarioControllerApprove,
   usePropostasHorarioControllerReject,
   usePropostasHorarioControllerReopen,
+  usePropostasHorarioControllerSendBack,
   getPropostasHorarioControllerFindAllQueryKey,
   getPropostasHorarioControllerFindOneQueryKey,
 } from "@/api-generated/client/propostas-horario/propostas-horario"
@@ -212,6 +213,31 @@ export function useReopenProposta() {
       },
       onError: (error: any) => {
         toast.error(error?.response?.data?.message || "Erro ao reabrir proposta")
+      },
+    },
+  })
+}
+
+/**
+ * Hook para devolver uma proposta aprovada para edição (diretores)
+ */
+export function useSendBackProposta() {
+  const queryClient = useQueryClient()
+
+  return usePropostasHorarioControllerSendBack({
+    mutation: {
+      onSuccess: (proposta) => {
+        toast.success("Proposta devolvida para edição com sucesso!")
+        // Invalida a lista e o item específico
+        queryClient.invalidateQueries({
+          queryKey: getPropostasHorarioControllerFindAllQueryKey(),
+        })
+        queryClient.invalidateQueries({
+          queryKey: getPropostasHorarioControllerFindOneQueryKey(proposta.id),
+        })
+      },
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || "Erro ao devolver proposta")
       },
     },
   })

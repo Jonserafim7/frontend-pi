@@ -26,6 +26,7 @@ import type {
   CreatePropostaHorarioDto,
   PropostaHorarioResponseDto,
   RejectPropostaDto,
+  SendBackPropostaDto,
   SubmitPropostaHorarioDto,
   UpdatePropostaHorarioDto,
 } from "../../model"
@@ -998,6 +999,101 @@ export const usePropostasHorarioControllerReopen = <
 > => {
   const mutationOptions =
     getPropostasHorarioControllerReopenMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * @summary Devolver uma proposta aprovada para edição
+ */
+export const propostasHorarioControllerSendBack = (
+  id: string,
+  sendBackPropostaDto: BodyType<SendBackPropostaDto>,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+) => {
+  return orvalCustomInstance<PropostaHorarioResponseDto>(
+    {
+      url: `/propostas-horario/${id}/send-back`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: sendBackPropostaDto,
+    },
+    options,
+  )
+}
+
+export const getPropostasHorarioControllerSendBackMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof propostasHorarioControllerSendBack>>,
+    TError,
+    { id: string; data: BodyType<SendBackPropostaDto> },
+    TContext
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof propostasHorarioControllerSendBack>>,
+  TError,
+  { id: string; data: BodyType<SendBackPropostaDto> },
+  TContext
+> => {
+  const mutationKey = ["propostasHorarioControllerSendBack"]
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof propostasHorarioControllerSendBack>>,
+    { id: string; data: BodyType<SendBackPropostaDto> }
+  > = (props) => {
+    const { id, data } = props ?? {}
+
+    return propostasHorarioControllerSendBack(id, data, requestOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PropostasHorarioControllerSendBackMutationResult = NonNullable<
+  Awaited<ReturnType<typeof propostasHorarioControllerSendBack>>
+>
+export type PropostasHorarioControllerSendBackMutationBody =
+  BodyType<SendBackPropostaDto>
+export type PropostasHorarioControllerSendBackMutationError = ErrorType<unknown>
+
+/**
+ * @summary Devolver uma proposta aprovada para edição
+ */
+export const usePropostasHorarioControllerSendBack = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof propostasHorarioControllerSendBack>>,
+      TError,
+      { id: string; data: BodyType<SendBackPropostaDto> },
+      TContext
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof propostasHorarioControllerSendBack>>,
+  TError,
+  { id: string; data: BodyType<SendBackPropostaDto> },
+  TContext
+> => {
+  const mutationOptions =
+    getPropostasHorarioControllerSendBackMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }

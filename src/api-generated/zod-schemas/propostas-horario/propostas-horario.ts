@@ -395,3 +395,52 @@ export const propostasHorarioControllerReopenResponse = zod.object({
   "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização')
 })
 
+/**
+ * @summary Devolver uma proposta aprovada para edição
+ */
+export const propostasHorarioControllerSendBackParams = zod.object({
+  "id": zod.string().uuid().describe('ID da proposta de horário')
+})
+
+export const propostasHorarioControllerSendBackBody = zod.object({
+  "motivoDevolucao": zod.string().describe('Motivo obrigatório para devolver a proposta para edição')
+})
+
+export const propostasHorarioControllerSendBackResponse = zod.object({
+  "id": zod.string().describe('ID único da proposta'),
+  "curso": zod.object({
+  "id": zod.string().describe('ID do curso'),
+  "nome": zod.string().describe('Nome do curso'),
+  "codigo": zod.object({
+
+}).optional().describe('Código do curso')
+}).describe('Dados do curso'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo'),
+  "dataInicio": zod.string().datetime({}).describe('Data de início do período letivo'),
+  "dataFim": zod.string().datetime({}).describe('Data de fim do período letivo')
+}).describe('Dados do período letivo'),
+  "coordenadorQueSubmeteu": zod.object({
+  "id": zod.string().describe('ID do coordenador'),
+  "nome": zod.string().describe('Nome do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
+}).describe('Dados do coordenador que submeteu'),
+  "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status atual da proposta'),
+  "dataSubmissao": zod.string().datetime({}).optional().describe('Data de submissão da proposta'),
+  "dataAprovacaoRejeicao": zod.string().datetime({}).optional().describe('Data de aprovação ou rejeição'),
+  "justificativaRejeicao": zod.object({
+
+}).optional().describe('Justificativa em caso de rejeição'),
+  "observacoesCoordenador": zod.object({
+
+}).optional().describe('Observações do coordenador'),
+  "observacoesDiretor": zod.object({
+
+}).optional().describe('Observações do diretor'),
+  "quantidadeAlocacoes": zod.number().describe('Quantidade de alocações na proposta'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização')
+})
+
