@@ -1,14 +1,40 @@
+import React from "react"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { CalendarDays, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { DataTable } from "@/components/data-table/data-table"
+import {
+  propostasCoordinatorColumns,
+  PropostasFilters,
+  usePropostasHorarioControllerFindAll,
+} from "../index"
+import { useNavigate } from "react-router"
+import { toast } from "sonner"
 
 /**
  * Página de listagem de propostas de horário para coordenadores
  * Exibe as propostas do coordenador logado com filtros e ações
  */
 export function PropostasListPage() {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const navigate = useNavigate()
+
+  // Buscar propostas do coordenador logado
+  const {
+    data: propostas = [],
+    isLoading,
+    error,
+  } = usePropostasHorarioControllerFindAll()
+
+  const handleCreateProposta = () => {
+    navigate("/coordenador/propostas-horario/nova")
+  }
+
+  // Mostrar erro se houver problema na busca
+  React.useEffect(() => {
+    if (error) {
+      toast.error("Erro ao carregar propostas")
+    }
+  }, [error])
 
   return (
     <div className="container mx-auto space-y-8 p-12">
@@ -22,31 +48,33 @@ export function PropostasListPage() {
             </p>
           </div>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
+        <Button onClick={handleCreateProposta}>
           <Plus />
           Nova Proposta
         </Button>
       </div>
 
-      {/* TODO: Implementar PropostasDataTable */}
-      <div className="text-muted-foreground rounded-lg border p-8 text-center">
-        <CalendarDays className="mx-auto mb-4 h-12 w-12 opacity-50" />
-        <p>Lista de propostas será implementada aqui</p>
-      </div>
-
-      {/* TODO: Implementar CreatePropostaDialog */}
-      {isCreateDialogOpen && (
-        <div className="text-muted-foreground text-center">
-          <p>Dialog de criação será implementado aqui</p>
-          <Button
-            variant="outline"
-            onClick={() => setIsCreateDialogOpen(false)}
-            className="mt-2"
-          >
-            Fechar (temporário)
-          </Button>
-        </div>
-      )}
+      {/* Data Table com Filtros */}
+      <DataTable
+        columns={propostasCoordinatorColumns}
+        data={propostas}
+        filters={(table) => <PropostasFilters table={table} />}
+        header={(table) => (
+          <div className="flex items-center justify-between">
+            <div className="text-muted-foreground text-sm">
+              {isLoading ?
+                "Carregando propostas..."
+              : `${table.getFilteredRowModel().rows.length} de ${table.getCoreRowModel().rows.length} proposta(s)`
+              }
+            </div>
+            {error && (
+              <div className="text-destructive text-sm">
+                Erro ao carregar dados
+              </div>
+            )}
+          </div>
+        )}
+      />
     </div>
   )
 }
