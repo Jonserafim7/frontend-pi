@@ -19,10 +19,7 @@ import { MatrizCurricularDetailsPage } from "@/features/matrizes-curriculares/pa
 import { DisciplinasListPage } from "@/features/disciplinas/pages/disciplinas-list-page"
 import { DisciplinasOfertadasListPage } from "@/features/disciplinas-ofertadas/pages/disciplinas-ofertadas-list-page"
 import { PeriodosLetivosListPage } from "@/features/periodos-letivos/pages/periodos-letivos-list-page"
-import {
-  ProfessorDisponibilidadePage,
-  CoordenadorDisponibilidadePage,
-} from "@/features/disponibilidade-professores/pages"
+import { ProfessorDisponibilidadePage } from "@/features/disponibilidade-professores/pages"
 import { TurmasListPage } from "@/features/turmas/pages/turmas-list-page"
 import {
   PropostasListPage,
@@ -211,20 +208,6 @@ export function AppRoutes() {
                 }
               />{" "}
             </Route>{" "}
-            <Route path="disponibilidades">
-              {" "}
-              <Route
-                index
-                element={
-                  <RequireAuth
-                    allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
-                  >
-                    {" "}
-                    <CoordenadorDisponibilidadePage />{" "}
-                  </RequireAuth>
-                }
-              />{" "}
-            </Route>
             <Route path="propostas-horario">
               <Route
                 index
