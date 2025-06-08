@@ -1,4 +1,4 @@
-import React from "react"
+import { useState, useEffect } from "react"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { CalendarDays, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,7 @@ import { toast } from "sonner"
  * Exibe as propostas do coordenador logado com filtros e ações
  */
 export function PropostasListPage() {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   // Buscar propostas do coordenador logado
   const {
@@ -30,7 +30,7 @@ export function PropostasListPage() {
   }
 
   // Mostrar erro se houver problema na busca
-  React.useEffect(() => {
+  useEffect(() => {
     if (error) {
       toast.error("Erro ao carregar propostas")
     }

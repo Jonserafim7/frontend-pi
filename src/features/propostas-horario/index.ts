@@ -80,15 +80,10 @@ export {
 } from "@/api-generated/client/propostas-horario/propostas-horario"
 
 // -----------------------------------------------------------------------------
-// Custom Hooks (imports diretos)
+// Custom Hooks
 // -----------------------------------------------------------------------------
 export * from "./hooks/use-propostas-horario"
 export * from "./hooks/use-proposta-allocation"
-
-// Future custom hooks will be exported here:
-// export * from "./hooks/use-proposta-filters"
-// export * from "./hooks/use-proposta-permissions"
-// export * from "./hooks/use-proposta-status"
 
 // -----------------------------------------------------------------------------
 // Components - Schedule/Allocation (Específicos para Propostas)
@@ -100,6 +95,8 @@ export * from "./components/alocacao-turmas-horarios/proposta-turno-section"
 // Componentes compartilhados/genéricos mantidos:
 export * from "./components/alocacao-turmas-horarios/schedule-cell-view"
 export * from "./components/alocacao-turmas-horarios/schedule-allocation-dialog"
+export * from "./components/alocacao-turmas-horarios/allocation-card"
+export * from "./components/alocacao-turmas-horarios/add-allocation-button"
 
 // -----------------------------------------------------------------------------
 // Components - Data Table
@@ -111,26 +108,19 @@ export {
 export { PropostasActionDropdown } from "./components/data-table/propostas-action-dropdown"
 export { PropostasFilters } from "./components/data-table/propostas-filters"
 export { DiretorPropostasFilters } from "./components/data-table/diretor-propostas-filters"
-// Future data table components will be exported here:
-// export * from "./components/data-table/propostas-data-table"
 
 // -----------------------------------------------------------------------------
 // Components - Dialogs & Forms
 // -----------------------------------------------------------------------------
 export { CreatePropostaDialog } from "./components/create-proposta-dialog"
-// Future dialog components will be exported here:
-// export * from "./components/submit-proposta-dialog"
-// export * from "./components/approve-reject-dialogs"
 
 // -----------------------------------------------------------------------------
 // Components - UI Elements
 // -----------------------------------------------------------------------------
 export { PropostaStatusBadge } from "./components/proposta-status-badge"
-// Future UI components will be exported here:
-// export * from "./components/proposta-schedule-grid"
 
 // -----------------------------------------------------------------------------
-// Pages (imports diretos)
+// Pages
 // -----------------------------------------------------------------------------
 export { PropostasListPage } from "./pages/propostas-list-page"
 export { CreatePropostaPage } from "./pages/create-proposta-page"

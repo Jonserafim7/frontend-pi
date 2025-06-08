@@ -68,28 +68,19 @@ export interface PropostaTurnoSectionProps {
   aulas: AulaHorarioDto[]
   inicio: string
   fim: string
-  alocacoesMap: Map<string, AlocacaoHorarioResponseDto>
-  propostaId: string
-  readonly?: boolean
-}
-
-/**
- * Props para célula da grade de propostas
- */
-export interface PropostaScheduleCellProps {
-  dia: DiaSemanaKey
-  horario: AulaHorarioDto
-  alocacao?: AlocacaoHorarioResponseDto
   propostaId: string
   readonly?: boolean
 }
 
 /**
  * Props para container de célula de propostas
+ * Não precisa de alocacao individual - busca todas as alocações do slot automaticamente
  */
-export interface PropostaScheduleCellContainerProps
-  extends PropostaScheduleCellProps {
+export interface PropostaScheduleCellContainerProps {
+  dia: DiaSemanaKey
+  horario: AulaHorarioDto
   propostaId: string
+  readonly?: boolean
 }
 
 /**

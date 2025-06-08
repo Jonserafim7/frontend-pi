@@ -1,23 +1,30 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Book, Plus } from "lucide-react"
+import { AllocationCard } from "./allocation-card"
+import { AddAllocationButton } from "./add-allocation-button"
 import type { AlocacaoHorarioResponseDto } from "@/api-generated/model"
 
 interface ScheduleCellViewProps {
   /**
-   * Alocação existente para o slot, se houver
+   * Lista de alocações existentes para o slot
    */
-  alocacao?: AlocacaoHorarioResponseDto
+  alocacoes?: AlocacaoHorarioResponseDto[]
   /**
-   * Callback para quando a célula é clicada
+   * Callback para quando a célula é clicada (para adicionar)
    */
-  onCellClick: () => void
+  onAddClick: () => void
+  /**
+   * Callback para quando uma alocação é removida
+   */
+  onRemoveClick?: (alocacaoId: string) => void
   /**
    * Se a célula está em estado de loading
    */
   isLoading?: boolean
+  /**
+   * Se o usuário pode editar (adicionar/remover alocações)
+   */
+  canEdit?: boolean
   /**
    * Data test id para testes automatizados
    */
@@ -25,67 +32,126 @@ interface ScheduleCellViewProps {
 }
 
 /**
- * Componente de apresentação puro para célula da grade de horários.
+ * Componente de apresentação para célula da grade de horários.
  *
- * Renderiza:
- * - Badge com código da turma e professor se houver alocação
- * - Botão para adicionar se não houver alocação
- * - Estados de loading
+ * Suporta múltiplas alocações em um mesmo slot com:
+ * - Container com altura responsiva que se adapta ao conteúdo
+ * - Scrolling automático em caso de overflow
+ * - Cards compactos para cada turma alocada
+ * - Layout responsivo para mobile/tablet/desktop
+ * - Adaptação dinâmica baseada na quantidade de alocações
  *
  * @component
  */
 export function ScheduleCellView({
-  alocacao,
-  onCellClick,
+  alocacoes = [],
+  onAddClick,
+  onRemoveClick,
   isLoading = false,
+  canEdit = true,
   "data-testid": dataTestId,
 }: ScheduleCellViewProps) {
-  /**
-   * Caso exista uma alocação: mostra badge com informações da turma
-   */
-  if (alocacao) {
-    return (
-      <div className="group relative min-h-[60px] border-r p-2 last:border-r-0">
-        <div
-          onClick={onCellClick}
-          className={`bg-primary/10 hover:bg-primary/20 border-primary/20 flex h-full w-full cursor-pointer flex-col items-center justify-center rounded-md border p-2 transition-colors ${isLoading ? "opacity-50" : ""} `}
-          data-testid={dataTestId || "allocated-cell"}
-        >
-          {/* Ícone de livro indica célula ocupada */}
-          <Book className="text-primary mb-1 h-4 w-4" />
-          <div className="w-full text-center">
-            <Badge
-              variant="secondary"
-              className="mb-1 max-w-full text-xs"
-            >
-              <span className="truncate">{alocacao.turma.codigoDaTurma}</span>
-            </Badge>
-            <div className="text-muted-foreground truncate text-xs">
-              {alocacao.turma.professorAlocado?.nome || "Professor não definido"}
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const hasAlocacoes = alocacoes.length > 0
+  const numAlocacoes = alocacoes.length
 
   /**
-   * Caso não exista alocação: mostra botão para adicionar
+   * Determina o tamanho do botão baseado no espaço disponível
+   * - small: quando há muitas alocações (3+)
+   * - medium: normal (1-2 alocações ou vazio)
+   * - large: quando há muito espaço (célula vazia e grid grande)
    */
+  const getButtonSize = (): "small" | "medium" | "large" => {
+    if (numAlocacoes >= 3) return "small"
+    if (numAlocacoes === 0) return "medium" // Pode ser "large" no futuro se detectarmos tela grande
+    return "medium"
+  }
+
   return (
-    <div className="group relative min-h-[60px] border-r p-2 last:border-r-0">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onCellClick}
-        disabled={isLoading}
-        className={`border-muted-foreground/20 hover:border-muted-foreground/40 h-full w-full border-2 border-dashed opacity-0 transition-opacity group-hover:opacity-100 ${isLoading ? "cursor-not-allowed" : ""} `}
-        aria-label="Adicionar alocação"
-        data-testid={dataTestId || "add-allocation-btn"}
+    <div
+      className="relative border-r p-0.5 last:border-r-0 sm:p-1 lg:p-1.5"
+      data-testid={dataTestId}
+    >
+      {/* Container com altura responsiva e scrolling automático */}
+      <div
+        className={`border-muted/20 flex h-32 max-h-40 min-h-[128px] flex-col overflow-hidden rounded-md border sm:h-36 sm:min-h-[144px] lg:h-40 lg:min-h-[300px]`}
       >
-        {/* Ícone de adicionar */}
-        <Plus className="text-muted-foreground h-4 w-4" />
-      </Button>
+        {/* Área de alocações com scroll automático */}
+        <div className="flex-1 space-y-0.5 overflow-y-auto p-1 sm:space-y-1 sm:p-1.5 lg:space-y-1.5 lg:p-2">
+          {hasAlocacoes ?
+            /* Cards de turmas alocadas usando AllocationCard */
+            alocacoes.map((alocacao) => (
+              <AllocationCard
+                key={alocacao.id}
+                alocacao={alocacao}
+                onRemove={canEdit ? onRemoveClick : undefined}
+                isLoading={isLoading}
+                showRemoveButton={canEdit}
+                readonly={!canEdit}
+                size="normal"
+                hideTeacherWhenCrowded={true}
+                totalAllocations={numAlocacoes}
+                data-testid={`allocation-card-${alocacao.id}`}
+              />
+            ))
+          : /* Mensagem quando não há alocações */
+            <div className="text-muted-foreground flex h-full items-center justify-center">
+              <span className="text-center text-[10px] sm:text-xs lg:text-sm">
+                <span className="block sm:hidden">Vazio</span>
+                <span className="hidden sm:block lg:hidden">Nenhuma turma</span>
+                <span className="hidden lg:block">Nenhuma turma alocada</span>
+              </span>
+            </div>
+          }
+        </div>
+
+        {/* Botão + fixo na parte inferior */}
+        {canEdit && (
+          <div className="border-muted/20 border-t p-0.5 sm:p-1">
+            <AddAllocationButton
+              onClick={onAddClick}
+              disabled={isLoading}
+              state={isLoading ? "loading" : "default"}
+              size={getButtonSize()}
+              tooltip="Clique para adicionar uma nova turma a este horário"
+              disabledReason={
+                isLoading ? "Aguarde a operação atual terminar" : undefined
+              }
+              data-testid={
+                dataTestId ? `${dataTestId}-add-btn` : "add-allocation-btn"
+              }
+            />
+          </div>
+        )}
+
+        {/* Mostrar botão em modo readonly se não pode editar */}
+        {!canEdit && (
+          <div className="border-muted/20 border-t p-0.5 sm:p-1">
+            <AddAllocationButton
+              onClick={() => {}} // Noop
+              disabled={true}
+              state="readonly"
+              size={getButtonSize()}
+              tooltip="Visualização somente leitura"
+              disabledReason="Você não tem permissão para editar esta proposta"
+              data-testid={
+                dataTestId ?
+                  `${dataTestId}-readonly-btn`
+                : "readonly-allocation-btn"
+              }
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Overlay de loading responsivo */}
+      {isLoading && (
+        <div className="bg-background/50 absolute inset-0 flex items-center justify-center rounded-md">
+          <div className="text-muted-foreground text-[10px] sm:text-xs lg:text-sm">
+            <span className="block sm:hidden">...</span>
+            <span className="hidden sm:block">Carregando...</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

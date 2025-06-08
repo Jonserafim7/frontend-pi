@@ -1,13 +1,10 @@
 import { useConfiguracoesHorarioControllerGet } from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
 import { useAlocacoesHorariosControllerFindByProposta } from "@/api-generated/client/alocações-de-horário/alocações-de-horário"
-// import type { AlocacaoHorarioResponseDto } from "@/api-generated/model"
 import type { PropostaScheduleGridProps } from "../../types/proposta-allocation-types"
-import { createAlocacoesMap } from "../../types/proposta-allocation-types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AlertCircle } from "lucide-react"
-import { useMemo } from "react"
 import { PropostaTurnoSection } from "./proposta-turno-section"
 
 /**
@@ -35,11 +32,6 @@ export function PropostaScheduleGrid({
       staleTime: 5 * 60 * 1000, // 5 minutos
     },
   })
-
-  // Criar um mapa otimizado para busca rápida de alocações
-  const alocacoesMap = useMemo(() => {
-    return alocacoes ? createAlocacoesMap(alocacoes) : new Map()
-  }, [alocacoes])
 
   const isLoading = isLoadingConfig || isLoadingAlocacoes
   const error = errorConfig || errorAlocacoes
@@ -124,7 +116,6 @@ export function PropostaScheduleGrid({
             aulas={configuracao.aulasTurnoManha}
             inicio={configuracao.inicioTurnoManha}
             fim={configuracao.fimTurnoManhaCalculado}
-            alocacoesMap={alocacoesMap}
             propostaId={propostaId}
           />
 
@@ -134,7 +125,6 @@ export function PropostaScheduleGrid({
             aulas={configuracao.aulasTurnoTarde}
             inicio={configuracao.inicioTurnoTarde}
             fim={configuracao.fimTurnoTardeCalculado}
-            alocacoesMap={alocacoesMap}
             propostaId={propostaId}
           />
 
@@ -144,7 +134,6 @@ export function PropostaScheduleGrid({
             aulas={configuracao.aulasTurnoNoite}
             inicio={configuracao.inicioTurnoNoite}
             fim={configuracao.fimTurnoNoiteCalculado}
-            alocacoesMap={alocacoesMap}
             propostaId={propostaId}
           />
         </CardContent>

@@ -22,7 +22,6 @@ import type { PropostaScheduleCellContainerProps } from "../../types/proposta-al
 export function PropostaScheduleCellContainer({
   dia,
   horario,
-  alocacao,
   propostaId,
 }: PropostaScheduleCellContainerProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false)
@@ -58,8 +57,14 @@ export function PropostaScheduleCellContainer({
    * Preparar lista de alocações existentes para o slot
    */
   const alocacoesExistentes = React.useMemo(() => {
-    return alocacao ? [alocacao] : []
-  }, [alocacao])
+    // Buscar todas as alocações do slot atual
+    return alocacoesDaProposta.filter(
+      (alocacao) =>
+        alocacao.diaDaSemana === dia &&
+        alocacao.horaInicio === horario.inicio &&
+        alocacao.horaFim === horario.fim,
+    )
+  }, [alocacoesDaProposta, dia, horario])
 
   /**
    * Preparar lista de turmas disponíveis para o slot
@@ -101,11 +106,39 @@ export function PropostaScheduleCellContainer({
   /**
    * Abre o dialog para gerenciar alocações (apenas se pode editar)
    */
-  const handleCellClick = React.useCallback(() => {
+  const handleAddClick = React.useCallback(() => {
     if (podeEditarProposta) {
       setDialogOpen(true)
     }
   }, [podeEditarProposta])
+
+  /**
+   * Remove uma alocação específica
+   */
+  const handleRemoveClick = React.useCallback(
+    async (alocacaoId: string) => {
+      try {
+        setLastError(null)
+        await removerAlocacao(alocacaoId)
+      } catch (error) {
+        console.error(
+          "❌ [PropostaScheduleCellContainer] Erro ao remover alocação:",
+          error,
+        )
+
+        let errorMessage = "Erro desconhecido ao remover alocação"
+
+        if (error instanceof Error) {
+          errorMessage = error.message
+        } else if (typeof error === "string") {
+          errorMessage = error
+        }
+
+        setLastError(errorMessage)
+      }
+    },
+    [removerAlocacao],
+  )
 
   /**
    * Criar nova alocação associada à proposta
@@ -138,41 +171,15 @@ export function PropostaScheduleCellContainer({
     [criarAlocacao, dia, horario],
   )
 
-  /**
-   * Remover alocação existente
-   */
-  const handleRemoverAlocacao = React.useCallback(
-    async (alocacaoId: string) => {
-      try {
-        setLastError(null)
-        await removerAlocacao(alocacaoId)
-      } catch (error) {
-        console.error(
-          "❌ [PropostaScheduleCellContainer] Erro ao remover alocação:",
-          error,
-        )
-
-        let errorMessage = "Erro desconhecido ao remover alocação"
-
-        if (error instanceof Error) {
-          errorMessage = error.message
-        } else if (typeof error === "string") {
-          errorMessage = error
-        }
-
-        setLastError(errorMessage)
-      }
-    },
-    [removerAlocacao],
-  )
-
   return (
     <>
-      {/* Componente de apresentação */}
+      {/* Componente de apresentação com nova interface */}
       <ScheduleCellView
-        alocacao={alocacao}
-        onCellClick={handleCellClick}
+        alocacoes={alocacoesExistentes}
+        onAddClick={handleAddClick}
+        onRemoveClick={podeEditarProposta ? handleRemoveClick : undefined}
         isLoading={isLoading}
+        canEdit={podeEditarProposta}
         data-testid={`schedule-cell-${dia}-${horario.inicio.replace(":", "")}`}
       />
 
@@ -186,7 +193,7 @@ export function PropostaScheduleCellContainer({
           alocacoesExistentes={alocacoesExistentes}
           turmasDisponiveis={turmasDisponiveis}
           onAlocarTurma={handleAlocarTurma}
-          onRemoverAlocacao={handleRemoverAlocacao}
+          onRemoverAlocacao={handleRemoveClick}
           isCreating={isCreating}
           isValidating={isValidating}
           lastError={lastError}

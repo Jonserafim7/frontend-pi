@@ -1,7 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown, X, AlertCircle } from "lucide-react"
+import {
+  Check,
+  ChevronsUpDown,
+  X,
+  AlertCircle,
+  User,
+  Plus,
+  CheckCircle,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -119,6 +127,11 @@ export function ScheduleAllocationDialog({
 }: ScheduleAllocationDialogProps) {
   const [openCombobox, setOpenCombobox] = React.useState(false)
   const [selectedTurma, setSelectedTurma] = React.useState("")
+  const [validationState, setValidationState] = React.useState<{
+    isValid: boolean
+    conflicts: string[]
+    warnings: string[]
+  }>({ isValid: true, conflicts: [], warnings: [] })
 
   // Mapear dias da semana para labels em português
   const diaLabels: Record<DiaSemanaKey, string> = {
@@ -147,8 +160,52 @@ export function ScheduleAllocationDialog({
     if (!open) {
       setSelectedTurma("")
       setOpenCombobox(false)
+      setValidationState({ isValid: true, conflicts: [], warnings: [] })
     }
   }, [open])
+
+  /**
+   * Validação em tempo real quando turma é selecionada - Sub-task 5.4.3
+   */
+  React.useEffect(() => {
+    if (!selectedTurma) {
+      setValidationState({ isValid: true, conflicts: [], warnings: [] })
+      return
+    }
+
+    const turma = turmasNaoAlocadas.find((t) => t.id === selectedTurma)
+    if (!turma) return
+
+    const conflicts: string[] = []
+    const warnings: string[] = []
+
+    // Verificar se a turma já tem alocação em horário conflitante
+    const hasConflict = alocacoesExistentes.some(
+      (alocacao) => alocacao.turma.id === selectedTurma,
+    )
+
+    if (hasConflict) {
+      conflicts.push("Esta turma já está alocada neste horário")
+    }
+
+    // Verificar se professor já tem alocação neste horário (exemplo de warning)
+    if (turma.professor) {
+      const professorConflict = alocacoesExistentes.some(
+        (alocacao) => alocacao.turma.professorAlocado?.nome === turma.professor,
+      )
+      if (professorConflict) {
+        warnings.push(
+          `Professor ${turma.professor} já tem outra turma neste horário`,
+        )
+      }
+    }
+
+    setValidationState({
+      isValid: conflicts.length === 0,
+      conflicts,
+      warnings,
+    })
+  }, [selectedTurma, turmasNaoAlocadas, alocacoesExistentes])
 
   /**
    * Adiciona uma turma ao slot
@@ -193,11 +250,40 @@ export function ScheduleAllocationDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Exibir erro se houver */}
+          {/* Feedback aprimorado de erro - Sub-task 5.4.5 */}
           {lastError && (
-            <Alert variant="destructive">
+            <Alert
+              variant="destructive"
+              className="border-destructive"
+            >
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{lastError}</AlertDescription>
+              <AlertDescription>
+                <div className="font-medium">Erro ao processar operação:</div>
+                <div className="mt-1 text-sm">{lastError}</div>
+                <div className="mt-2 text-xs opacity-75">
+                  Verifique os dados e tente novamente. Se o problema persistir,
+                  contate o suporte.
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Feedback de loading global */}
+          {(isCreating || isValidating) && (
+            <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950">
+              <div className="border-background mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+              <AlertDescription>
+                <div className="font-medium">
+                  {isValidating ?
+                    "Validando alocação..."
+                  : "Processando alocação..."}
+                </div>
+                <div className="mt-1 text-sm text-blue-800 dark:text-blue-200">
+                  {isValidating ?
+                    "Verificando conflitos de horário e disponibilidade..."
+                  : "Salvando a nova alocação na base de dados..."}
+                </div>
+              </AlertDescription>
             </Alert>
           )}
 
@@ -236,11 +322,14 @@ export function ScheduleAllocationDialog({
             </div>
           )}
 
-          {/* Combobox para adicionar nova turma */}
+          {/* Combobox para adicionar nova turma - Interface melhorada */}
           {turmasNaoAlocadas.length > 0 && (
             <div>
-              <h4 className="mb-2 text-sm font-medium">Adicionar Turma:</h4>
-              <div className="flex gap-2">
+              <h4 className="mb-2 text-sm font-medium">
+                Adicionar Turma ({turmasNaoAlocadas.length} disponível
+                {turmasNaoAlocadas.length !== 1 ? "s" : ""}):
+              </h4>
+              <div>
                 <Popover
                   open={openCombobox}
                   onOpenChange={setOpenCombobox}
@@ -250,50 +339,104 @@ export function ScheduleAllocationDialog({
                       variant="outline"
                       role="combobox"
                       aria-expanded={openCombobox}
-                      className="flex-1 justify-between"
+                      className="h-auto min-h-[48px] w-full justify-between p-3"
                       disabled={isLoading}
                     >
-                      {selectedTurma ?
-                        turmasNaoAlocadas.find(
-                          (turma) => turma.id === selectedTurma,
-                        )?.codigo
-                      : "Selecionar turma..."}
+                      <div className="flex flex-col items-start text-left">
+                        {selectedTurma ?
+                          <>
+                            <span className="text-sm font-medium">
+                              {
+                                turmasNaoAlocadas.find(
+                                  (turma) => turma.id === selectedTurma,
+                                )?.codigo
+                              }
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              {
+                                turmasNaoAlocadas.find(
+                                  (turma) => turma.id === selectedTurma,
+                                )?.disciplina
+                              }
+                              {turmasNaoAlocadas.find(
+                                (turma) => turma.id === selectedTurma,
+                              )?.professor &&
+                                ` • ${turmasNaoAlocadas.find((turma) => turma.id === selectedTurma)?.professor}`}
+                            </span>
+                          </>
+                        : <>
+                            <span className="text-muted-foreground text-sm">
+                              Selecione uma turma para alocar...
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              Digite para buscar por código, disciplina ou
+                              professor
+                            </span>
+                          </>
+                        }
+                      </div>
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[400px] p-0">
+                  <PopoverContent
+                    className="w-full p-0"
+                    align="start"
+                  >
                     <Command>
-                      <CommandInput placeholder="Buscar turma..." />
-                      <CommandList>
-                        <CommandEmpty>Nenhuma turma encontrada.</CommandEmpty>
-                        <CommandGroup>
+                      <CommandInput
+                        placeholder="Buscar por código, disciplina ou professor..."
+                        className="h-12"
+                      />
+                      <CommandList className="max-h-[300px]">
+                        <CommandEmpty>
+                          <div className="flex flex-col items-center justify-center py-6 text-center">
+                            <div className="text-muted-foreground text-sm">
+                              Nenhuma turma encontrada
+                            </div>
+                            <div className="text-muted-foreground mt-1 text-xs">
+                              Tente buscar por código, nome da disciplina ou
+                              professor
+                            </div>
+                          </div>
+                        </CommandEmpty>
+                        <CommandGroup
+                          heading={`${turmasNaoAlocadas.length} turma${turmasNaoAlocadas.length !== 1 ? "s" : ""} disponível${turmasNaoAlocadas.length !== 1 ? "is" : ""}`}
+                        >
                           {turmasNaoAlocadas.map((turma) => (
                             <CommandItem
                               key={turma.id}
-                              value={turma.id}
-                              onSelect={(currentValue) => {
+                              value={`${turma.codigo} ${turma.disciplina} ${turma.professor || ""}`}
+                              onSelect={() => {
                                 setSelectedTurma(
-                                  currentValue === selectedTurma ? "" : (
-                                    currentValue
-                                  ),
+                                  turma.id === selectedTurma ? "" : turma.id,
                                 )
                                 setOpenCombobox(false)
                               }}
+                              className="flex cursor-pointer gap-3 p-3"
                             >
                               <Check
                                 className={cn(
-                                  "mr-2 h-4 w-4",
+                                  "h-4 w-4 shrink-0",
                                   selectedTurma === turma.id ?
                                     "opacity-100"
                                   : "opacity-0",
                                 )}
                               />
-                              <div className="flex-1">
-                                <div className="font-medium">{turma.codigo}</div>
-                                <div className="text-muted-foreground text-sm">
-                                  {turma.disciplina}
-                                  {turma.professor && ` - ${turma.professor}`}
+                              <div className="flex-1 space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-medium">
+                                    {turma.codigo}
+                                  </span>
+                                  <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+                                    {turma.disciplina}
+                                  </span>
                                 </div>
+                                {turma.professor && (
+                                  <div className="text-muted-foreground flex items-center gap-1 text-xs">
+                                    <User className="h-3 w-3" />
+                                    {turma.professor}
+                                  </div>
+                                )}
                               </div>
                             </CommandItem>
                           ))}
@@ -302,16 +445,80 @@ export function ScheduleAllocationDialog({
                     </Command>
                   </PopoverContent>
                 </Popover>
-                <Button
-                  onClick={handleAdicionarTurma}
-                  disabled={!selectedTurma || isLoading}
-                >
-                  {isValidating ?
-                    "Validando..."
-                  : isCreating ?
-                    "Adicionando..."
-                  : "Adicionar"}
-                </Button>
+
+                {/* Preview da turma selecionada - Sub-task 5.4.2 */}
+                {selectedTurma && (
+                  <div className="bg-muted/50 mt-3 rounded-lg border p-3">
+                    <div className="mb-2 flex items-center gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <span className="text-sm font-medium">
+                        Turma Selecionada:
+                      </span>
+                    </div>
+                    {(() => {
+                      const turma = turmasNaoAlocadas.find(
+                        (t) => t.id === selectedTurma,
+                      )
+                      return (
+                        turma && (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className="bg-primary text-primary-foreground rounded px-2 py-1 text-sm font-medium">
+                                {turma.codigo}
+                              </span>
+                              <span className="text-sm">{turma.disciplina}</span>
+                            </div>
+                            {turma.professor && (
+                              <div className="text-muted-foreground flex items-center gap-1 text-sm">
+                                <User className="h-4 w-4" />
+                                Professor: {turma.professor}
+                              </div>
+                            )}
+                            <div className="text-muted-foreground text-xs">
+                              Esta turma será alocada no horário de{" "}
+                              {horario.inicio} às {horario.fim} na{" "}
+                              {diaLabels[dia]}.
+                            </div>
+
+                            {/* Informações sobre conflitos - Sub-task 5.4.4 */}
+                            {(validationState.conflicts.length > 0 ||
+                              validationState.warnings.length > 0) && (
+                              <div className="mt-2 space-y-2">
+                                {validationState.conflicts.map(
+                                  (conflict, index) => (
+                                    <Alert
+                                      key={`conflict-${index}`}
+                                      variant="destructive"
+                                      className="py-2"
+                                    >
+                                      <AlertCircle className="h-4 w-4" />
+                                      <AlertDescription className="text-sm">
+                                        {conflict}
+                                      </AlertDescription>
+                                    </Alert>
+                                  ),
+                                )}
+                                {validationState.warnings.map(
+                                  (warning, index) => (
+                                    <Alert
+                                      key={`warning-${index}`}
+                                      className="border-yellow-500 bg-yellow-50 py-2 dark:bg-yellow-950"
+                                    >
+                                      <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                      <AlertDescription className="text-sm text-yellow-800 dark:text-yellow-200">
+                                        {warning}
+                                      </AlertDescription>
+                                    </Alert>
+                                  ),
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      )
+                    })()}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -330,13 +537,38 @@ export function ScheduleAllocationDialog({
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex gap-2">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
+            className="flex-1"
           >
             Fechar
           </Button>
+          {turmasNaoAlocadas.length > 0 && (
+            <Button
+              onClick={handleAdicionarTurma}
+              disabled={!selectedTurma || isLoading || !validationState.isValid}
+              className="flex-1"
+              variant={!validationState.isValid ? "destructive" : "default"}
+            >
+              {isValidating ?
+                <>
+                  <div className="border-background mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+                  Validando...
+                </>
+              : isCreating ?
+                <>
+                  <div className="border-background mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+                  Adicionando...
+                </>
+              : <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Adicionar
+                </>
+              }
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
