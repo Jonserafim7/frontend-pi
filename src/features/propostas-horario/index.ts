@@ -113,10 +113,10 @@ export { DiretorPropostasFilters } from "./components/data-table/diretor-propost
 // export * from "./components/data-table/propostas-data-table"
 
 // -----------------------------------------------------------------------------
-// Components - Dialogs & Forms (futuros componentes)
+// Components - Dialogs & Forms
 // -----------------------------------------------------------------------------
+export { CreatePropostaDialog } from "./components/create-proposta-dialog"
 // Future dialog components will be exported here:
-// export * from "./components/create-proposta-dialog"
 // export * from "./components/submit-proposta-dialog"
 // export * from "./components/approve-reject-dialogs"
 

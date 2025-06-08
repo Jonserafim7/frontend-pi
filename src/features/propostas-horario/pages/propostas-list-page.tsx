@@ -7,8 +7,8 @@ import {
   propostasCoordinatorColumns,
   PropostasFilters,
   usePropostasHorarioControllerFindAll,
+  CreatePropostaDialog,
 } from "../index"
-import { useNavigate } from "react-router"
 import { toast } from "sonner"
 
 /**
@@ -16,7 +16,7 @@ import { toast } from "sonner"
  * Exibe as propostas do coordenador logado com filtros e ações
  */
 export function PropostasListPage() {
-  const navigate = useNavigate()
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
 
   // Buscar propostas do coordenador logado
   const {
@@ -26,7 +26,7 @@ export function PropostasListPage() {
   } = usePropostasHorarioControllerFindAll()
 
   const handleCreateProposta = () => {
-    navigate("/coordenador/propostas-horario/nova")
+    setIsCreateDialogOpen(true)
   }
 
   // Mostrar erro se houver problema na busca
@@ -74,6 +74,12 @@ export function PropostasListPage() {
             )}
           </div>
         )}
+      />
+
+      {/* Dialog de Criação de Proposta */}
+      <CreatePropostaDialog
+        isOpen={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
       />
     </div>
   )
