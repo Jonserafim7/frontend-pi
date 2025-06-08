@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useParams, useNavigate } from "react-router"
 import { usePropostaHorario } from "../hooks/use-propostas-horario"
 import { PropostaStatusBadge } from "../components/proposta-status-badge"
+import { PropostaScheduleGrid } from "../components/alocacao-turmas-horarios/proposta-schedule-grid"
 
 /**
  * Página de detalhes/edição de uma proposta de horário
@@ -328,19 +329,8 @@ export function PropostaDetailsPage() {
         </Card>
       </div>
 
-      {/* TODO: Implementar ScheduleGrid adaptado */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CalendarDays className="text-primary h-5 w-5" />
-            Grade de Horários
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-muted-foreground flex flex-col items-center justify-center py-8">
-          <CalendarDays className="mx-auto mb-4 h-12 w-12 opacity-50" />
-          <p>Grade de horários será implementada aqui</p>
-        </CardContent>
-      </Card>
+      {/* Grade de Horários da Proposta */}
+      {proposta && <PropostaScheduleGrid propostaId={proposta.id} />}
     </div>
   )
 }

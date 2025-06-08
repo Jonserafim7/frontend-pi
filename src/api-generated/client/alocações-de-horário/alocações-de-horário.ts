@@ -749,6 +749,187 @@ export function useAlocacoesHorariosControllerFindByProfessor<
 }
 
 /**
+ * Busca todas as alocações de uma proposta de horário específica
+ * @summary Buscar alocações por proposta
+ */
+export const alocacoesHorariosControllerFindByProposta = (
+  idPropostaHorario: string,
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
+) => {
+  return orvalCustomInstance<AlocacaoHorarioResponseDto[]>(
+    {
+      url: `/alocacoes-horarios/proposta/${idPropostaHorario}`,
+      method: "GET",
+      signal,
+    },
+    options,
+  )
+}
+
+export const getAlocacoesHorariosControllerFindByPropostaQueryKey = (
+  idPropostaHorario: string,
+) => {
+  return ["alocacoes-horarios", "proposta", idPropostaHorario] as const
+}
+
+export const getAlocacoesHorariosControllerFindByPropostaQueryOptions = <
+  TData = Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+  TError = ErrorType<unknown>,
+>(
+  idPropostaHorario: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAlocacoesHorariosControllerFindByPropostaQueryKey(idPropostaHorario)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>
+  > = ({ signal }) =>
+    alocacoesHorariosControllerFindByProposta(
+      idPropostaHorario,
+      requestOptions,
+      signal,
+    )
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!idPropostaHorario,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AlocacoesHorariosControllerFindByPropostaQueryResult = NonNullable<
+  Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>
+>
+export type AlocacoesHorariosControllerFindByPropostaQueryError =
+  ErrorType<unknown>
+
+export function useAlocacoesHorariosControllerFindByProposta<
+  TData = Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+  TError = ErrorType<unknown>,
+>(
+  idPropostaHorario: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+          TError,
+          Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useAlocacoesHorariosControllerFindByProposta<
+  TData = Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+  TError = ErrorType<unknown>,
+>(
+  idPropostaHorario: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+          TError,
+          Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAlocacoesHorariosControllerFindByProposta<
+  TData = Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+  TError = ErrorType<unknown>,
+>(
+  idPropostaHorario: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Buscar alocações por proposta
+ */
+
+export function useAlocacoesHorariosControllerFindByProposta<
+  TData = Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+  TError = ErrorType<unknown>,
+>(
+  idPropostaHorario: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof alocacoesHorariosControllerFindByProposta>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getAlocacoesHorariosControllerFindByPropostaQueryOptions(
+    idPropostaHorario,
+    options,
+  )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * Remove uma alocação de horário existente
  * @summary Remover alocação
  */

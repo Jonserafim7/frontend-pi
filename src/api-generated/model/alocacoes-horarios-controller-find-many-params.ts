@@ -24,4 +24,8 @@ export type AlocacoesHorariosControllerFindManyParams = {
    * Filtrar por dia da semana
    */
   diaDaSemana?: AlocacoesHorariosControllerFindManyDiaDaSemana
+  /**
+   * Filtrar por ID da proposta de horário
+   */
+  idPropostaHorario?: string
 }
