@@ -24,7 +24,13 @@ import {
   CoordenadorDisponibilidadePage,
 } from "@/features/disponibilidade-professores/pages"
 import { TurmasListPage } from "@/features/turmas/pages/turmas-list-page"
-import { PropostasHorarioPage } from "@/features/propostas-horario/pages/propostas-horario-page"
+import {
+  PropostasListPage,
+  CreatePropostaPage,
+  PropostaDetailsPage,
+  DiretorPropostasListPage,
+  DiretorPropostaDetailsPage,
+} from "@/features/propostas-horario"
 
 // Placeholders genéricos para cada tipo de usuário
 const CoordenadorDashboard = () => <div>Dashboard do Coordenador (em breve)</div>
@@ -114,6 +120,24 @@ export function AppRoutes() {
                 </RequireAuth>
               }
             />
+            <Route path="propostas-horario">
+              <Route
+                index
+                element={
+                  <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
+                    <DiretorPropostasListPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path=":id"
+                element={
+                  <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
+                    <DiretorPropostaDetailsPage />
+                  </RequireAuth>
+                }
+              />
+            </Route>
           </Route>
 
           <Route path="/coordenador">
@@ -208,7 +232,27 @@ export function AppRoutes() {
                   <RequireAuth
                     allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
                   >
-                    <PropostasHorarioPage />
+                    <PropostasListPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="nova"
+                element={
+                  <RequireAuth
+                    allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
+                  >
+                    <CreatePropostaPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path=":id"
+                element={
+                  <RequireAuth
+                    allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
+                  >
+                    <PropostaDetailsPage />
                   </RequireAuth>
                 }
               />

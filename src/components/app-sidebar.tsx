@@ -176,6 +176,18 @@ export function AppSidebar() {
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip="Propostas de Horário"
+                      isActive={isPathActive("/diretor/propostas-horario")}
+                    >
+                      <Link to="/diretor/propostas-horario">
+                        <CalendarCheck />
+                        <span>Propostas de Horário</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

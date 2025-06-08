@@ -10,6 +10,8 @@ import type { CreateAlocacaoHorarioDtoDiaDaSemana } from "./create-alocacao-hora
 export interface CreateAlocacaoHorarioDto {
   /** ID da turma que será alocada */
   idTurma: string
+  /** ID da proposta de horário (opcional para alocações dentro de propostas) */
+  idPropostaHorario?: string
   /** Dia da semana para a alocação */
   diaDaSemana: CreateAlocacaoHorarioDtoDiaDaSemana
   /** Hora de início da aula (formato HH:mm) */

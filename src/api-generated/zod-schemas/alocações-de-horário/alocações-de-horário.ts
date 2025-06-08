@@ -16,6 +16,7 @@ import {
  */
 export const alocacoesHorariosControllerCreateBody = zod.object({
   "idTurma": zod.string().describe('ID da turma que será alocada'),
+  "idPropostaHorario": zod.string().optional().describe('ID da proposta de horário (opcional para alocações dentro de propostas)'),
   "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana para a alocação'),
   "horaInicio": zod.string().describe('Hora de início da aula (formato HH:mm)'),
   "horaFim": zod.string().describe('Hora de fim da aula (formato HH:mm)')
@@ -29,7 +30,8 @@ export const alocacoesHorariosControllerFindManyQueryParams = zod.object({
   "idTurma": zod.string().optional().describe('Filtrar por ID da turma'),
   "idProfessor": zod.string().optional().describe('Filtrar por ID do professor'),
   "idPeriodoLetivo": zod.string().optional().describe('Filtrar por período letivo'),
-  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).optional().describe('Filtrar por dia da semana')
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).optional().describe('Filtrar por dia da semana'),
+  "idPropostaHorario": zod.string().optional().describe('Filtrar por ID da proposta de horário')
 })
 
 export const alocacoesHorariosControllerFindManyResponseItem = zod.object({
@@ -67,6 +69,7 @@ export const alocacoesHorariosControllerFindManyResponse = zod.array(alocacoesHo
  */
 export const alocacoesHorariosControllerValidateBody = zod.object({
   "idTurma": zod.string().describe('ID da turma que será alocada'),
+  "idPropostaHorario": zod.string().optional().describe('ID da proposta de horário (opcional para alocações dentro de propostas)'),
   "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana para a alocação'),
   "horaInicio": zod.string().describe('Hora de início da aula (formato HH:mm)'),
   "horaFim": zod.string().describe('Hora de fim da aula (formato HH:mm)')
@@ -153,6 +156,43 @@ export const alocacoesHorariosControllerFindByProfessorResponseItem = zod.object
 }).describe('Dados da turma alocada')
 })
 export const alocacoesHorariosControllerFindByProfessorResponse = zod.array(alocacoesHorariosControllerFindByProfessorResponseItem)
+
+/**
+ * Busca todas as alocações de uma proposta de horário específica
+ * @summary Buscar alocações por proposta
+ */
+export const alocacoesHorariosControllerFindByPropostaParams = zod.object({
+  "idPropostaHorario": zod.string().describe('ID da proposta de horário')
+})
+
+export const alocacoesHorariosControllerFindByPropostaResponseItem = zod.object({
+  "id": zod.string().describe('ID único da alocação'),
+  "idTurma": zod.string().describe('ID da turma alocada'),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana da alocação'),
+  "horaInicio": zod.string().describe('Hora de início da aula'),
+  "horaFim": zod.string().describe('Hora de fim da aula'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação da alocação'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização'),
+  "turma": zod.object({
+  "id": zod.string().describe('ID da turma'),
+  "codigoDaTurma": zod.string().describe('Código da turma'),
+  "disciplinaOfertada": zod.object({
+  "id": zod.string().describe('ID da disciplina ofertada'),
+  "disciplina": zod.object({
+  "id": zod.string().describe('ID da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().describe('Código da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária da disciplina')
+}).describe('Dados da disciplina')
+}).describe('Dados da disciplina ofertada'),
+  "professorAlocado": zod.object({
+  "id": zod.string().describe('ID do professor'),
+  "nome": zod.string().describe('Nome do professor'),
+  "email": zod.string().describe('Email do professor')
+}).optional().describe('Professor alocado à turma')
+}).describe('Dados da turma alocada')
+})
+export const alocacoesHorariosControllerFindByPropostaResponse = zod.array(alocacoesHorariosControllerFindByPropostaResponseItem)
 
 /**
  * Remove uma alocação de horário existente

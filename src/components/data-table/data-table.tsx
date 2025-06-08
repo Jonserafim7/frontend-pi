@@ -29,12 +29,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   header?: (table: ReactTable<TData>) => React.ReactNode
+  filters?: (table: ReactTable<TData>) => React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   header,
+  filters,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -81,6 +83,13 @@ export function DataTable<TData, TValue>({
         </div>
         {header && header(table)}
       </div>
+
+      {/* Filters Section */}
+      {filters && (
+        <div className="border-border/50 bg-background/50 flex items-center gap-4 rounded-lg border p-4">
+          {filters(table)}
+        </div>
+      )}
 
       {/* Modern Glass-morphism Table Container */}
       <div
