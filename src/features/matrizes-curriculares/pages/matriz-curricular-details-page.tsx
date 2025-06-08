@@ -18,7 +18,7 @@ import {
   FileText,
   Clock,
 } from "lucide-react"
-import { useMatrizesCurricularesControllerFindAll } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
+import { useMatrizesCurricularesControllerFindMatrizesDoCoordenador } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
 import type { MatrizCurricularResponseDto } from "@/api-generated/model/matriz-curricular-response-dto"
 
 /**
@@ -34,7 +34,7 @@ export function MatrizCurricularDetailsPage() {
     useState<MatrizCurricularResponseDto | null>(null)
 
   const { data: matrizesCurriculares, isPending: isLoadingMatrizes } =
-    useMatrizesCurricularesControllerFindAll()
+    useMatrizesCurricularesControllerFindMatrizesDoCoordenador()
 
   // Carrega os dados da matriz curricular
   useEffect(() => {

@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { getMatrizesCurricularesControllerFindAllQueryKey } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
+import { getMatrizesCurricularesControllerFindMatrizesDoCoordenadorQueryKey } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
 
 /**
  * Propriedades para o diálogo de exclusão de matriz curricular
@@ -54,8 +54,10 @@ export function DeleteMatrizCurricularAlertDialog({
           toast.success(
             `A matriz curricular "${matrizCurricularName}" foi excluída com sucesso.`,
           )
+          // Invalidar cache das matrizes do coordenador
           queryClient.invalidateQueries({
-            queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
+            queryKey:
+              getMatrizesCurricularesControllerFindMatrizesDoCoordenadorQueryKey(),
           })
           onOpenChange(false)
         },

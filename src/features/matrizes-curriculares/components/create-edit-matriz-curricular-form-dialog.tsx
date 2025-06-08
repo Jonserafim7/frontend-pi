@@ -23,9 +23,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
-  getMatrizesCurricularesControllerFindAllQueryKey,
+  getMatrizesCurricularesControllerFindMatrizesDoCoordenadorQueryKey,
   useMatrizesCurricularesControllerCreate,
-  useMatrizesCurricularesControllerFindAll,
+  useMatrizesCurricularesControllerFindMatrizesDoCoordenador,
   useMatrizesCurricularesControllerUpdate,
 } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -80,10 +80,9 @@ export function CreateEditMatrizCurricularFormDialog({
   const isEditMode = !!matrizCurricularId
   const [selectedDisciplinas, setSelectedDisciplinas] = useState<string[]>([])
   const [commandOpen, setCommandOpen] = useState(false)
-
   const { data: disciplinasData } = useDisciplinasControllerFindAll()
   const { data: matrizCurricularData } =
-    useMatrizesCurricularesControllerFindAll()
+    useMatrizesCurricularesControllerFindMatrizesDoCoordenador()
 
   const { mutate: createMatrizCurricular } =
     useMatrizesCurricularesControllerCreate()
@@ -136,8 +135,10 @@ export function CreateEditMatrizCurricularFormDialog({
           onSuccess: () => {
             console.log("Matriz curricular atualizada com sucesso")
             toast.success(`A matriz curricular "${data.nome}" foi atualizada.`)
+            // Invalidar cache das matrizes do coordenador
             queryClient.invalidateQueries({
-              queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
+              queryKey:
+                getMatrizesCurricularesControllerFindMatrizesDoCoordenadorQueryKey(),
             })
             onOpenChange(false)
             form.reset()
@@ -160,8 +161,10 @@ export function CreateEditMatrizCurricularFormDialog({
             toast.success(
               `A matriz curricular "${data.nome}" foi criada para o seu curso.`,
             )
+            // Invalidar cache das matrizes do coordenador
             queryClient.invalidateQueries({
-              queryKey: getMatrizesCurricularesControllerFindAllQueryKey(),
+              queryKey:
+                getMatrizesCurricularesControllerFindMatrizesDoCoordenadorQueryKey(),
             })
             onOpenChange(false)
             form.reset()
