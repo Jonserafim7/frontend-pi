@@ -3,8 +3,7 @@ import type { PropostaHorarioResponseDto } from "@/api-generated/model"
 import { Badge } from "@/components/ui/badge"
 import { formatDateToDisplay } from "@/lib/utils/format-date"
 import { PropostaStatusBadge } from "../proposta-status-badge"
-// TODO: Implementar componente PropostasActionDropdown na task 2.4
-// import { PropostasActionDropdown } from "./propostas-action-dropdown"
+import { PropostasActionDropdown } from "./propostas-action-dropdown"
 
 /**
  * Colunas da data table para coordenadores visualizarem suas propostas
@@ -210,8 +209,10 @@ export const propostasCoordinatorColumns: ColumnDef<PropostaHorarioResponseDto>[
 
         return (
           <div className="flex justify-end">
-            {/* TODO: Implementar PropostasActionDropdown na task 2.4 */}
-            <div className="text-muted-foreground text-sm">Ações em breve</div>
+            <PropostasActionDropdown
+              proposta={proposta}
+              userRole="coordinator"
+            />
           </div>
         )
       },

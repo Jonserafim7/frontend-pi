@@ -100,12 +100,12 @@ export * from "./components/alocacao-turmas-horarios/schedule-grid-types"
 export * from "./components/alocacao-turmas-horarios/turno-section"
 
 // -----------------------------------------------------------------------------
-// Components - Data Table (futuros componentes)
+// Components - Data Table
 // -----------------------------------------------------------------------------
+export { PropostasActionDropdown } from "./components/data-table/propostas-action-dropdown"
 // Future data table components will be exported here:
 // export * from "./components/data-table/propostas-data-table"
 // export * from "./components/data-table/propostas-columns"
-// export * from "./components/data-table/propostas-action-dropdown"
 
 // -----------------------------------------------------------------------------
 // Components - Dialogs & Forms (futuros componentes)
