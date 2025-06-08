@@ -250,3 +250,194 @@ export const propostasCoordinatorColumns: ColumnDef<PropostaHorarioResponseDto>[
       enableHiding: false,
     },
   ]
+
+/**
+ * Colunas da data table para diretores visualizarem propostas de todos os coordenadores
+ * Inclui: coordenador, curso, período letivo, status, data submissão e ações
+ */
+export const propostasDirectorColumns: ColumnDef<PropostaHorarioResponseDto>[] = [
+  {
+    accessorKey: "coordenadorQueSubmeteu.nome",
+    header: "Coordenador",
+    cell: ({ row }) => {
+      const coordenador = row.original.coordenadorQueSubmeteu
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">{coordenador?.nome}</span>
+          {coordenador?.email && (
+            <span className="text-muted-foreground text-xs">
+              {coordenador.email}
+            </span>
+          )}
+        </div>
+      )
+    },
+    enableSorting: true,
+    enableHiding: true,
+    sortingFn: "alphanumeric",
+  },
+  {
+    accessorKey: "curso.nome",
+    header: "Curso",
+    cell: ({ row }) => {
+      const curso = row.original.curso
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">{curso?.nome}</span>
+          {curso?.codigo && (
+            <span className="text-muted-foreground text-xs">
+              {typeof curso.codigo === "string" ? curso.codigo : "Sem código"}
+            </span>
+          )}
+        </div>
+      )
+    },
+    enableSorting: true,
+    enableHiding: true,
+    sortingFn: "alphanumeric",
+  },
+  {
+    accessorKey: "periodoLetivo",
+    header: "Período Letivo",
+    cell: ({ row }) => {
+      const periodo = row.original.periodoLetivo
+      if (!periodo) return <div className="text-muted-foreground">-</div>
+
+      return (
+        <div className="flex flex-col">
+          <Badge
+            variant="outline"
+            className="w-fit"
+          >
+            {periodo.ano}/{periodo.semestre}º
+          </Badge>
+          <div className="text-muted-foreground mt-1 text-xs">
+            {formatDateToDisplay(periodo.dataInicio)} -{" "}
+            {formatDateToDisplay(periodo.dataFim)}
+          </div>
+        </div>
+      )
+    },
+    enableSorting: true,
+    enableHiding: true,
+    sortingFn: (rowA, rowB, columnId) => {
+      const a = rowA.original.periodoLetivo
+      const b = rowB.original.periodoLetivo
+
+      if (!a && !b) return 0
+      if (!a) return 1
+      if (!b) return -1
+
+      // Primeiro compara por ano, depois por semestre
+      if (a.ano !== b.ano) {
+        return a.ano - b.ano
+      }
+      return a.semestre - b.semestre
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status
+      const statusConfig = PROPOSTA_STATUS_CONFIG[status]
+
+      // Mapear variants customizadas para variants válidas do Badge
+      const getBadgeVariant = (customVariant: string) => {
+        switch (customVariant) {
+          case "warning":
+            return "secondary"
+          case "success":
+            return "default"
+          case "destructive":
+            return "destructive"
+          case "secondary":
+            return "secondary"
+          default:
+            return "outline"
+        }
+      }
+
+      return (
+        <div className="flex flex-col">
+          <Badge
+            variant={getBadgeVariant(statusConfig.variant)}
+            className={`w-fit ${
+              statusConfig.variant === "warning" ?
+                "border-yellow-200 bg-yellow-100 text-yellow-800"
+              : statusConfig.variant === "success" ?
+                "border-green-200 bg-green-100 text-green-800"
+              : ""
+            }`}
+          >
+            {statusConfig.label}
+          </Badge>
+          <div className="text-muted-foreground mt-1 text-xs">
+            {statusConfig.description}
+          </div>
+        </div>
+      )
+    },
+    enableSorting: true,
+    enableHiding: true,
+    sortingFn: (rowA, rowB, columnId) => {
+      const statusOrder = {
+        DRAFT: 0,
+        PENDENTE_APROVACAO: 1,
+        APROVADA: 2,
+        REJEITADA: 3,
+      }
+      const a = statusOrder[rowA.original.status] ?? 999
+      const b = statusOrder[rowB.original.status] ?? 999
+      return a - b
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+  },
+  {
+    accessorKey: "dataSubmissao",
+    header: "Data Submissão",
+    cell: ({ row }) => {
+      const dataSubmissao = row.original.dataSubmissao
+      if (!dataSubmissao) {
+        return (
+          <div className="text-muted-foreground text-sm italic">
+            Não submetida
+          </div>
+        )
+      }
+
+      return (
+        <div className="flex flex-col">
+          <div className="text-sm">{formatDateToDisplay(dataSubmissao)}</div>
+          <div className="text-muted-foreground text-xs">
+            {new Date(dataSubmissao).toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </div>
+        </div>
+      )
+    },
+    enableSorting: true,
+    enableHiding: true,
+    sortingFn: "datetime",
+  },
+  {
+    id: "actions",
+    header: "Ações",
+    cell: ({ row }) => {
+      const proposta = row.original
+
+      return (
+        <div className="flex justify-end">
+          {/* TODO: Implementar PropostasActionDropdown para diretores na task 2.5 */}
+          <div className="text-muted-foreground text-sm">Ações em breve</div>
+        </div>
+      )
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
+]
