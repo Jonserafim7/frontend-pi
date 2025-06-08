@@ -371,8 +371,10 @@ export const propostasDirectorColumns: ColumnDef<PropostaHorarioResponseDto>[] =
 
       return (
         <div className="flex justify-end">
-          {/* TODO: Implementar PropostasActionDropdown para diretores na task 2.5 */}
-          <div className="text-muted-foreground text-sm">Ações em breve</div>
+          <PropostasActionDropdown
+            proposta={proposta}
+            userRole="director"
+          />
         </div>
       )
     },
