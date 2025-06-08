@@ -316,6 +316,18 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Minhas Aulas"
+                    isActive={isPathActive("/professor/minhas-alocacoes")}
+                  >
+                    <Link to="/professor/minhas-alocacoes">
+                      <CalendarCheck />
+                      <span>Minhas Aulas</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

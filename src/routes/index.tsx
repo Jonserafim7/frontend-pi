@@ -20,6 +20,7 @@ import { DisciplinasListPage } from "@/features/disciplinas/pages/disciplinas-li
 import { DisciplinasOfertadasListPage } from "@/features/disciplinas-ofertadas/pages/disciplinas-ofertadas-list-page"
 import { PeriodosLetivosListPage } from "@/features/periodos-letivos/pages/periodos-letivos-list-page"
 import { ProfessorDisponibilidadePage } from "@/features/disponibilidade-professores/pages"
+import { MinhasAlocacoesPage } from "@/features/propostas-horario/pages/minhas-alocacoes-page"
 import { TurmasListPage } from "@/features/turmas/pages/turmas-list-page"
 import {
   PropostasListPage,
@@ -258,6 +259,17 @@ export function AppRoutes() {
                 element={
                   <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.PROFESSOR]}>
                     <ProfessorDisponibilidadePage />
+                  </RequireAuth>
+                }
+              />
+            </Route>
+
+            <Route path="minhas-alocacoes">
+              <Route
+                index
+                element={
+                  <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.PROFESSOR]}>
+                    <MinhasAlocacoesPage />
                   </RequireAuth>
                 }
               />

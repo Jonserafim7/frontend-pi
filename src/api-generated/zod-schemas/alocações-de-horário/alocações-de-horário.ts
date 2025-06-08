@@ -202,3 +202,36 @@ export const alocacoesHorariosControllerDeleteParams = zod.object({
   "id": zod.string().describe('ID da alocação')
 })
 
+/**
+ * Busca todas as alocações do professor atualmente logado
+ * @summary Buscar alocações do professor logado
+ */
+export const alocacoesHorariosControllerFindMinhasAlocacoesResponseItem = zod.object({
+  "id": zod.string().describe('ID único da alocação'),
+  "idTurma": zod.string().describe('ID da turma alocada'),
+  "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana da alocação'),
+  "horaInicio": zod.string().describe('Hora de início da aula'),
+  "horaFim": zod.string().describe('Hora de fim da aula'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação da alocação'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização'),
+  "turma": zod.object({
+  "id": zod.string().describe('ID da turma'),
+  "codigoDaTurma": zod.string().describe('Código da turma'),
+  "disciplinaOfertada": zod.object({
+  "id": zod.string().describe('ID da disciplina ofertada'),
+  "disciplina": zod.object({
+  "id": zod.string().describe('ID da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().describe('Código da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária da disciplina')
+}).describe('Dados da disciplina')
+}).describe('Dados da disciplina ofertada'),
+  "professorAlocado": zod.object({
+  "id": zod.string().describe('ID do professor'),
+  "nome": zod.string().describe('Nome do professor'),
+  "email": zod.string().describe('Email do professor')
+}).optional().describe('Professor alocado à turma')
+}).describe('Dados da turma alocada')
+})
+export const alocacoesHorariosControllerFindMinhasAlocacoesResponse = zod.array(alocacoesHorariosControllerFindMinhasAlocacoesResponseItem)
+

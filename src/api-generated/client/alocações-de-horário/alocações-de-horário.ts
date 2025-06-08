@@ -1018,3 +1018,185 @@ export const useAlocacoesHorariosControllerDelete = <
 
   return useMutation(mutationOptions, queryClient)
 }
+/**
+ * Busca todas as alocações do professor atualmente logado
+ * @summary Buscar alocações do professor logado
+ */
+export const alocacoesHorariosControllerFindMinhasAlocacoes = (
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
+) => {
+  return orvalCustomInstance<AlocacaoHorarioResponseDto[]>(
+    { url: `/alocacoes-horarios/minhas-alocacoes`, method: "GET", signal },
+    options,
+  )
+}
+
+export const getAlocacoesHorariosControllerFindMinhasAlocacoesQueryKey = () => {
+  return ["alocacoes-horarios", "minhas-alocacoes"] as const
+}
+
+export const getAlocacoesHorariosControllerFindMinhasAlocacoesQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+  >,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAlocacoesHorariosControllerFindMinhasAlocacoesQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>>
+  > = ({ signal }) =>
+    alocacoesHorariosControllerFindMinhasAlocacoes(requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AlocacoesHorariosControllerFindMinhasAlocacoesQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>>
+  >
+export type AlocacoesHorariosControllerFindMinhasAlocacoesQueryError =
+  ErrorType<unknown>
+
+export function useAlocacoesHorariosControllerFindMinhasAlocacoes<
+  TData = Awaited<
+    ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useAlocacoesHorariosControllerFindMinhasAlocacoes<
+  TData = Awaited<
+    ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAlocacoesHorariosControllerFindMinhasAlocacoes<
+  TData = Awaited<
+    ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Buscar alocações do professor logado
+ */
+
+export function useAlocacoesHorariosControllerFindMinhasAlocacoes<
+  TData = Awaited<
+    ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof alocacoesHorariosControllerFindMinhasAlocacoes>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getAlocacoesHorariosControllerFindMinhasAlocacoesQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
