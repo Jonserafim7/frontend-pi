@@ -108,6 +108,7 @@ export {
 } from "./components/data-table/propostas-columns"
 export { PropostasActionDropdown } from "./components/data-table/propostas-action-dropdown"
 export { PropostasFilters } from "./components/data-table/propostas-filters"
+export { DiretorPropostasFilters } from "./components/data-table/diretor-propostas-filters"
 // Future data table components will be exported here:
 // export * from "./components/data-table/propostas-data-table"
 

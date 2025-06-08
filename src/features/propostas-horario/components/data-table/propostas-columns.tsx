@@ -245,6 +245,10 @@ export const propostasDirectorColumns: ColumnDef<PropostaHorarioResponseDto>[] =
     enableSorting: true,
     enableHiding: true,
     sortingFn: "alphanumeric",
+    filterFn: (row, id, value) => {
+      const coordenadorNome = row.original.coordenadorQueSubmeteu?.nome || ""
+      return value.includes(coordenadorNome)
+    },
   },
   {
     accessorKey: "curso.nome",
@@ -265,6 +269,10 @@ export const propostasDirectorColumns: ColumnDef<PropostaHorarioResponseDto>[] =
     enableSorting: true,
     enableHiding: true,
     sortingFn: "alphanumeric",
+    filterFn: (row, id, value) => {
+      const cursoNome = row.original.curso?.nome || ""
+      return value.includes(cursoNome)
+    },
   },
   {
     accessorKey: "periodoLetivo",
