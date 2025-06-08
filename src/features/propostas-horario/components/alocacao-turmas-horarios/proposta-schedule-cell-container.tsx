@@ -26,12 +26,14 @@ export function PropostaScheduleCellContainer({
   propostaId,
 }: PropostaScheduleCellContainerProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false)
+  const [lastError, setLastError] = React.useState<string | null>(null)
 
   // Hook específico para alocações de propostas
   const {
     podeEditarProposta,
     isCreating,
     isDeleting,
+    isValidating,
     isLoadingTurmas,
     getTurmasDisponiveis,
     criarAlocacao,
@@ -88,6 +90,15 @@ export function PropostaScheduleCellContainer({
   ])
 
   /**
+   * Limpar erro quando dialog abre
+   */
+  React.useEffect(() => {
+    if (dialogOpen) {
+      setLastError(null)
+    }
+  }, [dialogOpen])
+
+  /**
    * Abre o dialog para gerenciar alocações (apenas se pode editar)
    */
   const handleCellClick = React.useCallback(() => {
@@ -102,11 +113,26 @@ export function PropostaScheduleCellContainer({
   const handleAlocarTurma = React.useCallback(
     async (turmaId: string) => {
       try {
+        setLastError(null)
         await criarAlocacao(turmaId, dia, horario.inicio, horario.fim)
         setDialogOpen(false)
       } catch (error) {
-        // Error handling é feito no hook
-        console.error("Erro ao alocar turma:", error)
+        console.error(
+          "❌ [PropostaScheduleCellContainer] Erro ao alocar turma:",
+          error,
+        )
+
+        // Extrair mensagem de erro mais específica
+        let errorMessage = "Erro desconhecido ao alocar turma"
+
+        if (error instanceof Error) {
+          errorMessage = error.message
+        } else if (typeof error === "string") {
+          errorMessage = error
+        }
+
+        setLastError(errorMessage)
+        // Não fechar o dialog para que o usuário veja o erro
       }
     },
     [criarAlocacao, dia, horario],
@@ -118,10 +144,23 @@ export function PropostaScheduleCellContainer({
   const handleRemoverAlocacao = React.useCallback(
     async (alocacaoId: string) => {
       try {
+        setLastError(null)
         await removerAlocacao(alocacaoId)
       } catch (error) {
-        // Error handling é feito no hook
-        console.error("Erro ao remover alocação:", error)
+        console.error(
+          "❌ [PropostaScheduleCellContainer] Erro ao remover alocação:",
+          error,
+        )
+
+        let errorMessage = "Erro desconhecido ao remover alocação"
+
+        if (error instanceof Error) {
+          errorMessage = error.message
+        } else if (typeof error === "string") {
+          errorMessage = error
+        }
+
+        setLastError(errorMessage)
       }
     },
     [removerAlocacao],
@@ -134,6 +173,7 @@ export function PropostaScheduleCellContainer({
         alocacao={alocacao}
         onCellClick={handleCellClick}
         isLoading={isLoading}
+        data-testid={`schedule-cell-${dia}-${horario.inicio.replace(":", "")}`}
       />
 
       {/* Dialog para gerenciar alocações - só abre se pode editar */}
@@ -147,6 +187,9 @@ export function PropostaScheduleCellContainer({
           turmasDisponiveis={turmasDisponiveis}
           onAlocarTurma={handleAlocarTurma}
           onRemoverAlocacao={handleRemoverAlocacao}
+          isCreating={isCreating}
+          isValidating={isValidating}
+          lastError={lastError}
         />
       )}
     </>

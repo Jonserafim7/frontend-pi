@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown, X } from "lucide-react"
+import { Check, ChevronsUpDown, X, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,11 +21,12 @@ import {
   CommandList,
 } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import type {
   AulaHorarioDto,
   AlocacaoHorarioResponseDto,
 } from "@/api-generated/model"
-import type { DiaSemanaKey } from "./schedule-grid-types"
+import type { DiaSemanaKey } from "../../types/proposta-allocation-types"
 
 interface ScheduleAllocationDialogProps {
   /**
@@ -60,11 +61,23 @@ interface ScheduleAllocationDialogProps {
   /**
    * Callback chamado quando uma alocação é adicionada
    */
-  onAlocarTurma?: (turmaId: string) => void
+  onAlocarTurma?: (turmaId: string) => Promise<void>
   /**
    * Callback chamado quando uma alocação é removida
    */
   onRemoverAlocacao?: (alocacaoId: string) => void
+  /**
+   * Estado de loading da criação (do react-query)
+   */
+  isCreating?: boolean
+  /**
+   * Estado de loading da validação (do react-query)
+   */
+  isValidating?: boolean
+  /**
+   * Último erro de alocação
+   */
+  lastError?: string | null
 }
 
 /**
@@ -86,6 +99,9 @@ interface ScheduleAllocationDialogProps {
  *   turmasDisponiveis={turmas}
  *   onAlocarTurma={handleAlocar}
  *   onRemoverAlocacao={handleRemover}
+ *   isCreating={isCreating}
+ *   isValidating={isValidating}
+ *   lastError={lastError}
  * />
  */
 export function ScheduleAllocationDialog({
@@ -97,6 +113,9 @@ export function ScheduleAllocationDialog({
   turmasDisponiveis = [],
   onAlocarTurma,
   onRemoverAlocacao,
+  isCreating = false,
+  isValidating = false,
+  lastError = null,
 }: ScheduleAllocationDialogProps) {
   const [openCombobox, setOpenCombobox] = React.useState(false)
   const [selectedTurma, setSelectedTurma] = React.useState("")
@@ -122,13 +141,29 @@ export function ScheduleAllocationDialog({
   }, [turmasDisponiveis, alocacoesExistentes])
 
   /**
-   * Adiciona uma turma ao slot
+   * Reset state quando dialog fecha
    */
-  const handleAdicionarTurma = () => {
-    if (selectedTurma && onAlocarTurma) {
-      onAlocarTurma(selectedTurma)
+  React.useEffect(() => {
+    if (!open) {
       setSelectedTurma("")
       setOpenCombobox(false)
+    }
+  }, [open])
+
+  /**
+   * Adiciona uma turma ao slot
+   */
+  const handleAdicionarTurma = async () => {
+    if (!selectedTurma || !onAlocarTurma || isCreating || isValidating) return
+
+    try {
+      await onAlocarTurma(selectedTurma)
+      // Se sucesso, limpar seleção (o dialog fechará automaticamente via onOpenChange no container)
+      setSelectedTurma("")
+      setOpenCombobox(false)
+    } catch (err) {
+      // O erro já é tratado no hook/container, aqui só logamos
+      console.error("❌ [ScheduleAllocationDialog] Erro ao alocar turma:", err)
     }
   }
 
@@ -140,6 +175,8 @@ export function ScheduleAllocationDialog({
       onRemoverAlocacao(alocacaoId)
     }
   }
+
+  const isLoading = isCreating || isValidating
 
   return (
     <Dialog
@@ -156,6 +193,14 @@ export function ScheduleAllocationDialog({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Exibir erro se houver */}
+          {lastError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{lastError}</AlertDescription>
+            </Alert>
+          )}
+
           {/* Alocações existentes */}
           {alocacoesExistentes.length > 0 && (
             <div>
@@ -206,6 +251,7 @@ export function ScheduleAllocationDialog({
                       role="combobox"
                       aria-expanded={openCombobox}
                       className="flex-1 justify-between"
+                      disabled={isLoading}
                     >
                       {selectedTurma ?
                         turmasNaoAlocadas.find(
@@ -258,9 +304,13 @@ export function ScheduleAllocationDialog({
                 </Popover>
                 <Button
                   onClick={handleAdicionarTurma}
-                  disabled={!selectedTurma}
+                  disabled={!selectedTurma || isLoading}
                 >
-                  Adicionar
+                  {isValidating ?
+                    "Validando..."
+                  : isCreating ?
+                    "Adicionando..."
+                  : "Adicionar"}
                 </Button>
               </div>
             </div>

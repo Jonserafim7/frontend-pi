@@ -1,4 +1,4 @@
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   useAlocacoesHorariosControllerCreate,
@@ -7,6 +7,10 @@ import {
   getAlocacoesHorariosControllerFindByPropostaQueryKey,
   getAlocacoesHorariosControllerFindManyQueryKey,
 } from "@/api-generated/client/alocações-de-horário/alocações-de-horário"
+import {
+  getPropostasHorarioControllerFindOneQueryKey,
+  getPropostasHorarioControllerFindAllQueryKey,
+} from "@/api-generated/client/propostas-horario/propostas-horario"
 import { useTurmasControllerFindAll } from "@/api-generated/client/turmas/turmas"
 import { usePropostaHorario } from "./use-propostas-horario"
 import type {
@@ -41,6 +45,21 @@ export function usePropostaAllocation({
   const { data: proposta, isLoading: isLoadingProposta } =
     usePropostaHorario(propostaId)
 
+  // 🔍 Debug: Log dados da proposta
+  useEffect(() => {
+    if (proposta) {
+      console.log("🎯 [usePropostaAllocation] Proposta carregada:", {
+        id: proposta.id,
+        curso: proposta.curso?.nome,
+        cursoId: proposta.curso?.id,
+        periodo: `${proposta.periodoLetivo?.ano}/${proposta.periodoLetivo?.semestre}`,
+        periodoId: proposta.periodoLetivo?.id,
+        status: proposta.status,
+        alocacoes: proposta.quantidadeAlocacoes,
+      })
+    }
+  }, [proposta])
+
   // Mutations para alocações
   const createAlocacaoMutation = useAlocacoesHorariosControllerCreate()
   const deleteAlocacaoMutation = useAlocacoesHorariosControllerDelete()
@@ -56,7 +75,7 @@ export function usePropostaAllocation({
   const turmasDaProposta = useCallback(() => {
     if (!proposta || !todasTurmas.length) return []
 
-    return todasTurmas.filter((turma) => {
+    const turmasFiltradas = todasTurmas.filter((turma) => {
       // Turma deve ser do mesmo período letivo da proposta
       const pertenceAoPeriodo =
         turma.disciplinaOfertada?.idPeriodoLetivo === proposta.periodoLetivo.id
@@ -66,6 +85,21 @@ export function usePropostaAllocation({
 
       return pertenceAoPeriodo
     })
+
+    // 🔍 Debug: Log filtros de turmas
+    console.log("📚 [usePropostaAllocation] Filtro de turmas:", {
+      totalTurmas: todasTurmas.length,
+      turmasFiltradasProposta: turmasFiltradas.length,
+      periodoLetivoProposta: proposta.periodoLetivo.id,
+      amostraTurmas: turmasFiltradas.slice(0, 3).map((t) => ({
+        codigo: t.codigoDaTurma,
+        disciplina: t.disciplinaOfertada?.disciplina?.nome,
+        professor: t.professorAlocado?.nome,
+        periodoId: t.disciplinaOfertada?.idPeriodoLetivo,
+      })),
+    })
+
+    return turmasFiltradas
   }, [proposta, todasTurmas])
 
   /**
@@ -197,7 +231,7 @@ export function usePropostaAllocation({
         alocacoesExistentes.map((alocacao) => alocacao.idTurma),
       )
 
-      return turmasValidasDaProposta.filter((turma) => {
+      const turmasDisponiveis = turmasValidasDaProposta.filter((turma) => {
         // 1. Não pode estar já alocada neste slot
         if (turmasAlocadasIds.has(turma.id)) {
           return false
@@ -219,6 +253,23 @@ export function usePropostaAllocation({
 
         return !temConflito
       })
+
+      // 🔍 Debug: Log turmas disponíveis para slot
+      console.log(
+        `🎲 [usePropostaAllocation] Turmas disponíveis ${dia} ${horaInicio}:`,
+        {
+          totalTurmasDaProposta: turmasValidasDaProposta.length,
+          turmasJaAlocadas: alocacoesExistentes.length,
+          turmasDisponiveis: turmasDisponiveis.length,
+          podeEditar: podeEditarProposta(),
+          amostraTurmasDisponiveis: turmasDisponiveis.slice(0, 3).map((t) => ({
+            codigo: t.codigoDaTurma,
+            professor: t.professorAlocado?.nome,
+          })),
+        },
+      )
+
+      return turmasDisponiveis
     },
     [podeEditarProposta, turmasDaProposta, temConflitoHorario],
   )
@@ -283,25 +334,50 @@ export function usePropostaAllocation({
       }
 
       try {
+        console.log("🚀 [usePropostaAllocation] Criando alocação:", {
+          turma: idTurma,
+          proposta: propostaId,
+          slot: `${dia} ${horaInicio}-${horaFim}`,
+        })
+
         const result = await createAlocacaoMutation.mutateAsync({
           data: createData,
         })
 
-        // Invalidar caches específicos da proposta
+        console.log(
+          "✅ [usePropostaAllocation] Alocação criada, resultado:",
+          result,
+        )
+
+        // 🔄 Invalidar caches específicos da proposta
+        console.log("🔄 [usePropostaAllocation] Invalidando caches...")
+
         await Promise.all([
+          // Invalidar alocações específicas da proposta
           queryClient.invalidateQueries({
             queryKey:
               getAlocacoesHorariosControllerFindByPropostaQueryKey(propostaId),
           }),
+          // Invalidar todas as alocações
           queryClient.invalidateQueries({
             queryKey: getAlocacoesHorariosControllerFindManyQueryKey({}),
           }),
+          // ✅ CORREÇÃO: Invalidar a proposta específica para atualizar quantidadeAlocacoes
+          queryClient.invalidateQueries({
+            queryKey: getPropostasHorarioControllerFindOneQueryKey(propostaId),
+          }),
+          // ✅ CORREÇÃO: Invalidar lista de propostas para atualizar contadores gerais
+          queryClient.invalidateQueries({
+            queryKey: getPropostasHorarioControllerFindAllQueryKey(),
+          }),
         ])
+
+        console.log("✅ [usePropostaAllocation] Caches invalidados com sucesso!")
 
         toast.success("Alocação criada com sucesso!")
         return result
       } catch (error) {
-        console.error("Erro ao criar alocação:", error)
+        console.error("❌ [usePropostaAllocation] Erro ao criar alocação:", error)
         toast.error("Erro ao criar alocação")
         throw error
       }
@@ -326,23 +402,46 @@ export function usePropostaAllocation({
       }
 
       try {
+        console.log("🗑️ [usePropostaAllocation] Removendo alocação:", alocacaoId)
+
         await deleteAlocacaoMutation.mutateAsync({ id: alocacaoId })
 
-        // Invalidar caches específicos da proposta
+        console.log("✅ [usePropostaAllocation] Alocação removida")
+
+        // 🔄 Invalidar caches específicos da proposta
+        console.log(
+          "🔄 [usePropostaAllocation] Invalidando caches após remoção...",
+        )
+
         await Promise.all([
+          // Invalidar alocações específicas da proposta
           queryClient.invalidateQueries({
             queryKey:
               getAlocacoesHorariosControllerFindByPropostaQueryKey(propostaId),
           }),
+          // Invalidar todas as alocações
           queryClient.invalidateQueries({
             queryKey: getAlocacoesHorariosControllerFindManyQueryKey({}),
           }),
+          // ✅ CORREÇÃO: Invalidar a proposta específica para atualizar quantidadeAlocacoes
+          queryClient.invalidateQueries({
+            queryKey: getPropostasHorarioControllerFindOneQueryKey(propostaId),
+          }),
+          // ✅ CORREÇÃO: Invalidar lista de propostas para atualizar contadores gerais
+          queryClient.invalidateQueries({
+            queryKey: getPropostasHorarioControllerFindAllQueryKey(),
+          }),
         ])
+
+        console.log("✅ [usePropostaAllocation] Caches invalidados após remoção!")
 
         toast.success("Alocação removida com sucesso!")
         return true
       } catch (error) {
-        console.error("Erro ao remover alocação:", error)
+        console.error(
+          "❌ [usePropostaAllocation] Erro ao remover alocação:",
+          error,
+        )
         toast.error("Erro ao remover alocação")
         throw error
       }

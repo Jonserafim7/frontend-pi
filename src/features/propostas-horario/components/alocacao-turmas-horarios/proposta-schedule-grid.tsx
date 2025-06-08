@@ -1,6 +1,6 @@
 import { useConfiguracoesHorarioControllerGet } from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
 import { useAlocacoesHorariosControllerFindByProposta } from "@/api-generated/client/alocações-de-horário/alocações-de-horário"
-import type { AlocacaoHorarioResponseDto } from "@/api-generated/model"
+// import type { AlocacaoHorarioResponseDto } from "@/api-generated/model"
 import type { PropostaScheduleGridProps } from "../../types/proposta-allocation-types"
 import { createAlocacoesMap } from "../../types/proposta-allocation-types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
