@@ -116,10 +116,10 @@ export * from "./components/alocacao-turmas-horarios/turno-section"
 // export * from "./components/approve-reject-dialogs"
 
 // -----------------------------------------------------------------------------
-// Components - UI Elements (futuros componentes)
+// Components - UI Elements
 // -----------------------------------------------------------------------------
+export { PropostaStatusBadge } from "./components/proposta-status-badge"
 // Future UI components will be exported here:
-// export * from "./components/proposta-status-badge"
 // export * from "./components/proposta-schedule-grid"
 
 // -----------------------------------------------------------------------------

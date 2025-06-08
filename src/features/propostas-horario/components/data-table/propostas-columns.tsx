@@ -2,7 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import type { PropostaHorarioResponseDto } from "@/api-generated/model"
 import { Badge } from "@/components/ui/badge"
 import { formatDateToDisplay } from "@/lib/utils/format-date"
-import { PROPOSTA_STATUS_CONFIG } from "../../types/proposta-types"
+import { PropostaStatusBadge } from "../proposta-status-badge"
 // TODO: Implementar componente PropostasActionDropdown na task 2.4
 // import { PropostasActionDropdown } from "./propostas-action-dropdown"
 
@@ -76,42 +76,11 @@ export const propostasCoordinatorColumns: ColumnDef<PropostaHorarioResponseDto>[
       header: "Status",
       cell: ({ row }) => {
         const status = row.original.status
-        const statusConfig = PROPOSTA_STATUS_CONFIG[status]
-
-        // Mapear variants customizadas para variants válidas do Badge
-        const getBadgeVariant = (customVariant: string) => {
-          switch (customVariant) {
-            case "warning":
-              return "secondary"
-            case "success":
-              return "default"
-            case "destructive":
-              return "destructive"
-            case "secondary":
-              return "secondary"
-            default:
-              return "outline"
-          }
-        }
-
         return (
-          <div className="flex flex-col">
-            <Badge
-              variant={getBadgeVariant(statusConfig.variant)}
-              className={`w-fit ${
-                statusConfig.variant === "warning" ?
-                  "border-yellow-200 bg-yellow-100 text-yellow-800"
-                : statusConfig.variant === "success" ?
-                  "border-green-200 bg-green-100 text-green-800"
-                : ""
-              }`}
-            >
-              {statusConfig.label}
-            </Badge>
-            <div className="text-muted-foreground mt-1 text-xs">
-              {statusConfig.description}
-            </div>
-          </div>
+          <PropostaStatusBadge
+            status={status}
+            showDescription={true}
+          />
         )
       },
       enableSorting: true,
@@ -340,42 +309,11 @@ export const propostasDirectorColumns: ColumnDef<PropostaHorarioResponseDto>[] =
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status
-      const statusConfig = PROPOSTA_STATUS_CONFIG[status]
-
-      // Mapear variants customizadas para variants válidas do Badge
-      const getBadgeVariant = (customVariant: string) => {
-        switch (customVariant) {
-          case "warning":
-            return "secondary"
-          case "success":
-            return "default"
-          case "destructive":
-            return "destructive"
-          case "secondary":
-            return "secondary"
-          default:
-            return "outline"
-        }
-      }
-
       return (
-        <div className="flex flex-col">
-          <Badge
-            variant={getBadgeVariant(statusConfig.variant)}
-            className={`w-fit ${
-              statusConfig.variant === "warning" ?
-                "border-yellow-200 bg-yellow-100 text-yellow-800"
-              : statusConfig.variant === "success" ?
-                "border-green-200 bg-green-100 text-green-800"
-              : ""
-            }`}
-          >
-            {statusConfig.label}
-          </Badge>
-          <div className="text-muted-foreground mt-1 text-xs">
-            {statusConfig.description}
-          </div>
-        </div>
+        <PropostaStatusBadge
+          status={status}
+          showDescription={true}
+        />
       )
     },
     enableSorting: true,
