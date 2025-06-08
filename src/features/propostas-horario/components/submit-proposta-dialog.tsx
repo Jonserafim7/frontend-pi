@@ -99,7 +99,7 @@ export function SubmitPropostaDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Send className="h-5 w-5 text-blue-600" />
+            <Send className="text-primary h-5 w-5" />
             Submeter Proposta
           </DialogTitle>
           <DialogDescription>
@@ -114,9 +114,9 @@ export function SubmitPropostaDialog({
           >
             {/* Validação de Alocações Mínimas */}
             {!hasMinimumAllocations && (
-              <Alert className="border-yellow-200 bg-yellow-50">
-                <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                <AlertDescription className="text-yellow-800">
+              <Alert className="border-chart-2/30 bg-chart-2/10">
+                <AlertTriangle className="text-chart-2 h-4 w-4" />
+                <AlertDescription className="text-chart-2">
                   <strong>Atenção:</strong> É necessário adicionar pelo menos uma
                   alocação de turma antes de submeter a proposta.
                 </AlertDescription>
@@ -124,9 +124,9 @@ export function SubmitPropostaDialog({
             )}
 
             {hasMinimumAllocations && (
-              <Alert className="border-green-200 bg-green-50">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
+              <Alert className="border-accent/30 bg-accent/10">
+                <CheckCircle className="text-accent-foreground h-4 w-4" />
+                <AlertDescription className="text-accent-foreground">
                   <strong>Pronto para submissão:</strong> A proposta possui{" "}
                   {quantidadeAlocacoes} alocações e pode ser submetida.
                 </AlertDescription>
@@ -156,8 +156,8 @@ export function SubmitPropostaDialog({
             <Alert>
               <AlertDescription className="text-sm">
                 Após a submissão, a proposta ficará com status{" "}
-                <span className="font-semibold text-yellow-600">PENDENTE</span> e
-                não poderá mais ser editada até que seja aprovada ou rejeitada.
+                <span className="text-chart-2 font-semibold">PENDENTE</span> e não
+                poderá mais ser editada até que seja aprovada ou rejeitada.
               </AlertDescription>
             </Alert>
 
@@ -176,7 +176,7 @@ export function SubmitPropostaDialog({
                 disabled={
                   !hasMinimumAllocations || submitPropostaMutation.isPending
                 }
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-primary hover:bg-primary/90"
               >
                 {submitPropostaMutation.isPending ?
                   "Submetendo..."

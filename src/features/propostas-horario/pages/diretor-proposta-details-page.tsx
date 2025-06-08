@@ -123,7 +123,7 @@ export function DiretorPropostaDetailsPage() {
                 cursoNome={proposta.curso.nome}
                 coordenadorNome={proposta.coordenadorQueSubmeteu.nome}
               >
-                <Button className="gap-2 bg-green-600 hover:bg-green-700">
+                <Button className="bg-accent hover:bg-accent/90 gap-2">
                   <CheckCircle className="h-4 w-4" />
                   Aprovar Proposta
                 </Button>
@@ -357,16 +357,16 @@ export function DiretorPropostaDetailsPage() {
           <div className="flex items-center gap-2">
             {proposta.status === "APROVADA" ?
               <>
-                <CheckCircle className="h-4 w-4 text-green-600" />
+                <CheckCircle className="text-accent-foreground h-4 w-4" />
                 <Eye className="h-4 w-4" />
               </>
             : proposta.status === "REJEITADA" ?
               <>
-                <XCircle className="h-4 w-4 text-red-600" />
+                <XCircle className="text-destructive h-4 w-4" />
                 <Eye className="h-4 w-4" />
               </>
             : <>
-                <Lock className="h-4 w-4 text-blue-600" />
+                <Lock className="text-primary h-4 w-4" />
                 <Eye className="h-4 w-4" />
               </>
             }

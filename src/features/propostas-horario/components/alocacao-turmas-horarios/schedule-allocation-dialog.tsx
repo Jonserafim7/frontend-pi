@@ -270,7 +270,7 @@ export function ScheduleAllocationDialog({
 
           {/* Feedback de loading global */}
           {(isCreating || isValidating) && (
-            <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950">
+            <Alert className="border-primary/30 bg-primary/10">
               <div className="border-background mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
               <AlertDescription>
                 <div className="font-medium">
@@ -278,7 +278,7 @@ export function ScheduleAllocationDialog({
                     "Validando alocação..."
                   : "Processando alocação..."}
                 </div>
-                <div className="mt-1 text-sm text-blue-800 dark:text-blue-200">
+                <div className="text-primary mt-1 text-sm">
                   {isValidating ?
                     "Verificando conflitos de horário e disponibilidade..."
                   : "Salvando a nova alocação na base de dados..."}
@@ -450,7 +450,7 @@ export function ScheduleAllocationDialog({
                 {selectedTurma && (
                   <div className="bg-muted/50 mt-3 rounded-lg border p-3">
                     <div className="mb-2 flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <CheckCircle className="text-accent-foreground h-5 w-5" />
                       <span className="text-sm font-medium">
                         Turma Selecionada:
                       </span>
@@ -502,10 +502,10 @@ export function ScheduleAllocationDialog({
                                   (warning, index) => (
                                     <Alert
                                       key={`warning-${index}`}
-                                      className="border-yellow-500 bg-yellow-50 py-2 dark:bg-yellow-950"
+                                      className="border-chart-2/30 bg-chart-2/10 py-2"
                                     >
-                                      <AlertCircle className="h-4 w-4 text-yellow-600" />
-                                      <AlertDescription className="text-sm text-yellow-800 dark:text-yellow-200">
+                                      <AlertCircle className="text-chart-2 h-4 w-4" />
+                                      <AlertDescription className="text-chart-2 text-sm">
                                         {warning}
                                       </AlertDescription>
                                     </Alert>

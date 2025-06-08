@@ -27,13 +27,13 @@ export function PropostaStatusBadge({
   const getStatusColors = (status: PropostaHorarioResponseDtoStatus) => {
     switch (status) {
       case "DRAFT":
-        return "border-blue-200 bg-blue-100 text-blue-800 hover:bg-blue-50"
+        return "border-primary/30 bg-primary/10 text-primary hover:bg-primary/20"
       case "PENDENTE_APROVACAO":
-        return "border-yellow-200 bg-yellow-100 text-yellow-800 hover:bg-yellow-50"
+        return "border-chart-2/30 bg-chart-2/10 text-chart-2 hover:bg-chart-2/20"
       case "APROVADA":
-        return "border-green-200 bg-green-100 text-green-800 hover:bg-green-50"
+        return "border-accent/30 bg-accent/10 text-accent-foreground hover:bg-accent/20"
       case "REJEITADA":
-        return "border-red-200 bg-red-100 text-red-800 hover:bg-red-50"
+        return "border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20"
       default:
         return "border-gray-200 bg-gray-100 text-gray-800 hover:bg-gray-50"
     }

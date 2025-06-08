@@ -334,10 +334,10 @@ export function CreatePropostaDialog({
 
                           if (diasAteInicio > 0) {
                             statusIndicator = `Inicia em ${diasAteInicio} dias`
-                            statusColor = "text-blue-600"
+                            statusColor = "text-primary"
                           } else if (dataFim.getTime() > hoje.getTime()) {
                             statusIndicator = "Em andamento"
-                            statusColor = "text-green-600"
+                            statusColor = "text-accent-foreground"
                           }
 
                           const cursoSelecionado = form.watch("idCurso")

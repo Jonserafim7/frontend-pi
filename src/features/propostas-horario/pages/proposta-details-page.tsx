@@ -11,7 +11,6 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useParams, useNavigate } from "react-router"
 import {
@@ -24,7 +23,6 @@ import { PropostaPermissionsIndicator } from "../components/proposta-permissions
 import { SubmitPropostaDialog } from "../components/submit-proposta-dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, Lock, CheckCircle, XCircle } from "lucide-react"
-import { canEditProposta, type PropostaStatus } from "../types/proposta-types"
 
 /**
  * Página de detalhes/edição de uma proposta de horário
@@ -130,9 +128,8 @@ export function PropostaDetailsPage() {
           <Button
             variant="outline"
             onClick={handleBack}
-            className="gap-2"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft />
             Voltar à Lista
           </Button>
 
@@ -144,8 +141,8 @@ export function PropostaDetailsPage() {
                 propostaId={proposta.id}
                 quantidadeAlocacoes={proposta.quantidadeAlocacoes || 0}
               >
-                <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
-                  <Send className="h-4 w-4" />
+                <Button>
+                  <Send />
                   Submeter Proposta
                 </Button>
               </SubmitPropostaDialog>
@@ -156,7 +153,7 @@ export function PropostaDetailsPage() {
               <Button
                 onClick={handleReopen}
                 disabled={reopenPropostaMutation.isPending}
-                className="gap-2 bg-orange-600 hover:bg-orange-700"
+                className="bg-chart-2 hover:bg-chart-2/90 gap-2"
               >
                 <RotateCcw className="h-4 w-4" />
                 {reopenPropostaMutation.isPending ?
@@ -418,16 +415,16 @@ export function PropostaDetailsPage() {
             <div className="flex items-center gap-2">
               {proposta.status === "APROVADA" ?
                 <>
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <CheckCircle className="text-accent-foreground h-4 w-4" />
                   <Eye className="h-4 w-4" />
                 </>
               : proposta.status === "REJEITADA" ?
                 <>
-                  <XCircle className="h-4 w-4 text-red-600" />
+                  <XCircle className="text-destructive h-4 w-4" />
                   <Eye className="h-4 w-4" />
                 </>
               : <>
-                  <Lock className="h-4 w-4 text-yellow-600" />
+                  <Lock className="text-chart-2 h-4 w-4" />
                   <Eye className="h-4 w-4" />
                 </>
               }
@@ -458,22 +455,22 @@ export function PropostaDetailsPage() {
 
           {/* Alert de Justificativa de Rejeição - Task 4.7 */}
           {proposta.status === "REJEITADA" && proposta.justificativaRejeicao && (
-            <Alert className="border-red-200 bg-red-50">
-              <XCircle className="h-4 w-4 text-red-600" />
+            <Alert className="border-destructive/30 bg-destructive/10">
+              <XCircle className="text-destructive h-4 w-4" />
               <AlertDescription className="ml-6">
                 <div className="space-y-2">
-                  <p className="font-semibold text-red-800">
+                  <p className="text-destructive font-semibold">
                     Motivo da Rejeição:
                   </p>
-                  <p className="rounded bg-red-100 p-3 text-sm text-red-700">
+                  <p className="bg-destructive/20 text-destructive rounded p-3 text-sm">
                     {String(proposta.justificativaRejeicao)}
                   </p>
                   {proposta.observacoesDiretor && (
                     <>
-                      <p className="mt-3 font-semibold text-red-800">
+                      <p className="text-destructive mt-3 font-semibold">
                         Observações do Diretor:
                       </p>
-                      <p className="rounded bg-red-100 p-3 text-sm text-red-700">
+                      <p className="bg-destructive/20 text-destructive rounded p-3 text-sm">
                         {String(proposta.observacoesDiretor)}
                       </p>
                     </>

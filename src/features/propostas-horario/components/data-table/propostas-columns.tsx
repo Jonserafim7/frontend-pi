@@ -169,7 +169,7 @@ export const propostasCoordinatorColumns: ColumnDef<PropostaHorarioResponseDto>[
           <div className="flex flex-col">
             <div className="text-sm">{formatDateToDisplay(dataResposta)}</div>
             <div
-              className={`text-xs ${isApproved ? "text-green-600" : "text-red-600"}`}
+              className={`text-xs ${isApproved ? "text-accent-foreground" : "text-destructive"}`}
             >
               {isApproved ? "Aprovada" : "Rejeitada"}
             </div>

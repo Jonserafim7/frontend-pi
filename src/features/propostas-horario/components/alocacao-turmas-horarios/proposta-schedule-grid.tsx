@@ -118,10 +118,7 @@ export function PropostaScheduleGrid({
               </Badge>
             )}
             {!readonly && (
-              <Badge
-                variant="outline"
-                className="gap-1 text-xs text-blue-600"
-              >
+              <Badge variant="outline">
                 <Edit className="h-3 w-3" />
                 Editável
               </Badge>

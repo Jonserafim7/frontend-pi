@@ -114,7 +114,7 @@ export function ApprovePropostaDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-600" />
+            <CheckCircle className="text-accent-foreground h-5 w-5" />
             Aprovar Proposta
           </DialogTitle>
           <DialogDescription>
@@ -128,9 +128,9 @@ export function ApprovePropostaDialog({
             className="space-y-4"
           >
             {/* Informações da Proposta */}
-            <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800">
+            <Alert className="border-accent/30 bg-accent/10">
+              <CheckCircle className="text-accent-foreground h-4 w-4" />
+              <AlertDescription className="text-accent-foreground">
                 <strong>Aprovar proposta:</strong>
                 <br />
                 <span className="text-sm">
@@ -165,8 +165,10 @@ export function ApprovePropostaDialog({
               <AlertDescription className="text-sm">
                 Esta ação é <strong>irreversível</strong>. A proposta ficará com
                 status{" "}
-                <span className="font-semibold text-green-600">APROVADA</span> e
-                não poderá mais ser modificada.
+                <span className="text-accent-foreground font-semibold">
+                  APROVADA
+                </span>{" "}
+                e não poderá mais ser modificada.
               </AlertDescription>
             </Alert>
 
@@ -183,7 +185,7 @@ export function ApprovePropostaDialog({
               <Button
                 type="submit"
                 disabled={approvePropostaMutation.isPending}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-accent hover:bg-accent/90"
               >
                 {approvePropostaMutation.isPending ?
                   "Aprovando..."
@@ -253,7 +255,7 @@ export function RejectPropostaDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <XCircle className="h-5 w-5 text-red-600" />
+            <XCircle className="text-destructive h-5 w-5" />
             Rejeitar Proposta
           </DialogTitle>
           <DialogDescription>
@@ -267,9 +269,9 @@ export function RejectPropostaDialog({
             className="space-y-4"
           >
             {/* Informações da Proposta */}
-            <Alert className="border-red-200 bg-red-50">
-              <XCircle className="h-4 w-4 text-red-600" />
-              <AlertDescription className="text-red-800">
+            <Alert className="border-destructive/30 bg-destructive/10">
+              <XCircle className="text-destructive h-4 w-4" />
+              <AlertDescription className="text-destructive">
                 <strong>Rejeitar proposta:</strong>
                 <br />
                 <span className="text-sm">
@@ -286,14 +288,14 @@ export function RejectPropostaDialog({
               name="justificativaRejeicao"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-red-700">
+                  <FormLabel className="text-destructive">
                     Justificativa da Rejeição{" "}
-                    <span className="text-red-500">*</span>
+                    <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Explique os motivos da rejeição desta proposta..."
-                      className="min-h-[120px] resize-none border-red-200 focus:border-red-300"
+                      className="border-destructive/30 focus:border-destructive/50 min-h-[120px] resize-none"
                       {...field}
                     />
                   </FormControl>
@@ -322,12 +324,12 @@ export function RejectPropostaDialog({
             />
 
             {/* Aviso sobre mudança de status */}
-            <Alert className="border-yellow-200 bg-yellow-50">
-              <AlertTriangle className="h-4 w-4 text-yellow-600" />
-              <AlertDescription className="text-sm text-yellow-800">
+            <Alert className="border-chart-2/30 bg-chart-2/10">
+              <AlertTriangle className="text-chart-2 h-4 w-4" />
+              <AlertDescription className="text-chart-2 text-sm">
                 A proposta ficará com status{" "}
-                <span className="font-semibold text-red-600">REJEITADA</span> e o
-                coordenador poderá reabri-la para nova edição.
+                <span className="text-destructive font-semibold">REJEITADA</span>{" "}
+                e o coordenador poderá reabri-la para nova edição.
               </AlertDescription>
             </Alert>
 
