@@ -3,7 +3,8 @@ export { DisciplinasOfertadasListPage } from "./pages/disciplinas-ofertadas-list
 
 // Components
 export { DisciplinaOfertadaDataTable } from "./components/data-table/disciplina-ofertada-data-table"
-export { CreateEditDisciplinaOfertadaFormDialog } from "./components/create-edit-disciplina-ofertada-form-dialog"
+export { CreateDisciplinaOfertadaComMatrizDialog } from "./components/create-disciplina-ofertada-com-matriz-dialog"
+export { EditDisciplinaOfertadaDialog } from "./components/edit-disciplina-ofertada-dialog"
 export { DeleteDisciplinaOfertadaAlertDialog } from "./components/delete-disciplina-ofertada-alert-dialog"
 
 // Hooks

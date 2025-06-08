@@ -751,3 +751,219 @@ export const useDisciplinasOfertadasControllerRemove = <
 
   return useMutation(mutationOptions, queryClient)
 }
+/**
+ * @summary Listar disciplinas ofertadas dos cursos do coordenador (Coordenador)
+ */
+export const disciplinasOfertadasControllerFindOfertasDoCoordenador = (
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
+) => {
+  return orvalCustomInstance<DisciplinaOfertadaResponseDto[]>(
+    {
+      url: `/disciplinas-ofertadas/coordenador/minhas-ofertas`,
+      method: "GET",
+      signal,
+    },
+    options,
+  )
+}
+
+export const getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey =
+  () => {
+    return ["disciplinas-ofertadas", "coordenador", "minhas-ofertas"] as const
+  }
+
+export const getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<typeof disciplinasOfertadasControllerFindOfertasDoCoordenador>
+    >,
+    TError = ErrorType<void>,
+  >(options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof disciplinasOfertadasControllerFindOfertasDoCoordenador
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  }) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey()
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<typeof disciplinasOfertadasControllerFindOfertasDoCoordenador>
+      >
+    > = ({ signal }) =>
+      disciplinasOfertadasControllerFindOfertasDoCoordenador(
+        requestOptions,
+        signal,
+      )
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+      Awaited<
+        ReturnType<typeof disciplinasOfertadasControllerFindOfertasDoCoordenador>
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type DisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof disciplinasOfertadasControllerFindOfertasDoCoordenador>
+    >
+  >
+export type DisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryError =
+  ErrorType<void>
+
+export function useDisciplinasOfertadasControllerFindOfertasDoCoordenador<
+  TData = Awaited<
+    ReturnType<typeof disciplinasOfertadasControllerFindOfertasDoCoordenador>
+  >,
+  TError = ErrorType<void>,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof disciplinasOfertadasControllerFindOfertasDoCoordenador
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof disciplinasOfertadasControllerFindOfertasDoCoordenador
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof disciplinasOfertadasControllerFindOfertasDoCoordenador
+            >
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisciplinasOfertadasControllerFindOfertasDoCoordenador<
+  TData = Awaited<
+    ReturnType<typeof disciplinasOfertadasControllerFindOfertasDoCoordenador>
+  >,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof disciplinasOfertadasControllerFindOfertasDoCoordenador
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof disciplinasOfertadasControllerFindOfertasDoCoordenador
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof disciplinasOfertadasControllerFindOfertasDoCoordenador
+            >
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisciplinasOfertadasControllerFindOfertasDoCoordenador<
+  TData = Awaited<
+    ReturnType<typeof disciplinasOfertadasControllerFindOfertasDoCoordenador>
+  >,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof disciplinasOfertadasControllerFindOfertasDoCoordenador
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Listar disciplinas ofertadas dos cursos do coordenador (Coordenador)
+ */
+
+export function useDisciplinasOfertadasControllerFindOfertasDoCoordenador<
+  TData = Awaited<
+    ReturnType<typeof disciplinasOfertadasControllerFindOfertasDoCoordenador>
+  >,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof disciplinasOfertadasControllerFindOfertasDoCoordenador
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}

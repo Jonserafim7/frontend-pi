@@ -632,3 +632,187 @@ export const useDisciplinasControllerRemove = <
 
   return useMutation(mutationOptions, queryClient)
 }
+/**
+ * @summary Listar disciplinas das matrizes do coordenador logado
+ */
+export const disciplinasControllerFindDisciplinasDoCoordenador = (
+  options?: SecondParameter<typeof orvalCustomInstance>,
+  signal?: AbortSignal,
+) => {
+  return orvalCustomInstance<DisciplinaResponseDto[]>(
+    { url: `/disciplinas/coordenador/minhas-disciplinas`, method: "GET", signal },
+    options,
+  )
+}
+
+export const getDisciplinasControllerFindDisciplinasDoCoordenadorQueryKey =
+  () => {
+    return ["disciplinas", "coordenador", "minhas-disciplinas"] as const
+  }
+
+export const getDisciplinasControllerFindDisciplinasDoCoordenadorQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+  >,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<
+        ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+      >,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof orvalCustomInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getDisciplinasControllerFindDisciplinasDoCoordenadorQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>>
+  > = ({ signal }) =>
+    disciplinasControllerFindDisciplinasDoCoordenador(requestOptions, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DisciplinasControllerFindDisciplinasDoCoordenadorQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>>
+  >
+export type DisciplinasControllerFindDisciplinasDoCoordenadorQueryError =
+  ErrorType<void>
+
+export function useDisciplinasControllerFindDisciplinasDoCoordenador<
+  TData = Awaited<
+    ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+  >,
+  TError = ErrorType<void>,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useDisciplinasControllerFindDisciplinasDoCoordenador<
+  TData = Awaited<
+    ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+  >,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+          >
+        >,
+        "initialData"
+      >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDisciplinasControllerFindDisciplinasDoCoordenador<
+  TData = Awaited<
+    ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+  >,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Listar disciplinas das matrizes do coordenador logado
+ */
+
+export function useDisciplinasControllerFindDisciplinasDoCoordenador<
+  TData = Awaited<
+    ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+  >,
+  TError = ErrorType<void>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof disciplinasControllerFindDisciplinasDoCoordenador>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof orvalCustomInstance>
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getDisciplinasControllerFindDisciplinasDoCoordenadorQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}

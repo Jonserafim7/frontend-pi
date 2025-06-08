@@ -43,7 +43,7 @@ import { useDisciplinasOfertadasControllerCreateComPeriodoAtivo } from "@/api-ge
 import type { MatrizCurricularResponseDto } from "@/api-generated/model/matriz-curricular-response-dto"
 import type { DisciplinaResponseDto } from "@/api-generated/model/disciplina-response-dto"
 import { useQueryClient } from "@tanstack/react-query"
-import { getDisciplinasOfertadasControllerFindAllQueryKey } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
+import { getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
 import { getTurmasControllerFindAllQueryKey } from "@/api-generated/client/turmas/turmas"
 import { toast } from "sonner"
 
@@ -157,7 +157,8 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
           // Invalida as queries para atualizar os dados
           Promise.all([
             queryClient.invalidateQueries({
-              queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
+              queryKey:
+                getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey(),
             }),
             queryClient.invalidateQueries({
               queryKey: getTurmasControllerFindAllQueryKey(),

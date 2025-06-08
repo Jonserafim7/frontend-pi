@@ -82,3 +82,16 @@ export const disciplinasControllerRemoveParams = zod.object({
   "id": zod.string().describe('ID da disciplina a ser removida')
 })
 
+/**
+ * @summary Listar disciplinas das matrizes do coordenador logado
+ */
+export const disciplinasControllerFindDisciplinasDoCoordenadorResponseItem = zod.object({
+  "id": zod.string().describe('ID único da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().optional().describe('Código único da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária total da disciplina em horas'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do registro')
+})
+export const disciplinasControllerFindDisciplinasDoCoordenadorResponse = zod.array(disciplinasControllerFindDisciplinasDoCoordenadorResponseItem)
+

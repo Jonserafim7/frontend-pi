@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { Calendar, Plus } from "lucide-react"
 import { DisciplinaOfertadaDataTable } from "../components/data-table/disciplina-ofertada-data-table"
-import { useDisciplinasOfertadasControllerFindAll } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
+import { useDisciplinasOfertadasControllerFindOfertasDoCoordenador } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
 import { CreateDisciplinaOfertadaComMatrizDialog } from "../components/create-disciplina-ofertada-com-matriz-dialog"
 import { SkeletonTable } from "@/components/skeleton-table"
 import { disciplinaOfertadaColumns } from "../components/data-table/disciplina-ofertada-columns"
@@ -15,9 +15,9 @@ export function DisciplinasOfertadasListPage() {
   // Estados para os diálogos
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-  // Busca as disciplinas ofertadas da API
+  // Busca as disciplinas ofertadas da API - apenas dos cursos que o coordenador coordena
   const { data: disciplinasOfertadas, isLoading } =
-    useDisciplinasOfertadasControllerFindAll()
+    useDisciplinasOfertadasControllerFindOfertasDoCoordenador()
 
   return (
     <>

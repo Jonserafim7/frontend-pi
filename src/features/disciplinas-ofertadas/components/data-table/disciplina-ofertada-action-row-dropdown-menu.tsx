@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import type { DisciplinaOfertadaResponseDto } from "@/api-generated/model/disciplina-ofertada-response-dto"
 import { DeleteDisciplinaOfertadaAlertDialog } from "../delete-disciplina-ofertada-alert-dialog"
-import { CreateEditDisciplinaOfertadaFormDialog } from "../create-edit-disciplina-ofertada-form-dialog"
+import { EditDisciplinaOfertadaDialog } from "../edit-disciplina-ofertada-dialog"
 import { toast } from "sonner"
 
 interface DisciplinaOfertadaActionRowDropdownMenuProps {
@@ -110,7 +110,7 @@ export function DisciplinaOfertadaActionRowDropdownMenu({
       </DropdownMenu>
 
       {/* Diálogo de edição */}
-      <CreateEditDisciplinaOfertadaFormDialog
+      <EditDisciplinaOfertadaDialog
         isOpen={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         disciplinaOfertada={disciplinaOfertada}

@@ -144,3 +144,34 @@ export const disciplinasOfertadasControllerRemoveParams = zod.object({
   "id": zod.string().describe('ID da oferta da disciplina (UUID)')
 })
 
+/**
+ * @summary Listar disciplinas ofertadas dos cursos do coordenador (Coordenador)
+ */
+export const disciplinasOfertadasControllerFindOfertasDoCoordenadorResponseItem = zod.object({
+  "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
+  "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
+  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
+  "disciplina": zod.object({
+  "id": zod.string().describe('ID único da disciplina'),
+  "nome": zod.string().describe('Nome da disciplina'),
+  "codigo": zod.string().optional().describe('Código único da disciplina'),
+  "cargaHoraria": zod.number().describe('Carga horária total da disciplina em horas'),
+  "dataCriacao": zod.string().datetime({}).describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().datetime({}).describe('Data da última atualização do registro')
+}).describe('Detalhes da disciplina ofertada'),
+  "periodoLetivo": zod.object({
+  "id": zod.string().describe('ID único do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo (1 ou 2)'),
+  "status": zod.enum(['ATIVO', 'INATIVO']).describe('Status atual do período letivo'),
+  "dataInicio": zod.string().describe('Data de início do período letivo'),
+  "dataFim": zod.string().describe('Data de fim do período letivo'),
+  "dataCriacao": zod.string().describe('Data de criação do registro'),
+  "dataAtualizacao": zod.string().describe('Data da última atualização do registro')
+}).describe('Detalhes do período letivo da oferta'),
+  "createdAt": zod.string().datetime({}).describe('Data de criação da oferta da disciplina'),
+  "updatedAt": zod.string().datetime({}).describe('Data da última atualização da oferta da disciplina')
+})
+export const disciplinasOfertadasControllerFindOfertasDoCoordenadorResponse = zod.array(disciplinasOfertadasControllerFindOfertasDoCoordenadorResponseItem)
+

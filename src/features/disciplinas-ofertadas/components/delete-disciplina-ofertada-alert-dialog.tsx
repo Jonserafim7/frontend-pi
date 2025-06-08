@@ -12,7 +12,7 @@ import { useDisciplinasOfertadasControllerRemove } from "@/api-generated/client/
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { TriangleAlert } from "lucide-react"
-import { getDisciplinasOfertadasControllerFindAllQueryKey } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
+import { getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
 import { useQueryClient } from "@tanstack/react-query"
 import type { DisciplinaOfertadaResponseDto } from "@/api-generated/model/disciplina-ofertada-response-dto"
 import { cn } from "@/lib/utils"
@@ -61,7 +61,8 @@ export function DeleteDisciplinaOfertadaAlertDialog({
           onOpenChange(false)
           toast.success("Disciplina ofertada removida")
           queryClient.invalidateQueries({
-            queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
+            queryKey:
+              getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey(),
           })
         },
         onError: () => {
