@@ -1,6 +1,0 @@
-export * from "./schedule-grid"
-export * from "./schedule-cell-container"
-export * from "./schedule-cell-view"
-export * from "./schedule-allocation-dialog"
-export * from "./schedule-grid-types"
-export * from "./turno-section"

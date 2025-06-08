@@ -25,13 +25,12 @@ import {
 } from "@/features/disponibilidade-professores/pages"
 import { TurmasListPage } from "@/features/turmas/pages/turmas-list-page"
 import {
-  PropostasHorarioPage,
   PropostasListPage,
   CreatePropostaPage,
   PropostaDetailsPage,
   DiretorPropostasListPage,
   DiretorPropostaDetailsPage,
-} from "@/features/propostas-horario/pages"
+} from "@/features/propostas-horario"
 
 // Placeholders genéricos para cada tipo de usuário
 const CoordenadorDashboard = () => <div>Dashboard do Coordenador (em breve)</div>
