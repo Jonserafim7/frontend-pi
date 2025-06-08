@@ -102,10 +102,14 @@ export * from "./components/alocacao-turmas-horarios/turno-section"
 // -----------------------------------------------------------------------------
 // Components - Data Table
 // -----------------------------------------------------------------------------
+export {
+  propostasCoordinatorColumns,
+  propostasDirectorColumns,
+} from "./components/data-table/propostas-columns"
 export { PropostasActionDropdown } from "./components/data-table/propostas-action-dropdown"
+export { PropostasFilters } from "./components/data-table/propostas-filters"
 // Future data table components will be exported here:
 // export * from "./components/data-table/propostas-data-table"
-// export * from "./components/data-table/propostas-columns"
 
 // -----------------------------------------------------------------------------
 // Components - Dialogs & Forms (futuros componentes)
