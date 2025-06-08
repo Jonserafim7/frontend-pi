@@ -16,6 +16,7 @@ import {
  */
 export const alocacoesHorariosControllerCreateBody = zod.object({
   "idTurma": zod.string().describe('ID da turma que será alocada'),
+  "idPropostaHorario": zod.string().optional().describe('ID da proposta de horário (opcional para alocações dentro de propostas)'),
   "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana para a alocação'),
   "horaInicio": zod.string().describe('Hora de início da aula (formato HH:mm)'),
   "horaFim": zod.string().describe('Hora de fim da aula (formato HH:mm)')
@@ -68,6 +69,7 @@ export const alocacoesHorariosControllerFindManyResponse = zod.array(alocacoesHo
  */
 export const alocacoesHorariosControllerValidateBody = zod.object({
   "idTurma": zod.string().describe('ID da turma que será alocada'),
+  "idPropostaHorario": zod.string().optional().describe('ID da proposta de horário (opcional para alocações dentro de propostas)'),
   "diaDaSemana": zod.enum(['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO']).describe('Dia da semana para a alocação'),
   "horaInicio": zod.string().describe('Hora de início da aula (formato HH:mm)'),
   "horaFim": zod.string().describe('Hora de fim da aula (formato HH:mm)')

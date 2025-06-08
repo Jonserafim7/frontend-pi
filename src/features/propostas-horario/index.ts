@@ -7,6 +7,7 @@
 // Types & Interfaces
 // -----------------------------------------------------------------------------
 export * from "./types/proposta-types"
+export * from "./types/proposta-allocation-types"
 export type {
   PropostaStatus,
   PropostaListItem,
@@ -82,7 +83,7 @@ export {
 // Custom Hooks (imports diretos)
 // -----------------------------------------------------------------------------
 export * from "./hooks/use-propostas-horario"
-export * from "./hooks/use-schedule-allocation"
+export * from "./hooks/use-proposta-allocation"
 
 // Future custom hooks will be exported here:
 // export * from "./hooks/use-proposta-filters"
@@ -90,14 +91,15 @@ export * from "./hooks/use-schedule-allocation"
 // export * from "./hooks/use-proposta-status"
 
 // -----------------------------------------------------------------------------
-// Components - Schedule/Allocation (imports diretos)
+// Components - Schedule/Allocation (Específicos para Propostas)
 // -----------------------------------------------------------------------------
-export * from "./components/alocacao-turmas-horarios/schedule-grid"
-export * from "./components/alocacao-turmas-horarios/schedule-cell-container"
+export * from "./components/alocacao-turmas-horarios/proposta-schedule-grid"
+export * from "./components/alocacao-turmas-horarios/proposta-schedule-cell-container"
+export * from "./components/alocacao-turmas-horarios/proposta-turno-section"
+
+// Componentes compartilhados/genéricos mantidos:
 export * from "./components/alocacao-turmas-horarios/schedule-cell-view"
 export * from "./components/alocacao-turmas-horarios/schedule-allocation-dialog"
-export * from "./components/alocacao-turmas-horarios/schedule-grid-types"
-export * from "./components/alocacao-turmas-horarios/turno-section"
 
 // -----------------------------------------------------------------------------
 // Components - Data Table
@@ -130,7 +132,6 @@ export { PropostaStatusBadge } from "./components/proposta-status-badge"
 // -----------------------------------------------------------------------------
 // Pages (imports diretos)
 // -----------------------------------------------------------------------------
-export { PropostasHorarioPage } from "./pages/propostas-horario-page"
 export { PropostasListPage } from "./pages/propostas-list-page"
 export { CreatePropostaPage } from "./pages/create-proposta-page"
 export { PropostaDetailsPage } from "./pages/proposta-details-page"

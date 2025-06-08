@@ -1,39 +1,51 @@
 "use client"
 
 import * as React from "react"
-import { toast } from "sonner"
 import { ScheduleCellView } from "./schedule-cell-view"
 import { ScheduleAllocationDialog } from "./schedule-allocation-dialog"
-import { useScheduleAllocation } from "../../hooks/use-schedule-allocation"
-import type { ScheduleCellProps } from "./schedule-grid-types"
+import { usePropostaAllocation } from "../../hooks/use-proposta-allocation"
+import { useAlocacoesHorariosControllerFindByProposta } from "@/api-generated/client/alocações-de-horário/alocações-de-horário"
+import type { PropostaScheduleCellContainerProps } from "../../types/proposta-allocation-types"
 
 /**
- * Container que gerencia estado e lógica para uma célula da grade de horários.
+ * Container específico para células da grade de horários de propostas.
  *
- * Responsabilidades:
- * - Gerenciar estado do dialog de alocações
- * - Integrar com hooks de API para alocações
- * - Preparar dados para o combobox de turmas
- * - Tratar callbacks de criação/remoção de alocações
- * - Gerenciar estados de loading e error
+ * Diferenças do container geral:
+ * - Usa hook específico de propostas
+ * - Filtra turmas do curso/período da proposta
+ * - Valida permissões baseadas no status da proposta
+ * - Associa alocações automaticamente à proposta
+ * - Integra com validações de negócio específicas
  *
  * @component
  */
-export function ScheduleCellContainer({
+export function PropostaScheduleCellContainer({
   dia,
   horario,
   alocacao,
-}: ScheduleCellProps) {
+  propostaId,
+}: PropostaScheduleCellContainerProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false)
 
+  // Hook específico para alocações de propostas
   const {
-    isLoadingTurmas,
+    podeEditarProposta,
     isCreating,
     isDeleting,
+    isLoadingTurmas,
     getTurmasDisponiveis,
     criarAlocacao,
     removerAlocacao,
-  } = useScheduleAllocation()
+  } = usePropostaAllocation({ propostaId })
+
+  // Buscar todas as alocações da proposta para validações
+  const { data: alocacoesDaProposta = [] } =
+    useAlocacoesHorariosControllerFindByProposta(propostaId, {
+      query: {
+        enabled: !!propostaId,
+        staleTime: 30 * 1000, // 30 segundos
+      },
+    })
 
   /**
    * Determinar se há operação em andamento
@@ -56,6 +68,7 @@ export function ScheduleCellContainer({
       horario.inicio,
       horario.fim,
       alocacoesExistentes,
+      alocacoesDaProposta,
     )
 
     // Mapear para o formato esperado pelo dialog
@@ -66,29 +79,34 @@ export function ScheduleCellContainer({
         turma.disciplinaOfertada?.disciplina?.nome || "Disciplina não informada",
       professor: turma.professorAlocado?.nome,
     }))
-  }, [getTurmasDisponiveis, dia, horario, alocacoesExistentes])
+  }, [
+    getTurmasDisponiveis,
+    dia,
+    horario,
+    alocacoesExistentes,
+    alocacoesDaProposta,
+  ])
 
   /**
-   * Abre o dialog para gerenciar alocações
+   * Abre o dialog para gerenciar alocações (apenas se pode editar)
    */
   const handleCellClick = React.useCallback(() => {
-    setDialogOpen(true)
-  }, [])
+    if (podeEditarProposta) {
+      setDialogOpen(true)
+    }
+  }, [podeEditarProposta])
 
   /**
-   * Criar nova alocação
+   * Criar nova alocação associada à proposta
    */
   const handleAlocarTurma = React.useCallback(
     async (turmaId: string) => {
       try {
         await criarAlocacao(turmaId, dia, horario.inicio, horario.fim)
-        toast.success("Turma alocada com sucesso!")
         setDialogOpen(false)
       } catch (error) {
+        // Error handling é feito no hook
         console.error("Erro ao alocar turma:", error)
-        toast.error(
-          error instanceof Error ? error.message : "Erro ao alocar turma",
-        )
       }
     },
     [criarAlocacao, dia, horario],
@@ -101,12 +119,9 @@ export function ScheduleCellContainer({
     async (alocacaoId: string) => {
       try {
         await removerAlocacao(alocacaoId)
-        toast.success("Alocação removida com sucesso!")
       } catch (error) {
+        // Error handling é feito no hook
         console.error("Erro ao remover alocação:", error)
-        toast.error(
-          error instanceof Error ? error.message : "Erro ao remover alocação",
-        )
       }
     },
     [removerAlocacao],
@@ -121,17 +136,19 @@ export function ScheduleCellContainer({
         isLoading={isLoading}
       />
 
-      {/* Dialog para gerenciar alocações */}
-      <ScheduleAllocationDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        dia={dia}
-        horario={horario}
-        alocacoesExistentes={alocacoesExistentes}
-        turmasDisponiveis={turmasDisponiveis}
-        onAlocarTurma={handleAlocarTurma}
-        onRemoverAlocacao={handleRemoverAlocacao}
-      />
+      {/* Dialog para gerenciar alocações - só abre se pode editar */}
+      {podeEditarProposta && (
+        <ScheduleAllocationDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          dia={dia}
+          horario={horario}
+          alocacoesExistentes={alocacoesExistentes}
+          turmasDisponiveis={turmasDisponiveis}
+          onAlocarTurma={handleAlocarTurma}
+          onRemoverAlocacao={handleRemoverAlocacao}
+        />
+      )}
     </>
   )
 }

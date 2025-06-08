@@ -1,33 +1,28 @@
 import { Badge } from "@/components/ui/badge"
-import { ScheduleCellContainer } from "./schedule-cell-container"
-import type { TurnoSectionProps } from "./schedule-grid-types"
-import { DIAS_SEMANA } from "./schedule-grid-types"
+import { PropostaScheduleCellContainer } from "./proposta-schedule-cell-container"
+import type { PropostaTurnoSectionProps } from "../../types/proposta-allocation-types"
+import { DIAS_SEMANA } from "../../types/proposta-allocation-types"
 
 /**
- * Componente que representa uma seção da grade de horários para um turno específico (manhã, tarde ou noite).
+ * Componente que representa uma seção da grade de horários para um turno específico (manhã, tarde ou noite)
+ * adaptado para propostas.
  *
- * Renderiza o cabeçalho do turno, os horários e as células para cada dia da semana.
- * Cada célula pode exibir uma alocação existente ou um botão para adicionar nova alocação.
+ * Diferenças da versão geral:
+ * - Usa PropostaScheduleCellContainer ao invés do container geral
+ * - Passa propostaId para os containers das células
+ * - Integrado com sistema de permissões de propostas
  *
- * @param {TurnoSectionProps} props
+ * @param {PropostaTurnoSectionProps} props
  * @returns {JSX.Element}
- *
- * @example
- * <TurnoSection
- *   titulo="Manhã"
- *   aulas={aulasManha}
- *   inicio="07:00"
- *   fim="12:00"
- *   alocacoesMap={alocacoesMap}
- * />
  */
-export function TurnoSection({
+export function PropostaTurnoSection({
   titulo,
   aulas,
   inicio,
   fim,
   alocacoesMap,
-}: TurnoSectionProps) {
+  propostaId,
+}: PropostaTurnoSectionProps) {
   return (
     <div>
       {/* Cabeçalho do turno */}
@@ -71,17 +66,18 @@ export function TurnoSection({
               <div className="text-muted-foreground text-xs">{aula.fim}</div>
             </div>
 
-            {/* Células para cada dia da semana */}
+            {/* Células para cada dia da semana - USANDO CONTAINER ESPECÍFICO DE PROPOSTA */}
             {DIAS_SEMANA.map((dia) => {
               const chaveAlocacao = `${dia.key}_${aula.inicio}`
               const alocacaoEncontrada = alocacoesMap.get(chaveAlocacao)
 
               return (
-                <ScheduleCellContainer
+                <PropostaScheduleCellContainer
                   key={`${dia.key}-${aula.inicio}`}
                   dia={dia.key}
                   horario={aula}
                   alocacao={alocacaoEncontrada}
+                  propostaId={propostaId}
                 />
               )
             })}
