@@ -129,7 +129,7 @@ export const useTurmasControllerCreate = <
   return useMutation(mutationOptions, queryClient)
 }
 /**
- * @summary Listar turmas com filtros (Admin, Coordenador, Diretor)
+ * @summary Listar turmas baseado no papel do usuário logado
  */
 export const turmasControllerFindAll = (
   params?: TurmasControllerFindAllParams,
@@ -255,7 +255,7 @@ export function useTurmasControllerFindAll<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Listar turmas com filtros (Admin, Coordenador, Diretor)
+ * @summary Listar turmas baseado no papel do usuário logado
  */
 
 export function useTurmasControllerFindAll<

@@ -19,7 +19,7 @@ export const turmasControllerCreateBody = zod.object({
 })
 
 /**
- * @summary Listar turmas com filtros (Admin, Coordenador, Diretor)
+ * @summary Listar turmas baseado no papel do usuário logado
  */
 export const turmasControllerFindAllQueryParams = zod.object({
   "idDisciplinaOfertada": zod.string().optional().describe('ID da disciplina ofertada para filtrar'),
