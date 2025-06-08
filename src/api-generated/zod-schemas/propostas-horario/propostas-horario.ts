@@ -25,21 +25,27 @@ export const propostasHorarioControllerCreateBody = zod.object({
 export const propostasHorarioControllerFindAllResponseItem = zod.object({
   "id": zod.string().describe('ID único da proposta'),
   "curso": zod.object({
+  "id": zod.string().describe('ID do curso'),
+  "nome": zod.string().describe('Nome do curso'),
+  "codigo": zod.object({
 
+}).optional().describe('Código do curso')
 }).describe('Dados do curso'),
   "periodoLetivo": zod.object({
-
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo'),
+  "dataInicio": zod.string().datetime({}).describe('Data de início do período letivo'),
+  "dataFim": zod.string().datetime({}).describe('Data de fim do período letivo')
 }).describe('Dados do período letivo'),
   "coordenadorQueSubmeteu": zod.object({
-
+  "id": zod.string().describe('ID do coordenador'),
+  "nome": zod.string().describe('Nome do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
 }).describe('Dados do coordenador que submeteu'),
   "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status atual da proposta'),
-  "dataSubmissao": zod.object({
-
-}).optional().describe('Data de submissão da proposta'),
-  "dataAprovacaoRejeicao": zod.object({
-
-}).optional().describe('Data de aprovação ou rejeição'),
+  "dataSubmissao": zod.string().datetime({}).optional().describe('Data de submissão da proposta'),
+  "dataAprovacaoRejeicao": zod.string().datetime({}).optional().describe('Data de aprovação ou rejeição'),
   "justificativaRejeicao": zod.object({
 
 }).optional().describe('Justificativa em caso de rejeição'),
@@ -65,21 +71,27 @@ export const propostasHorarioControllerFindOneParams = zod.object({
 export const propostasHorarioControllerFindOneResponse = zod.object({
   "id": zod.string().describe('ID único da proposta'),
   "curso": zod.object({
+  "id": zod.string().describe('ID do curso'),
+  "nome": zod.string().describe('Nome do curso'),
+  "codigo": zod.object({
 
+}).optional().describe('Código do curso')
 }).describe('Dados do curso'),
   "periodoLetivo": zod.object({
-
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo'),
+  "dataInicio": zod.string().datetime({}).describe('Data de início do período letivo'),
+  "dataFim": zod.string().datetime({}).describe('Data de fim do período letivo')
 }).describe('Dados do período letivo'),
   "coordenadorQueSubmeteu": zod.object({
-
+  "id": zod.string().describe('ID do coordenador'),
+  "nome": zod.string().describe('Nome do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
 }).describe('Dados do coordenador que submeteu'),
   "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status atual da proposta'),
-  "dataSubmissao": zod.object({
-
-}).optional().describe('Data de submissão da proposta'),
-  "dataAprovacaoRejeicao": zod.object({
-
-}).optional().describe('Data de aprovação ou rejeição'),
+  "dataSubmissao": zod.string().datetime({}).optional().describe('Data de submissão da proposta'),
+  "dataAprovacaoRejeicao": zod.string().datetime({}).optional().describe('Data de aprovação ou rejeição'),
   "justificativaRejeicao": zod.object({
 
 }).optional().describe('Justificativa em caso de rejeição'),
@@ -110,21 +122,27 @@ export const propostasHorarioControllerUpdateBody = zod.object({
 export const propostasHorarioControllerUpdateResponse = zod.object({
   "id": zod.string().describe('ID único da proposta'),
   "curso": zod.object({
+  "id": zod.string().describe('ID do curso'),
+  "nome": zod.string().describe('Nome do curso'),
+  "codigo": zod.object({
 
+}).optional().describe('Código do curso')
 }).describe('Dados do curso'),
   "periodoLetivo": zod.object({
-
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo'),
+  "dataInicio": zod.string().datetime({}).describe('Data de início do período letivo'),
+  "dataFim": zod.string().datetime({}).describe('Data de fim do período letivo')
 }).describe('Dados do período letivo'),
   "coordenadorQueSubmeteu": zod.object({
-
+  "id": zod.string().describe('ID do coordenador'),
+  "nome": zod.string().describe('Nome do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
 }).describe('Dados do coordenador que submeteu'),
   "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status atual da proposta'),
-  "dataSubmissao": zod.object({
-
-}).optional().describe('Data de submissão da proposta'),
-  "dataAprovacaoRejeicao": zod.object({
-
-}).optional().describe('Data de aprovação ou rejeição'),
+  "dataSubmissao": zod.string().datetime({}).optional().describe('Data de submissão da proposta'),
+  "dataAprovacaoRejeicao": zod.string().datetime({}).optional().describe('Data de aprovação ou rejeição'),
   "justificativaRejeicao": zod.object({
 
 }).optional().describe('Justificativa em caso de rejeição'),
@@ -149,21 +167,27 @@ export const propostasHorarioControllerRemoveParams = zod.object({
 export const propostasHorarioControllerRemoveResponse = zod.object({
   "id": zod.string().describe('ID único da proposta'),
   "curso": zod.object({
+  "id": zod.string().describe('ID do curso'),
+  "nome": zod.string().describe('Nome do curso'),
+  "codigo": zod.object({
 
+}).optional().describe('Código do curso')
 }).describe('Dados do curso'),
   "periodoLetivo": zod.object({
-
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo'),
+  "dataInicio": zod.string().datetime({}).describe('Data de início do período letivo'),
+  "dataFim": zod.string().datetime({}).describe('Data de fim do período letivo')
 }).describe('Dados do período letivo'),
   "coordenadorQueSubmeteu": zod.object({
-
+  "id": zod.string().describe('ID do coordenador'),
+  "nome": zod.string().describe('Nome do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
 }).describe('Dados do coordenador que submeteu'),
   "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status atual da proposta'),
-  "dataSubmissao": zod.object({
-
-}).optional().describe('Data de submissão da proposta'),
-  "dataAprovacaoRejeicao": zod.object({
-
-}).optional().describe('Data de aprovação ou rejeição'),
+  "dataSubmissao": zod.string().datetime({}).optional().describe('Data de submissão da proposta'),
+  "dataAprovacaoRejeicao": zod.string().datetime({}).optional().describe('Data de aprovação ou rejeição'),
   "justificativaRejeicao": zod.object({
 
 }).optional().describe('Justificativa em caso de rejeição'),
@@ -192,21 +216,27 @@ export const propostasHorarioControllerSubmitBody = zod.object({
 export const propostasHorarioControllerSubmitResponse = zod.object({
   "id": zod.string().describe('ID único da proposta'),
   "curso": zod.object({
+  "id": zod.string().describe('ID do curso'),
+  "nome": zod.string().describe('Nome do curso'),
+  "codigo": zod.object({
 
+}).optional().describe('Código do curso')
 }).describe('Dados do curso'),
   "periodoLetivo": zod.object({
-
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo'),
+  "dataInicio": zod.string().datetime({}).describe('Data de início do período letivo'),
+  "dataFim": zod.string().datetime({}).describe('Data de fim do período letivo')
 }).describe('Dados do período letivo'),
   "coordenadorQueSubmeteu": zod.object({
-
+  "id": zod.string().describe('ID do coordenador'),
+  "nome": zod.string().describe('Nome do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
 }).describe('Dados do coordenador que submeteu'),
   "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status atual da proposta'),
-  "dataSubmissao": zod.object({
-
-}).optional().describe('Data de submissão da proposta'),
-  "dataAprovacaoRejeicao": zod.object({
-
-}).optional().describe('Data de aprovação ou rejeição'),
+  "dataSubmissao": zod.string().datetime({}).optional().describe('Data de submissão da proposta'),
+  "dataAprovacaoRejeicao": zod.string().datetime({}).optional().describe('Data de aprovação ou rejeição'),
   "justificativaRejeicao": zod.object({
 
 }).optional().describe('Justificativa em caso de rejeição'),
@@ -235,21 +265,27 @@ export const propostasHorarioControllerApproveBody = zod.object({
 export const propostasHorarioControllerApproveResponse = zod.object({
   "id": zod.string().describe('ID único da proposta'),
   "curso": zod.object({
+  "id": zod.string().describe('ID do curso'),
+  "nome": zod.string().describe('Nome do curso'),
+  "codigo": zod.object({
 
+}).optional().describe('Código do curso')
 }).describe('Dados do curso'),
   "periodoLetivo": zod.object({
-
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo'),
+  "dataInicio": zod.string().datetime({}).describe('Data de início do período letivo'),
+  "dataFim": zod.string().datetime({}).describe('Data de fim do período letivo')
 }).describe('Dados do período letivo'),
   "coordenadorQueSubmeteu": zod.object({
-
+  "id": zod.string().describe('ID do coordenador'),
+  "nome": zod.string().describe('Nome do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
 }).describe('Dados do coordenador que submeteu'),
   "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status atual da proposta'),
-  "dataSubmissao": zod.object({
-
-}).optional().describe('Data de submissão da proposta'),
-  "dataAprovacaoRejeicao": zod.object({
-
-}).optional().describe('Data de aprovação ou rejeição'),
+  "dataSubmissao": zod.string().datetime({}).optional().describe('Data de submissão da proposta'),
+  "dataAprovacaoRejeicao": zod.string().datetime({}).optional().describe('Data de aprovação ou rejeição'),
   "justificativaRejeicao": zod.object({
 
 }).optional().describe('Justificativa em caso de rejeição'),
@@ -279,21 +315,27 @@ export const propostasHorarioControllerRejectBody = zod.object({
 export const propostasHorarioControllerRejectResponse = zod.object({
   "id": zod.string().describe('ID único da proposta'),
   "curso": zod.object({
+  "id": zod.string().describe('ID do curso'),
+  "nome": zod.string().describe('Nome do curso'),
+  "codigo": zod.object({
 
+}).optional().describe('Código do curso')
 }).describe('Dados do curso'),
   "periodoLetivo": zod.object({
-
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo'),
+  "dataInicio": zod.string().datetime({}).describe('Data de início do período letivo'),
+  "dataFim": zod.string().datetime({}).describe('Data de fim do período letivo')
 }).describe('Dados do período letivo'),
   "coordenadorQueSubmeteu": zod.object({
-
+  "id": zod.string().describe('ID do coordenador'),
+  "nome": zod.string().describe('Nome do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
 }).describe('Dados do coordenador que submeteu'),
   "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status atual da proposta'),
-  "dataSubmissao": zod.object({
-
-}).optional().describe('Data de submissão da proposta'),
-  "dataAprovacaoRejeicao": zod.object({
-
-}).optional().describe('Data de aprovação ou rejeição'),
+  "dataSubmissao": zod.string().datetime({}).optional().describe('Data de submissão da proposta'),
+  "dataAprovacaoRejeicao": zod.string().datetime({}).optional().describe('Data de aprovação ou rejeição'),
   "justificativaRejeicao": zod.object({
 
 }).optional().describe('Justificativa em caso de rejeição'),
@@ -318,21 +360,27 @@ export const propostasHorarioControllerReopenParams = zod.object({
 export const propostasHorarioControllerReopenResponse = zod.object({
   "id": zod.string().describe('ID único da proposta'),
   "curso": zod.object({
+  "id": zod.string().describe('ID do curso'),
+  "nome": zod.string().describe('Nome do curso'),
+  "codigo": zod.object({
 
+}).optional().describe('Código do curso')
 }).describe('Dados do curso'),
   "periodoLetivo": zod.object({
-
+  "id": zod.string().describe('ID do período letivo'),
+  "ano": zod.number().describe('Ano do período letivo'),
+  "semestre": zod.number().describe('Semestre do período letivo'),
+  "dataInicio": zod.string().datetime({}).describe('Data de início do período letivo'),
+  "dataFim": zod.string().datetime({}).describe('Data de fim do período letivo')
 }).describe('Dados do período letivo'),
   "coordenadorQueSubmeteu": zod.object({
-
+  "id": zod.string().describe('ID do coordenador'),
+  "nome": zod.string().describe('Nome do coordenador'),
+  "email": zod.string().describe('Email do coordenador')
 }).describe('Dados do coordenador que submeteu'),
   "status": zod.enum(['DRAFT', 'PENDENTE_APROVACAO', 'APROVADA', 'REJEITADA']).describe('Status atual da proposta'),
-  "dataSubmissao": zod.object({
-
-}).optional().describe('Data de submissão da proposta'),
-  "dataAprovacaoRejeicao": zod.object({
-
-}).optional().describe('Data de aprovação ou rejeição'),
+  "dataSubmissao": zod.string().datetime({}).optional().describe('Data de submissão da proposta'),
+  "dataAprovacaoRejeicao": zod.string().datetime({}).optional().describe('Data de aprovação ou rejeição'),
   "justificativaRejeicao": zod.object({
 
 }).optional().describe('Justificativa em caso de rejeição'),

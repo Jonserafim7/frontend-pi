@@ -5,12 +5,10 @@
  * Documentação da API para o Sistema de Elaboração de Horário e Atribuição de Disciplinas
  * OpenAPI spec version: 1.0
  */
-import type { PropostaHorarioResponseDtoCurso } from "./proposta-horario-response-dto-curso"
-import type { PropostaHorarioResponseDtoPeriodoLetivo } from "./proposta-horario-response-dto-periodo-letivo"
-import type { PropostaHorarioResponseDtoCoordenadorQueSubmeteu } from "./proposta-horario-response-dto-coordenador-que-submeteu"
+import type { CursoPropostaDto } from "./curso-proposta-dto"
+import type { PeriodoLetivoPropostaDto } from "./periodo-letivo-proposta-dto"
+import type { CoordenadorPropostaDto } from "./coordenador-proposta-dto"
 import type { PropostaHorarioResponseDtoStatus } from "./proposta-horario-response-dto-status"
-import type { PropostaHorarioResponseDtoDataSubmissao } from "./proposta-horario-response-dto-data-submissao"
-import type { PropostaHorarioResponseDtoDataAprovacaoRejeicao } from "./proposta-horario-response-dto-data-aprovacao-rejeicao"
 import type { PropostaHorarioResponseDtoJustificativaRejeicao } from "./proposta-horario-response-dto-justificativa-rejeicao"
 import type { PropostaHorarioResponseDtoObservacoesCoordenador } from "./proposta-horario-response-dto-observacoes-coordenador"
 import type { PropostaHorarioResponseDtoObservacoesDiretor } from "./proposta-horario-response-dto-observacoes-diretor"
@@ -19,17 +17,17 @@ export interface PropostaHorarioResponseDto {
   /** ID único da proposta */
   id: string
   /** Dados do curso */
-  curso: PropostaHorarioResponseDtoCurso
+  curso: CursoPropostaDto
   /** Dados do período letivo */
-  periodoLetivo: PropostaHorarioResponseDtoPeriodoLetivo
+  periodoLetivo: PeriodoLetivoPropostaDto
   /** Dados do coordenador que submeteu */
-  coordenadorQueSubmeteu: PropostaHorarioResponseDtoCoordenadorQueSubmeteu
+  coordenadorQueSubmeteu: CoordenadorPropostaDto
   /** Status atual da proposta */
   status: PropostaHorarioResponseDtoStatus
   /** Data de submissão da proposta */
-  dataSubmissao?: PropostaHorarioResponseDtoDataSubmissao
+  dataSubmissao?: string
   /** Data de aprovação ou rejeição */
-  dataAprovacaoRejeicao?: PropostaHorarioResponseDtoDataAprovacaoRejeicao
+  dataAprovacaoRejeicao?: string
   /** Justificativa em caso de rejeição */
   justificativaRejeicao?: PropostaHorarioResponseDtoJustificativaRejeicao
   /** Observações do coordenador */
