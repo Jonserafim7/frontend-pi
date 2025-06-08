@@ -23,6 +23,7 @@ export function PropostaScheduleCellContainer({
   dia,
   horario,
   propostaId,
+  readonly = false,
 }: PropostaScheduleCellContainerProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false)
   const [lastError, setLastError] = React.useState<string | null>(null)
@@ -104,13 +105,13 @@ export function PropostaScheduleCellContainer({
   }, [dialogOpen])
 
   /**
-   * Abre o dialog para gerenciar alocações (apenas se pode editar)
+   * Abre o dialog para gerenciar alocações (apenas se pode editar e não está readonly)
    */
   const handleAddClick = React.useCallback(() => {
-    if (podeEditarProposta) {
+    if (podeEditarProposta && !readonly) {
       setDialogOpen(true)
     }
-  }, [podeEditarProposta])
+  }, [podeEditarProposta, readonly])
 
   /**
    * Remove uma alocação específica
@@ -177,9 +178,12 @@ export function PropostaScheduleCellContainer({
       <ScheduleCellView
         alocacoes={alocacoesExistentes}
         onAddClick={handleAddClick}
-        onRemoveClick={podeEditarProposta ? handleRemoveClick : undefined}
+        onRemoveClick={
+          podeEditarProposta && !readonly ? handleRemoveClick : undefined
+        }
         isLoading={isLoading}
-        canEdit={podeEditarProposta}
+        canEdit={podeEditarProposta && !readonly}
+        readonly={readonly}
         data-testid={`schedule-cell-${dia}-${horario.inicio.replace(":", "")}`}
       />
 

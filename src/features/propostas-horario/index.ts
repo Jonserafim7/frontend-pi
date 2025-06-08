@@ -113,11 +113,17 @@ export { DiretorPropostasFilters } from "./components/data-table/diretor-propost
 // Components - Dialogs & Forms
 // -----------------------------------------------------------------------------
 export { CreatePropostaDialog } from "./components/create-proposta-dialog"
+export { SubmitPropostaDialog } from "./components/submit-proposta-dialog"
+export {
+  ApprovePropostaDialog,
+  RejectPropostaDialog,
+} from "./components/approve-reject-dialogs"
 
 // -----------------------------------------------------------------------------
 // Components - UI Elements
 // -----------------------------------------------------------------------------
 export { PropostaStatusBadge } from "./components/proposta-status-badge"
+export { PropostaPermissionsIndicator } from "./components/proposta-permissions-indicator"
 
 // -----------------------------------------------------------------------------
 // Pages

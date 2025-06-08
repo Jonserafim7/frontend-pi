@@ -6,14 +6,25 @@ import {
   Calendar,
   Clock,
   User,
+  Send,
+  RotateCcw,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useParams, useNavigate } from "react-router"
-import { usePropostaHorario } from "../hooks/use-propostas-horario"
+import {
+  usePropostaHorario,
+  useReopenProposta,
+} from "../hooks/use-propostas-horario"
 import { PropostaStatusBadge } from "../components/proposta-status-badge"
 import { PropostaScheduleGrid } from "../components/alocacao-turmas-horarios/proposta-schedule-grid"
+import { PropostaPermissionsIndicator } from "../components/proposta-permissions-indicator"
+import { SubmitPropostaDialog } from "../components/submit-proposta-dialog"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Eye, Lock, CheckCircle, XCircle } from "lucide-react"
+import { canEditProposta, type PropostaStatus } from "../types/proposta-types"
 
 /**
  * Página de detalhes/edição de uma proposta de horário
@@ -24,22 +35,27 @@ export function PropostaDetailsPage() {
   const navigate = useNavigate()
 
   const { data: proposta, isLoading, error } = usePropostaHorario(id!)
+  const reopenPropostaMutation = useReopenProposta()
 
   const handleBack = () => {
     navigate("/coordenador/propostas-horario")
+  }
+
+  const handleReopen = async () => {
+    if (!proposta) return
+
+    try {
+      await reopenPropostaMutation.mutateAsync({ id: proposta.id })
+      // Os dados serão atualizados automaticamente via React Query
+    } catch (error) {
+      console.error("Erro ao reabrir proposta:", error)
+    }
   }
 
   if (error) {
     return (
       <div className="container mx-auto space-y-8 p-12">
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
           <HeaderIconContainer Icon={CalendarDays} />
           <div className="flex flex-col gap-1">
             <h1 className="text-2xl font-bold">Erro</h1>
@@ -48,6 +64,18 @@ export function PropostaDetailsPage() {
             </p>
           </div>
         </div>
+
+        <div className="flex justify-start">
+          <Button
+            variant="outline"
+            onClick={handleBack}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar à Lista
+          </Button>
+        </div>
+
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-8">
             <p className="text-destructive">
@@ -64,18 +92,19 @@ export function PropostaDetailsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
           <HeaderIconContainer Icon={CalendarDays} />
           <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-bold">
-              {isLoading ? "Carregando..." : "Detalhes da Proposta"}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold">
+                {isLoading ? "Carregando..." : "Detalhes da Proposta"}
+              </h1>
+              {proposta && (
+                <PropostaStatusBadge
+                  status={proposta.status}
+                  showDescription={false}
+                />
+              )}
+            </div>
             {proposta && (
               <p className="text-muted-foreground">
                 {proposta.curso.nome} - {proposta.periodoLetivo.ano}/
@@ -84,7 +113,60 @@ export function PropostaDetailsPage() {
             )}
           </div>
         </div>
+
+        {/* Indicadores de Permissões no Header */}
+        {proposta && (
+          <PropostaPermissionsIndicator
+            status={proposta.status}
+            userRole="coordenador" // TODO: Obter do contexto de auth
+          />
+        )}
       </div>
+
+      {/* Botões de Ação - Task 4.4, 4.8, 4.9 */}
+      {proposta && (
+        <div className="flex items-center justify-between">
+          {/* Botão Voltar */}
+          <Button
+            variant="outline"
+            onClick={handleBack}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar à Lista
+          </Button>
+
+          {/* Botões Condicionais baseados no Status */}
+          <div className="flex gap-3">
+            {/* Botão Submeter - Task 4.4 */}
+            {proposta.status === "DRAFT" && (
+              <SubmitPropostaDialog
+                propostaId={proposta.id}
+                quantidadeAlocacoes={proposta.quantidadeAlocacoes || 0}
+              >
+                <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+                  <Send className="h-4 w-4" />
+                  Submeter Proposta
+                </Button>
+              </SubmitPropostaDialog>
+            )}
+
+            {/* Botão Reabrir - Task 4.8 */}
+            {proposta.status === "REJEITADA" && (
+              <Button
+                onClick={handleReopen}
+                disabled={reopenPropostaMutation.isPending}
+                className="gap-2 bg-orange-600 hover:bg-orange-700"
+              >
+                <RotateCcw className="h-4 w-4" />
+                {reopenPropostaMutation.isPending ?
+                  "Reabrindo..."
+                : "Reabrir para Edição"}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Cards de Informações */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -329,8 +411,87 @@ export function PropostaDetailsPage() {
         </Card>
       </div>
 
+      {/* Indicador Visual de Modo Read-only e Justificativa - Task 4.6, 4.7 */}
+      {proposta && proposta.status !== "DRAFT" && (
+        <div className="space-y-4">
+          <Alert className="border-muted-foreground/30">
+            <div className="flex items-center gap-2">
+              {proposta.status === "APROVADA" ?
+                <>
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <Eye className="h-4 w-4" />
+                </>
+              : proposta.status === "REJEITADA" ?
+                <>
+                  <XCircle className="h-4 w-4 text-red-600" />
+                  <Eye className="h-4 w-4" />
+                </>
+              : <>
+                  <Lock className="h-4 w-4 text-yellow-600" />
+                  <Eye className="h-4 w-4" />
+                </>
+              }
+            </div>
+            <AlertDescription className="ml-8">
+              {proposta.status === "APROVADA" && (
+                <span>
+                  <strong>Proposta Aprovada:</strong> Esta grade de horários foi
+                  oficialmente aprovada e está em modo de visualização apenas.
+                  Nenhuma alteração pode ser feita.
+                </span>
+              )}
+              {proposta.status === "REJEITADA" && (
+                <span>
+                  <strong>Proposta Rejeitada:</strong> Esta proposta foi rejeitada
+                  pela direção e está em modo de visualização. Use o botão
+                  "Reabrir para Edição" para criar uma nova versão.
+                </span>
+              )}
+              {proposta.status === "PENDENTE_APROVACAO" && (
+                <span>
+                  <strong>Aguardando Aprovação:</strong> Esta proposta está sendo
+                  analisada pela direção e não pode ser modificada neste momento.
+                </span>
+              )}
+            </AlertDescription>
+          </Alert>
+
+          {/* Alert de Justificativa de Rejeição - Task 4.7 */}
+          {proposta.status === "REJEITADA" && proposta.justificativaRejeicao && (
+            <Alert className="border-red-200 bg-red-50">
+              <XCircle className="h-4 w-4 text-red-600" />
+              <AlertDescription className="ml-6">
+                <div className="space-y-2">
+                  <p className="font-semibold text-red-800">
+                    Motivo da Rejeição:
+                  </p>
+                  <p className="rounded bg-red-100 p-3 text-sm text-red-700">
+                    {String(proposta.justificativaRejeicao)}
+                  </p>
+                  {proposta.observacoesDiretor && (
+                    <>
+                      <p className="mt-3 font-semibold text-red-800">
+                        Observações do Diretor:
+                      </p>
+                      <p className="rounded bg-red-100 p-3 text-sm text-red-700">
+                        {String(proposta.observacoesDiretor)}
+                      </p>
+                    </>
+                  )}
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+      )}
+
       {/* Grade de Horários da Proposta */}
-      {proposta && <PropostaScheduleGrid propostaId={proposta.id} />}
+      {proposta && (
+        <PropostaScheduleGrid
+          propostaId={proposta.id}
+          readonly={proposta.status !== "DRAFT"}
+        />
+      )}
     </div>
   )
 }

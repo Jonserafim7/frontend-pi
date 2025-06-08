@@ -24,6 +24,7 @@ export function PropostaTurnoSection({
   inicio,
   fim,
   propostaId,
+  readonly = false,
 }: PropostaTurnoSectionProps) {
   return (
     <div>
@@ -78,6 +79,7 @@ export function PropostaTurnoSection({
                     dia={dia.key}
                     horario={aula}
                     propostaId={propostaId}
+                    readonly={readonly}
                   />
                 )
               })}

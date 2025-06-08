@@ -26,6 +26,10 @@ interface ScheduleCellViewProps {
    */
   canEdit?: boolean
   /**
+   * Se a célula está em modo visualização apenas (readonly)
+   */
+  readonly?: boolean
+  /**
    * Data test id para testes automatizados
    */
   "data-testid"?: string
@@ -49,6 +53,7 @@ export function ScheduleCellView({
   onRemoveClick,
   isLoading = false,
   canEdit = true,
+  readonly = false,
   "data-testid": dataTestId,
 }: ScheduleCellViewProps) {
   const hasAlocacoes = alocacoes.length > 0
@@ -83,10 +88,10 @@ export function ScheduleCellView({
               <AllocationCard
                 key={alocacao.id}
                 alocacao={alocacao}
-                onRemove={canEdit ? onRemoveClick : undefined}
+                onRemove={canEdit && !readonly ? onRemoveClick : undefined}
                 isLoading={isLoading}
-                showRemoveButton={canEdit}
-                readonly={!canEdit}
+                showRemoveButton={canEdit && !readonly}
+                readonly={!canEdit || readonly}
                 size="normal"
                 hideTeacherWhenCrowded={true}
                 totalAllocations={numAlocacoes}
@@ -105,7 +110,7 @@ export function ScheduleCellView({
         </div>
 
         {/* Botão + fixo na parte inferior */}
-        {canEdit && (
+        {canEdit && !readonly && (
           <div className="border-muted/20 border-t p-0.5 sm:p-1">
             <AddAllocationButton
               onClick={onAddClick}
@@ -123,8 +128,8 @@ export function ScheduleCellView({
           </div>
         )}
 
-        {/* Mostrar botão em modo readonly se não pode editar */}
-        {!canEdit && (
+        {/* Mostrar botão em modo readonly se não pode editar ou está readonly */}
+        {(!canEdit || readonly) && (
           <div className="border-muted/20 border-t p-0.5 sm:p-1">
             <AddAllocationButton
               onClick={() => {}} // Noop
@@ -132,7 +137,11 @@ export function ScheduleCellView({
               state="readonly"
               size={getButtonSize()}
               tooltip="Visualização somente leitura"
-              disabledReason="Você não tem permissão para editar esta proposta"
+              disabledReason={
+                readonly ?
+                  "Esta proposta está em modo de visualização apenas"
+                : "Você não tem permissão para editar esta proposta"
+              }
               data-testid={
                 dataTestId ?
                   `${dataTestId}-readonly-btn`

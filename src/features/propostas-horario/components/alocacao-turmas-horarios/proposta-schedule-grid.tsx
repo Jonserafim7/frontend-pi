@@ -4,7 +4,7 @@ import type { PropostaScheduleGridProps } from "../../types/proposta-allocation-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, Eye, Edit } from "lucide-react"
 import { PropostaTurnoSection } from "./proposta-turno-section"
 
 /**
@@ -14,6 +14,7 @@ import { PropostaTurnoSection } from "./proposta-turno-section"
 export function PropostaScheduleGrid({
   propostaId,
   className,
+  readonly = false,
 }: PropostaScheduleGridProps) {
   const {
     data: configuracao,
@@ -107,6 +108,24 @@ export function PropostaScheduleGrid({
                 {alocacoes.length} alocação{alocacoes.length !== 1 ? "ões" : ""}
               </Badge>
             )}
+            {readonly && (
+              <Badge
+                variant="outline"
+                className="text-muted-foreground gap-1 text-xs"
+              >
+                <Eye className="h-3 w-3" />
+                Visualização
+              </Badge>
+            )}
+            {!readonly && (
+              <Badge
+                variant="outline"
+                className="gap-1 text-xs text-blue-600"
+              >
+                <Edit className="h-3 w-3" />
+                Editável
+              </Badge>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -117,6 +136,7 @@ export function PropostaScheduleGrid({
             inicio={configuracao.inicioTurnoManha}
             fim={configuracao.fimTurnoManhaCalculado}
             propostaId={propostaId}
+            readonly={readonly}
           />
 
           {/* Turno da Tarde */}
@@ -126,6 +146,7 @@ export function PropostaScheduleGrid({
             inicio={configuracao.inicioTurnoTarde}
             fim={configuracao.fimTurnoTardeCalculado}
             propostaId={propostaId}
+            readonly={readonly}
           />
 
           {/* Turno da Noite */}
@@ -135,6 +156,7 @@ export function PropostaScheduleGrid({
             inicio={configuracao.inicioTurnoNoite}
             fim={configuracao.fimTurnoNoiteCalculado}
             propostaId={propostaId}
+            readonly={readonly}
           />
         </CardContent>
       </Card>
