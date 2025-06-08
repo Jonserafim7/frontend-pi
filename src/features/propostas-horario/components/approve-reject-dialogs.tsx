@@ -27,6 +27,7 @@ import {
   useRejectProposta,
 } from "../hooks/use-propostas-horario"
 import { toast } from "sonner"
+import { Badge } from "@/components/ui/badge"
 
 // Schemas de validação
 const approvePropostaSchema = z.object({
@@ -93,8 +94,10 @@ export function ApprovePropostaDialog({
       setOpen(false)
       form.reset()
       onSuccess?.()
+      toast.success("Proposta aprovada com sucesso")
     } catch (error) {
       console.error("Erro ao aprovar proposta:", error)
+      toast.error("Erro ao aprovar proposta")
     }
   }
 
@@ -163,11 +166,13 @@ export function ApprovePropostaDialog({
             {/* Aviso sobre mudança de status */}
             <Alert>
               <AlertDescription className="text-sm">
-                Esta ação é <strong>irreversível</strong>. A proposta ficará com
-                status{" "}
-                <span className="text-accent-foreground font-semibold">
+                Esta ação é irreversível. A proposta ficará com status{" "}
+                <Badge
+                  variant="outline"
+                  className="text-accent-foreground"
+                >
                   APROVADA
-                </span>{" "}
+                </Badge>{" "}
                 e não poderá mais ser modificada.
               </AlertDescription>
             </Alert>
@@ -236,6 +241,7 @@ export function RejectPropostaDialog({
       onSuccess?.()
     } catch (error) {
       console.error("Erro ao rejeitar proposta:", error)
+      toast.error("Erro ao rejeitar proposta")
     }
   }
 
