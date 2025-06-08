@@ -37,7 +37,10 @@ import {
   createPropostaFormSchema,
   type CreatePropostaFormData,
 } from "../schemas/proposta-schemas"
-import { useCreateProposta } from "../hooks/use-propostas-horario"
+import {
+  useCreateProposta,
+  usePropostasHorarioList,
+} from "../hooks/use-propostas-horario"
 import { useAuth } from "@/features/auth/contexts/auth-context"
 
 interface CreatePropostaDialogProps {
@@ -65,6 +68,9 @@ export function CreatePropostaDialog({
   const { data: periodosLetivos = [], isLoading: isLoadingPeriodos } =
     usePeriodosLetivosControllerFindAll()
 
+  const { data: propostas = [], isLoading: isLoadingPropostas } =
+    usePropostasHorarioList()
+
   // Configuração do formulário
   const form = useForm<CreatePropostaFormData>({
     resolver: zodResolver(createPropostaFormSchema),
@@ -82,8 +88,38 @@ export function CreatePropostaDialog({
     }
   }, [isOpen, form])
 
+  // Função para verificar se já existe proposta para a combinação curso + período
+  const verificarPropostaDuplicada = (
+    idCurso: string,
+    idPeriodoLetivo: string,
+  ) => {
+    return propostas.find(
+      (proposta) =>
+        proposta.curso.id === idCurso &&
+        proposta.periodoLetivo.id === idPeriodoLetivo &&
+        (proposta.status === "DRAFT" || proposta.status === "PENDENTE_APROVACAO"),
+    )
+  }
+
   // Função para lidar com o envio do formulário
   const onSubmit = async (data: CreatePropostaFormData) => {
+    // Verificar se já existe proposta para esta combinação
+    const propostaExistente = verificarPropostaDuplicada(
+      data.idCurso,
+      data.idPeriodoLetivo,
+    )
+
+    if (propostaExistente) {
+      const statusText =
+        propostaExistente.status === "DRAFT" ?
+          "em elaboração"
+        : "pendente de aprovação"
+      toast.error(
+        `Já existe uma proposta ${statusText} para este curso e período letivo.`,
+      )
+      return
+    }
+
     createProposta(
       { data },
       {
@@ -202,21 +238,41 @@ export function CreatePropostaDialog({
                         >
                           Nenhum curso disponível para sua coordenação
                         </SelectItem>
-                      : cursosOrdenados.map((curso) => (
-                          <SelectItem
-                            key={curso.id}
-                            value={curso.id}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{curso.nome}</span>
-                              {curso.codigo && (
-                                <span className="text-muted-foreground text-xs">
-                                  {curso.codigo}
-                                </span>
-                              )}
-                            </div>
-                          </SelectItem>
-                        ))
+                      : cursosOrdenados.map((curso) => {
+                          const periodoSelecionado = form.watch("idPeriodoLetivo")
+                          const temPropostaExistente =
+                            periodoSelecionado &&
+                            verificarPropostaDuplicada(
+                              curso.id,
+                              periodoSelecionado,
+                            )
+
+                          return (
+                            <SelectItem
+                              key={curso.id}
+                              value={curso.id}
+                              disabled={!!temPropostaExistente}
+                            >
+                              <div className="flex w-full items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">
+                                    {curso.nome}
+                                  </span>
+                                  {curso.codigo && (
+                                    <span className="text-muted-foreground text-xs">
+                                      {curso.codigo}
+                                    </span>
+                                  )}
+                                </div>
+                                {temPropostaExistente && (
+                                  <span className="text-xs font-medium text-amber-600">
+                                    Proposta existente
+                                  </span>
+                                )}
+                              </div>
+                            </SelectItem>
+                          )
+                        })
                       }
                     </SelectContent>
                   </Select>
@@ -284,10 +340,19 @@ export function CreatePropostaDialog({
                             statusColor = "text-green-600"
                           }
 
+                          const cursoSelecionado = form.watch("idCurso")
+                          const temPropostaExistente =
+                            cursoSelecionado &&
+                            verificarPropostaDuplicada(
+                              cursoSelecionado,
+                              periodo.id,
+                            )
+
                           return (
                             <SelectItem
                               key={periodo.id}
                               value={periodo.id}
+                              disabled={!!temPropostaExistente}
                             >
                               <div className="flex w-full items-center justify-between gap-4">
                                 <div className="flex flex-col">
@@ -304,13 +369,20 @@ export function CreatePropostaDialog({
                                     )}
                                   </span>
                                 </div>
-                                {statusIndicator && (
-                                  <span
-                                    className={`text-xs font-medium ${statusColor}`}
-                                  >
-                                    {statusIndicator}
-                                  </span>
-                                )}
+                                <div className="flex flex-col items-end gap-1">
+                                  {statusIndicator && (
+                                    <span
+                                      className={`text-xs font-medium ${statusColor}`}
+                                    >
+                                      {statusIndicator}
+                                    </span>
+                                  )}
+                                  {temPropostaExistente && (
+                                    <span className="text-xs font-medium text-amber-600">
+                                      Proposta existente
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </SelectItem>
                           )
@@ -363,12 +435,17 @@ export function CreatePropostaDialog({
               </Button>
               <Button
                 type="submit"
-                disabled={isCreating}
+                disabled={isCreating || isLoadingPropostas}
               >
                 {isCreating ?
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Criando...
+                  </>
+                : isLoadingPropostas ?
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Verificando...
                   </>
                 : <>
                     <CalendarDays className="mr-2 h-4 w-4" />
