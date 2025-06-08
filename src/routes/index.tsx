@@ -29,6 +29,8 @@ import {
   PropostasListPage,
   CreatePropostaPage,
   PropostaDetailsPage,
+  DiretorPropostasListPage,
+  DiretorPropostaDetailsPage,
 } from "@/features/propostas-horario/pages"
 
 // Placeholders genéricos para cada tipo de usuário
@@ -119,6 +121,24 @@ export function AppRoutes() {
                 </RequireAuth>
               }
             />
+            <Route path="propostas-horario">
+              <Route
+                index
+                element={
+                  <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
+                    <DiretorPropostasListPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path=":id"
+                element={
+                  <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.DIRETOR]}>
+                    <DiretorPropostaDetailsPage />
+                  </RequireAuth>
+                }
+              />
+            </Route>
           </Route>
 
           <Route path="/coordenador">
