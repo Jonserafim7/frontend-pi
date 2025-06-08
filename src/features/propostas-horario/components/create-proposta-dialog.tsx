@@ -38,6 +38,7 @@ import {
   type CreatePropostaFormData,
 } from "../schemas/proposta-schemas"
 import { useCreateProposta } from "../hooks/use-propostas-horario"
+import { useAuth } from "@/features/auth/contexts/auth-context"
 
 interface CreatePropostaDialogProps {
   isOpen: boolean
@@ -53,6 +54,7 @@ export function CreatePropostaDialog({
   onOpenChange,
 }: CreatePropostaDialogProps) {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   // Hooks da API
   const { mutate: createProposta, isPending: isCreating } = useCreateProposta()
@@ -105,8 +107,19 @@ export function CreatePropostaDialog({
     (periodo) => periodo.status === "ATIVO",
   )
 
-  // Ordena cursos por nome
-  const cursosOrdenados = [...cursos].sort((a, b) => a.nome.localeCompare(b.nome))
+  // Filtra cursos para mostrar apenas aqueles em que o coordenador logado é responsável
+  const cursosDisponiveis = cursos.filter((curso) => {
+    // Se não há coordenador principal definido, não mostrar o curso
+    if (!curso.coordenadorPrincipal) return false
+
+    // Verificar se o coordenador logado é o coordenador principal do curso
+    return curso.coordenadorPrincipal.id === user?.id
+  })
+
+  // Ordena cursos disponíveis por nome
+  const cursosOrdenados = [...cursosDisponiveis].sort((a, b) =>
+    a.nome.localeCompare(b.nome),
+  )
 
   // Ordena períodos por ano e semestre (mais recentes primeiro)
   const periodosOrdenados = [...periodosAtivos].sort((a, b) => {
@@ -171,7 +184,7 @@ export function CreatePropostaDialog({
                           value=""
                           disabled
                         >
-                          Nenhum curso encontrado
+                          Nenhum curso disponível para sua coordenação
                         </SelectItem>
                       : cursosOrdenados.map((curso) => (
                           <SelectItem
@@ -192,8 +205,7 @@ export function CreatePropostaDialog({
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Selecione o curso para o qual deseja criar a proposta de
-                    horário.
+                    Apenas cursos sob sua coordenação são exibidos.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
