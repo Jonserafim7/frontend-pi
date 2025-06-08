@@ -1,4 +1,4 @@
-import { ScheduleGrid } from "../components/schedule-grid"
+import { ScheduleGrid } from "../components/alocacao-turmas-horarios/schedule-grid"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { CalendarDays } from "lucide-react"
 

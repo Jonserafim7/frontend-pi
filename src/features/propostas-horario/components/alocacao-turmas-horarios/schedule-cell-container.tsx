@@ -4,7 +4,7 @@ import * as React from "react"
 import { toast } from "sonner"
 import { ScheduleCellView } from "./schedule-cell-view"
 import { ScheduleAllocationDialog } from "./schedule-allocation-dialog"
-import { useScheduleAllocation } from "../hooks/use-schedule-allocation"
+import { useScheduleAllocation } from "../../hooks/use-schedule-allocation"
 import type { ScheduleCellProps } from "./schedule-grid-types"
 
 /**

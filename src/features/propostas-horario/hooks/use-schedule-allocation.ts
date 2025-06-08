@@ -13,7 +13,7 @@ import type {
   AlocacaoHorarioResponseDto,
   TurmaResponseDto,
 } from "@/api-generated/model"
-import type { DiaSemanaKey } from "../components/schedule-grid-types"
+import type { DiaSemanaKey } from "../components/alocacao-turmas-horarios/schedule-grid-types"
 
 /**
  * Hook customizado para gerenciar alocações de horários com validações completas.
