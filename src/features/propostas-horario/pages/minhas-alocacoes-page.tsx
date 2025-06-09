@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { AlertCircle, Filter, RotateCcw, Search } from "lucide-react"
+import { AlertCircle, BookOpen, Filter, RotateCcw, Search } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,12 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { HeaderIconContainer } from "@/components/icon-container"
 import {
   useMinhasAlocacoes,
   useAlocacoesStats,
 } from "../hooks/use-minhas-alocacoes"
 import { AlocacaoCard } from "../components/alocacao-card"
 import { AlocacoesStatsComponent } from "../components/alocacoes-stats"
+import { AlocacoesPorDia } from "../components/alocacoes-por-dia"
 import type { AlocacaoHorarioResponseDto } from "@/api-generated/model"
 
 /**
@@ -60,24 +62,6 @@ export function MinhasAlocacoesPage() {
     return passaFiltroTexto && passaFiltroDia
   })
 
-  // Agrupar alocações por dia da semana para melhor organização
-  const alocacoesPorDia = alocacoesFiltradas.reduce(
-    (acc, alocacao) => {
-      const dia = alocacao.diaDaSemana
-      if (!acc[dia]) {
-        acc[dia] = []
-      }
-      acc[dia].push(alocacao)
-      return acc
-    },
-    {} as Record<string, AlocacaoHorarioResponseDto[]>,
-  )
-
-  // Ordenar alocações dentro de cada dia por horário
-  Object.keys(alocacoesPorDia).forEach((dia) => {
-    alocacoesPorDia[dia].sort((a, b) => a.horaInicio.localeCompare(b.horaInicio))
-  })
-
   // Limpar filtros
   const limparFiltros = () => {
     setFiltroTexto("")
@@ -86,7 +70,7 @@ export function MinhasAlocacoesPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto p-12">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -106,13 +90,16 @@ export function MinhasAlocacoesPage() {
   }
 
   return (
-    <div className="container mx-auto space-y-8 px-4 py-8">
-      {/* Cabeçalho */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Minhas Alocações</h1>
-        <p className="text-muted-foreground">
-          Visualize todas as suas aulas e horários alocados
-        </p>
+    <div className="container mx-auto flex flex-col gap-8 p-12">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <HeaderIconContainer Icon={BookOpen} />
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-bold">Minhas Alocações</h1>
+          <p className="text-muted-foreground">
+            Visualize todas as suas aulas e horários alocados
+          </p>
+        </div>
       </div>
 
       {/* Estatísticas */}
@@ -196,23 +183,10 @@ export function MinhasAlocacoesPage() {
                 </Button>
               : null}
             </div>
-          : <div className="space-y-8">
-              {/* Grid de alocações */}
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {alocacoesFiltradas.map((alocacao) => (
-                  <AlocacaoCard
-                    key={alocacao.id}
-                    alocacao={alocacao}
-                  />
-                ))}
-              </div>
-
-              {/* Resumo dos resultados */}
-              <div className="text-muted-foreground text-center text-sm">
-                Exibindo {alocacoesFiltradas.length} de {alocacoes.length}{" "}
-                alocações
-              </div>
-            </div>
+          : <AlocacoesPorDia
+              alocacoes={alocacoesFiltradas}
+              isLoading={isLoading}
+            />
           }
         </>
       )}

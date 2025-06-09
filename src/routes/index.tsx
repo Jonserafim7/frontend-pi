@@ -14,6 +14,7 @@ import { CoursesListPage } from "@/features/courses/pages/courses-list-page"
 import { ConfiguracoesHorarioPage } from "@/features/configuracoes-horario/pages/configuracoes-horario-page"
 import { DashboardDiretor } from "@/features/configuracoes-horario/pages/dashboard-diretor"
 import { DiretorHelpPage } from "@/features/ajuda/pages/diretor-help-page"
+import { CoordenadorHelpPage } from "@/features/ajuda/pages/coordenador-help-page"
 import { MatrizesCurricularesListPage } from "@/features/matrizes-curriculares/pages/matrizes-curriculares-list-page"
 import { MatrizCurricularDetailsPage } from "@/features/matrizes-curriculares/pages/matriz-curricular-details-page"
 import { DisciplinasListPage } from "@/features/disciplinas/pages/disciplinas-list-page"
@@ -21,6 +22,8 @@ import { DisciplinasOfertadasListPage } from "@/features/disciplinas-ofertadas/p
 import { PeriodosLetivosListPage } from "@/features/periodos-letivos/pages/periodos-letivos-list-page"
 import { ProfessorDisponibilidadePage } from "@/features/disponibilidade-professores/pages"
 import { MinhasAlocacoesPage } from "@/features/propostas-horario/pages/minhas-alocacoes-page"
+import { ProfessorDashboard } from "@/features/professor/pages/professor-dashboard"
+import { CoordenadorDashboard } from "@/features/coordenador/pages"
 import { TurmasListPage } from "@/features/turmas/pages/turmas-list-page"
 import {
   PropostasListPage,
@@ -29,10 +32,6 @@ import {
   DiretorPropostasListPage,
   DiretorPropostaDetailsPage,
 } from "@/features/propostas-horario"
-
-// Placeholders genéricos para cada tipo de usuário
-const CoordenadorDashboard = () => <div>Dashboard do Coordenador (em breve)</div>
-const ProfessorDashboard = () => <div>Dashboard do Professor (em breve)</div>
 
 /**
  * Main application routes configuration
@@ -241,6 +240,14 @@ export function AppRoutes() {
                 }
               />
             </Route>
+            <Route
+              path="ajuda"
+              element={
+                <RequireAuth allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}>
+                  <CoordenadorHelpPage />
+                </RequireAuth>
+              }
+            />
           </Route>
 
           <Route path="/professor">
