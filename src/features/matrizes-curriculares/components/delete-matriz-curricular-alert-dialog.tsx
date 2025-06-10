@@ -61,10 +61,9 @@ export function DeleteMatrizCurricularAlertDialog({
           })
           onOpenChange(false)
         },
-        onError: (error) => {
+        onError: (error: any) => {
           const errorMessage =
-            error?.message ||
-            "A matriz curricular pode estar em uso por outras entidades do sistema."
+            error?.response?.data?.message || "Erro ao excluir matriz curricular"
           toast.error(errorMessage)
         },
       },

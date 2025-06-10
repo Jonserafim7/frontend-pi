@@ -130,7 +130,7 @@ export function PropostaScheduleCellContainer({
         let errorMessage = "Erro desconhecido ao remover alocação"
 
         if (error instanceof Error) {
-          errorMessage = error.message
+          errorMessage = (error as any)?.response?.data?.message || error.message
         } else if (typeof error === "string") {
           errorMessage = error
         }
@@ -160,7 +160,7 @@ export function PropostaScheduleCellContainer({
         let errorMessage = "Erro desconhecido ao alocar turma"
 
         if (error instanceof Error) {
-          errorMessage = error.message
+          errorMessage = (error as any)?.response?.data?.message || error.message
         } else if (typeof error === "string") {
           errorMessage = error
         }

@@ -50,10 +50,10 @@ export function DeleteDisciplinaAlertDialog({
             queryKey: getDisciplinasControllerFindAllQueryKey(),
           })
         },
-        onError: () => {
-          setConfirmationText("")
-          onOpenChange(false)
-          toast.error("Erro ao remover a disciplina")
+        onError: (error: any) => {
+          toast.error(
+            error?.response?.data?.message || "Erro ao remover disciplina",
+          )
         },
       },
     )

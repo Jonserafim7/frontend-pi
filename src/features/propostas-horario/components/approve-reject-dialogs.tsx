@@ -83,22 +83,27 @@ export function ApprovePropostaDialog({
   })
 
   const handleSubmit = async (data: ApprovePropostaFormData) => {
-    try {
-      await approvePropostaMutation.mutateAsync({
+    approvePropostaMutation.mutate(
+      {
         id: propostaId,
         data: {
           observacoesDiretor: data.observacoesDiretor || undefined,
         },
-      })
-
-      setOpen(false)
-      form.reset()
-      onSuccess?.()
-      toast.success("Proposta aprovada com sucesso")
-    } catch (error) {
-      console.error("Erro ao aprovar proposta:", error)
-      toast.error("Erro ao aprovar proposta")
-    }
+      },
+      {
+        onSuccess: () => {
+          setOpen(false)
+          form.reset()
+          onSuccess?.()
+          toast.success("Proposta aprovada com sucesso")
+        },
+        onError: (error: any) => {
+          toast.error(
+            error?.response?.data?.message || "Erro ao aprovar proposta",
+          )
+        },
+      },
+    )
   }
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -227,22 +232,27 @@ export function RejectPropostaDialog({
   })
 
   const handleSubmit = async (data: RejectPropostaFormData) => {
-    try {
-      await rejectPropostaMutation.mutateAsync({
+    rejectPropostaMutation.mutate(
+      {
         id: propostaId,
         data: {
           justificativaRejeicao: data.justificativaRejeicao,
           observacoesDiretor: data.observacoesDiretor || undefined,
         },
-      })
-
-      setOpen(false)
-      form.reset()
-      onSuccess?.()
-    } catch (error) {
-      console.error("Erro ao rejeitar proposta:", error)
-      toast.error("Erro ao rejeitar proposta")
-    }
+      },
+      {
+        onSuccess: () => {
+          setOpen(false)
+          form.reset()
+          onSuccess?.()
+        },
+        onError: (error: any) => {
+          toast.error(
+            error?.response?.data?.message || "Erro ao rejeitar proposta",
+          )
+        },
+      },
+    )
   }
 
   const handleOpenChange = (newOpen: boolean) => {

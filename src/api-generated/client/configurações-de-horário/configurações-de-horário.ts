@@ -183,6 +183,7 @@ export function useConfiguracoesHorarioControllerGet<
 }
 
 /**
+ * Para criação inicial, valores padrão serão utilizados para campos não fornecidos: duração (50min), aulas por turno (4), manhã (07:30), tarde (13:30), noite (19:00)
  * @summary Cria ou atualiza a configuração de horário global
  */
 export const configuracoesHorarioControllerUpsert = (

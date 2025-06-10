@@ -65,11 +65,10 @@ export function DeleteDisciplinaOfertadaAlertDialog({
               getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey(),
           })
         },
-        onError: () => {
-          setConfirmationText("")
-          onOpenChange(false)
+        onError: (error: any) => {
           toast.error(
-            "Não foi possível remover a disciplina ofertada. Verifique se ela não possui turmas associadas.",
+            error?.response?.data?.message ||
+              "Erro ao remover disciplina ofertada",
           )
         },
       },

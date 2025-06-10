@@ -108,10 +108,9 @@ export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
           })
           setIsEditing(false)
         },
-        onError: (error: AxiosError) => {
+        onError: (error: any) => {
           toast.error(
-            error.request.message ||
-              "Ocorreu um erro ao atualizar o horário de início",
+            error?.response?.data?.message || "Erro ao atualizar configurações",
           )
         },
       },

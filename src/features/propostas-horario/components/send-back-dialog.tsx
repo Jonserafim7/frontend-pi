@@ -64,21 +64,26 @@ export function SendBackDialog({
   })
 
   const handleSubmit = async (data: SendBackPropostaFormData) => {
-    try {
-      await sendBackPropostaMutation.mutateAsync({
+    sendBackPropostaMutation.mutate(
+      {
         id: propostaId,
         data: {
           motivoDevolucao: data.motivoDevolucao,
         },
-      })
-
-      setOpen(false)
-      form.reset()
-      onSuccess?.()
-    } catch (error) {
-      console.error("Erro ao devolver proposta:", error)
-      toast.error("Erro ao devolver proposta")
-    }
+      },
+      {
+        onSuccess: () => {
+          setOpen(false)
+          form.reset()
+          onSuccess?.()
+        },
+        onError: (error: any) => {
+          toast.error(
+            error?.response?.data?.message || "Erro ao devolver proposta",
+          )
+        },
+      },
+    )
   }
 
   const handleOpenChange = (newOpen: boolean) => {

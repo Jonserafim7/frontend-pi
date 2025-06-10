@@ -14,6 +14,7 @@ export interface UpdateDisciplinaOfertadaDto {
   /**
    * Quantidade de turmas para esta disciplina ofertada
    * @minimum 1
+   * @maximum 10
    */
   quantidadeTurmas?: number
 }

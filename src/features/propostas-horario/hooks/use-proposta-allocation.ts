@@ -378,7 +378,9 @@ export function usePropostaAllocation({
         return result
       } catch (error) {
         console.error("❌ [usePropostaAllocation] Erro ao criar alocação:", error)
-        toast.error("Erro ao criar alocação")
+        toast.error(
+          (error as any)?.response?.data?.message || "Erro ao criar alocação",
+        )
         throw error
       }
     },
@@ -442,7 +444,9 @@ export function usePropostaAllocation({
           "❌ [usePropostaAllocation] Erro ao remover alocação:",
           error,
         )
-        toast.error("Erro ao remover alocação")
+        toast.error(
+          (error as any)?.response?.data?.message || "Erro ao remover alocação",
+        )
         throw error
       }
     },

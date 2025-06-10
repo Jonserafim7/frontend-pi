@@ -58,10 +58,9 @@ export function DeleteTurmaAlertDialog({
           setConfirmationText("")
           onOpenChange(false)
         },
-        onError: (error) => {
+        onError: (error: any) => {
           const errorMessage =
-            error?.message ||
-            "A turma pode estar em uso por outras entidades do sistema."
+            error?.response?.data?.message || "Erro ao excluir turma"
           toast.error(errorMessage)
         },
       },

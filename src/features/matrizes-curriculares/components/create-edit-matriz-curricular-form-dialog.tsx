@@ -143,8 +143,11 @@ export function CreateEditMatrizCurricularFormDialog({
             onOpenChange(false)
             form.reset()
           },
-          onError: (error) => {
-            toast.error(error?.message || "Erro ao atualizar matriz curricular")
+          onError: (error: any) => {
+            toast.error(
+              error?.response?.data?.message ||
+                "Erro ao atualizar matriz curricular",
+            )
           },
         },
       )
@@ -169,8 +172,10 @@ export function CreateEditMatrizCurricularFormDialog({
             onOpenChange(false)
             form.reset()
           },
-          onError: (error) => {
-            toast.error(error?.message || "Erro ao criar matriz curricular")
+          onError: (error: any) => {
+            toast.error(
+              error?.response?.data?.message || "Erro ao criar matriz curricular",
+            )
           },
         },
       )

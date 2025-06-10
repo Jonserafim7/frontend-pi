@@ -16,6 +16,7 @@ export interface DisciplinaOfertadaResponseDto {
   /**
    * Quantidade de turmas para esta disciplina ofertada
    * @minimum 1
+   * @maximum 10
    */
   quantidadeTurmas: number
   /** ID da oferta da disciplina (UUID) */

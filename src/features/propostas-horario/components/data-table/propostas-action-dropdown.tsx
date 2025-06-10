@@ -50,15 +50,20 @@ export function PropostasActionDropdown({
     navigate(`/coordenador/propostas-horario/${proposta.id}`)
   }
 
-  const handleReopen = async () => {
-    try {
-      await reopenPropostaMutation.mutateAsync({ id: proposta.id })
-      toast.success("Proposta reaberta para edição!")
-      // A navegação não é necessária pois a página será atualizada pelo React Query
-    } catch (error) {
-      console.error("Erro ao reabrir proposta:", error)
-      // O erro já é tratado pelo hook, mas podemos adicionar log adicional se necessário
-    }
+  const handleReopen = () => {
+    reopenPropostaMutation.mutate(
+      { id: proposta.id },
+      {
+        onSuccess: () => {
+          toast.success("Proposta reaberta para edição!")
+        },
+        onError: (error: any) => {
+          toast.error(
+            error?.response?.data?.message || "Erro ao reabrir proposta",
+          )
+        },
+      },
+    )
   }
 
   // Verificar permissões baseadas no status

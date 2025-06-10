@@ -30,7 +30,12 @@ export function PeriodosLetivosDataTable() {
 
   if (error) {
     // TODO: Implementar um componente de Erro mais elegante
-    return <p>Erro ao carregar períodos letivos: {error.message}</p>
+    return (
+      <p>
+        Erro ao carregar períodos letivos:{" "}
+        {(error as any)?.response?.data?.message || "Erro desconhecido"}
+      </p>
+    )
   }
 
   return (

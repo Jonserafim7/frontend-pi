@@ -47,10 +47,8 @@ export function DeleteUserAlertDialog({
             queryKey: getUsuariosControllerFindAllQueryKey(),
           })
         },
-        onError: () => {
-          setConfirmationText("")
-          onOpenChange(false)
-          toast.error("Erro ao remover o usuário.")
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || "Erro ao remover usuário")
         },
       },
     )

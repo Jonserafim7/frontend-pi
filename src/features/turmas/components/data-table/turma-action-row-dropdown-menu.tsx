@@ -56,8 +56,10 @@ export function TurmaActionRowDropdownMenu({
             queryKey: getTurmasControllerFindAllQueryKey(),
           })
         },
-        onError: (error) => {
-          toast.error(error?.message || "Ocorreu um erro ao remover o professor.")
+        onError: (error: any) => {
+          toast.error(
+            error?.response?.data?.message || "Erro ao remover professor",
+          )
         },
       },
     )

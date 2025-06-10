@@ -326,8 +326,9 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
               console.error("❌ CREATE ERROR:", error)
               console.error("Error response:", error.response?.data)
               console.error("Error status:", error.response?.status)
-              toast.error(error?.message || "Ocorreu um erro inesperado")
-              reject(error)
+              toast.error(
+                error?.response?.data?.message || "Erro ao criar disponibilidade",
+              )
             },
           })
         })
@@ -375,8 +376,10 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
             onError: (error: any) => {
               console.error("❌ UPDATE ERROR:", error)
               console.error("Error response:", error.response?.data)
-              toast.error(error?.message || "Ocorreu um erro inesperado")
-              reject(error)
+              toast.error(
+                error?.response?.data?.message ||
+                  "Erro ao atualizar disponibilidade",
+              )
             },
           })
         })
@@ -413,7 +416,10 @@ export const GridTurno: React.FC<GridTurnoProps> = ({
             onError: (error: any) => {
               console.error("❌ DELETE ERROR:", error)
               console.error("Error response:", error.response?.data)
-              toast.error(error?.message || "Ocorreu um erro inesperado")
+              toast.error(
+                error?.response?.data?.message ||
+                  "Erro ao remover disponibilidade",
+              )
             },
           })
         })

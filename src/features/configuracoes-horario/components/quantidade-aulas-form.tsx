@@ -70,8 +70,10 @@ export function QuantidadeAulasForm() {
           })
           setIsEditing(false)
         },
-        onError: (error: AxiosError) => {
-          toast.error(error.request.message || "Erro ao atualizar configurações")
+        onError: (error: any) => {
+          toast.error(
+            error?.response?.data?.message || "Erro ao atualizar configurações",
+          )
         },
       },
     )

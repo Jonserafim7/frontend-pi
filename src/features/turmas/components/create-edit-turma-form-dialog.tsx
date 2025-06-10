@@ -130,8 +130,10 @@ export function CreateEditTurmaFormDialog({
             })
             onOpenChange(false)
           },
-          onError: (error) => {
-            toast.error(error?.message || "Ocorreu um erro ao atualizar a turma.")
+          onError: (error: any) => {
+            toast.error(
+              error?.response?.data?.message || "Erro ao atualizar turma",
+            )
           },
         },
       )
@@ -152,8 +154,8 @@ export function CreateEditTurmaFormDialog({
             })
             onOpenChange(false)
           },
-          onError: (error) => {
-            toast.error(error?.message || "Ocorreu um erro ao criar a turma.")
+          onError: (error: any) => {
+            toast.error(error?.response?.data?.message || "Erro ao criar turma")
           },
         },
       )

@@ -174,9 +174,9 @@ export function CreateEditUserFormDialog({
               queryKey: getUsuariosControllerFindAllQueryKey(),
             })
           },
-          onError: (error: AxiosError) => {
+          onError: (error: any) => {
             const errorMessage =
-              error?.request.response || "Ocorreu um erro ao atualizar o usuário"
+              error?.response?.data?.message || "Erro ao atualizar usuário"
             toast.error(errorMessage)
           },
         },
@@ -197,9 +197,9 @@ export function CreateEditUserFormDialog({
               queryKey: getUsuariosControllerFindAllQueryKey(),
             })
           },
-          onError: (error: AxiosError) => {
+          onError: (error: any) => {
             const errorMessage =
-              error?.request.response || "Ocorreu um erro ao criar o usuário"
+              error?.response?.data?.message || "Erro ao criar usuário"
             toast.error(errorMessage)
           },
         },

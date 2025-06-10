@@ -123,10 +123,9 @@ export function CreateEditDisciplinaFormDialog({
             })
             onOpenChange(false)
           },
-          onError: (error: AxiosError) => {
+          onError: (error: any) => {
             toast.error(
-              error.request.message ||
-                "Ocorreu um erro ao atualizar a disciplina.",
+              error?.response?.data?.message || "Erro ao atualizar disciplina",
             )
           },
         },
@@ -145,9 +144,9 @@ export function CreateEditDisciplinaFormDialog({
             })
             onOpenChange(false)
           },
-          onError: (error: AxiosError) => {
+          onError: (error: any) => {
             toast.error(
-              error.request.response || "Ocorreu um erro ao criar a disciplina.",
+              error?.response?.data?.message || "Erro ao criar disciplina",
             )
           },
         },

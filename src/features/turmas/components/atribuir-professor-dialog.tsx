@@ -107,9 +107,9 @@ export function AtribuirProfessorDialog({
           onOpenChange(false)
           onSuccess?.()
         },
-        onError: (error) => {
+        onError: (error: any) => {
           toast.error(
-            error?.message || "Ocorreu um erro ao atribuir o professor.",
+            error?.response?.data?.message || "Erro ao atribuir professor",
           )
         },
       },

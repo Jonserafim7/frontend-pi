@@ -17,6 +17,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
@@ -83,6 +84,12 @@ export function EditDisciplinaOfertadaDialog({
 
   // Função para lidar com o envio do formulário
   const onSubmit = async (data: EditDisciplinaOfertadaFormValues) => {
+    // Garantia extra: validar limite no envio
+    if (data.quantidadeTurmas && data.quantidadeTurmas > 10) {
+      toast.error("Máximo de 10 turmas por disciplina ofertada")
+      return
+    }
+
     mutateUpdate(
       {
         id: disciplinaOfertada.id,
@@ -104,10 +111,10 @@ export function EditDisciplinaOfertadaDialog({
           ])
           onOpenChange(false)
         },
-        onError: (error: AxiosError) => {
+        onError: (error: any) => {
           toast.error(
-            error.message ||
-              "Ocorreu um erro ao atualizar a disciplina ofertada.",
+            error?.response?.data?.message ||
+              "Erro ao atualizar disciplina ofertada",
           )
         },
       },
@@ -173,10 +180,18 @@ export function EditDisciplinaOfertadaDialog({
                       max={10}
                       placeholder="1"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        const value = Number(e.target.value) || 1
+                        // Limitar o valor entre 1 e 10
+                        const limitedValue = Math.min(Math.max(value, 1), 10)
+                        field.onChange(limitedValue)
+                      }}
                       disabled={isLoading}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Máximo de 10 turmas por disciplina ofertada
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -193,7 +208,7 @@ export function EditDisciplinaOfertadaDialog({
                       variant="outline"
                       className="text-xs"
                     >
-                      Turma {String.fromCharCode(65 + index)}
+                      T{index + 1}
                     </Badge>
                   ))}
                 </div>

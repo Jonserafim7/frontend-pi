@@ -159,14 +159,9 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
             onSuccess()
             onOpenChange(false)
           },
-          onError: (error: AxiosError) => {
+          onError: (error: any) => {
             const errorMessage =
-              (
-                error.response?.data as { message?: string | string[] }
-              )?.message?.toString() ||
-              error.message ||
-              "Erro ao criar período letivo"
-            console.error("Erro ao criar período letivo:", error)
+              error?.response?.data?.message || "Erro ao criar período letivo"
             toast.error(errorMessage)
           },
         },
@@ -187,14 +182,9 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
             onSuccess()
             onOpenChange(false)
           },
-          onError: (error: AxiosError) => {
+          onError: (error: any) => {
             const errorMessage =
-              (
-                error.response?.data as { message?: string | string[] }
-              )?.message?.toString() ||
-              error.message ||
-              "Erro ao atualizar período letivo"
-            console.error("Erro ao atualizar período letivo (onError):", error)
+              error?.response?.data?.message || "Erro ao atualizar período letivo"
             toast.error(errorMessage)
           },
         },

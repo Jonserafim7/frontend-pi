@@ -141,9 +141,9 @@ export function CreateEditCourseFormDialog({
             })
             onOpenChange(false)
           },
-          onError: (error: AxiosError) => {
+          onError: (error: any) => {
             const errorMessage =
-              error?.request.response || "Ocorreu um erro ao atualizar o curso"
+              error?.response?.data?.message || "Erro ao atualizar curso"
             toast.error(errorMessage)
           },
         },
@@ -160,9 +160,9 @@ export function CreateEditCourseFormDialog({
             })
             onOpenChange(false)
           },
-          onError: (error: AxiosError) => {
+          onError: (error: any) => {
             const errorMessage =
-              error?.request.response || "Ocorreu um erro ao criar o curso"
+              error?.response?.data?.message || "Erro ao criar curso"
             toast.error(errorMessage)
           },
         },

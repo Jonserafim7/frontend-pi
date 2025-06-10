@@ -52,9 +52,9 @@ export function DeletePeriodoLetivoAlertDialog({
           onOpenChange(false)
           setConfirmationText("")
         },
-        onError: (error) => {
+        onError: (error: any) => {
           const errorMessage =
-            error?.message || "Ocorreu um erro ao excluir o período letivo"
+            error?.response?.data?.message || "Erro ao excluir período letivo"
           toast.error(errorMessage)
         },
       },

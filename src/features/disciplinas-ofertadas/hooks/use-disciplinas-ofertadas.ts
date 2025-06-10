@@ -24,8 +24,10 @@ export function useCreateDisciplinaOfertada() {
           queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
         })
       },
-      onError: (error) => {
-        toast.error(error.message || "Ocorreu um erro inesperado.")
+      onError: (error: any) => {
+        toast.error(
+          error?.response?.data?.message || "Erro ao criar disciplina ofertada",
+        )
       },
     },
   })
@@ -45,8 +47,11 @@ export function useUpdateDisciplinaOfertada() {
           queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
         })
       },
-      onError: (error) => {
-        toast.error(error.message || "Ocorreu um erro inesperado.")
+      onError: (error: any) => {
+        toast.error(
+          error?.response?.data?.message ||
+            "Erro ao atualizar disciplina ofertada",
+        )
       },
     },
   })
@@ -66,8 +71,10 @@ export function useDeleteDisciplinaOfertada() {
           queryKey: getDisciplinasOfertadasControllerFindAllQueryKey(),
         })
       },
-      onError: (error) => {
-        toast.error(error.message || "Ocorreu um erro inesperado.")
+      onError: (error: any) => {
+        toast.error(
+          error?.response?.data?.message || "Erro ao remover disciplina ofertada",
+        )
       },
     },
   })

@@ -59,18 +59,10 @@ export const ChangeStatusPeriodoLetivoDialog: React.FC<
           })
           onOpenChange(false)
         },
-        onError: (error: AxiosError) => {
+        onError: (error: any) => {
           const errorMessage =
-            (
-              error.response?.data as { message?: string | string[] }
-            )?.message?.toString() ||
-            error.message ||
-            `Erro ao ${isActivating ? "ativar" : "desativar"} período letivo`
-
-          console.error(
-            `Erro ao ${isActivating ? "ativar" : "desativar"} período letivo:`,
-            error,
-          )
+            error?.response?.data?.message ||
+            "Erro ao alterar status do período letivo"
           toast.error(errorMessage)
         },
       },

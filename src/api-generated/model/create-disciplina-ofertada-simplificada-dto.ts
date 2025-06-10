@@ -12,6 +12,7 @@ export interface CreateDisciplinaOfertadaSimplificadaDto {
   /**
    * Quantidade de turmas para esta disciplina
    * @minimum 1
+   * @maximum 10
    */
   quantidadeTurmas: number
 }

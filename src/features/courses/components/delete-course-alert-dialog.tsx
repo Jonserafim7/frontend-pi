@@ -52,9 +52,9 @@ export function DeleteCourseAlertDialog({
           })
           onOpenChange(false)
         },
-        onError: (error) => {
+        onError: (error: any) => {
           const errorMessage =
-            error?.message || "Ocorreu um erro ao excluir o curso"
+            error?.response?.data?.message || "Erro ao excluir curso"
           toast.error(errorMessage)
         },
       },

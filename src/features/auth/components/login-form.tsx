@@ -50,10 +50,11 @@ export function LoginForm(): React.ReactElement {
       setSubmitError(null)
       await login(values.email, values.senha)
     } catch (error) {
-      setSubmitError(
-        "Ocorreu um erro ao fazer login. Por favor, tente novamente.",
-      )
-      console.error("Login submission error:", error)
+      const errorMessage =
+        (error as any)?.response?.data?.message ||
+        "Ocorreu um erro ao fazer login. Por favor, tente novamente."
+      setSubmitError(errorMessage)
+      console.error("Erro ao submeter login:", error)
     }
   }
 

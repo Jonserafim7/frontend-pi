@@ -13,10 +13,13 @@ import {
 /**
  * @summary Criar uma nova oferta de disciplina (Admin, Diretor, Coordenador)
  */
+export const disciplinasOfertadasControllerCreateBodyQuantidadeTurmasMax = 10;
+
+
 export const disciplinasOfertadasControllerCreateBody = zod.object({
   "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
   "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
-  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada')
+  "quantidadeTurmas": zod.number().min(1).max(disciplinasOfertadasControllerCreateBodyQuantidadeTurmasMax).describe('Quantidade de turmas para esta disciplina ofertada')
 })
 
 /**
@@ -27,10 +30,13 @@ export const disciplinasOfertadasControllerFindAllQueryParams = zod.object({
   "cursoId": zod.string().optional().describe('ID do curso para filtrar (UUID)')
 })
 
+export const disciplinasOfertadasControllerFindAllResponseQuantidadeTurmasMax = 10;
+
+
 export const disciplinasOfertadasControllerFindAllResponseItem = zod.object({
   "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
   "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
-  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "quantidadeTurmas": zod.number().min(1).max(disciplinasOfertadasControllerFindAllResponseQuantidadeTurmasMax).describe('Quantidade de turmas para esta disciplina ofertada'),
   "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
   "disciplina": zod.object({
   "id": zod.string().describe('ID único da disciplina'),
@@ -58,9 +64,12 @@ export const disciplinasOfertadasControllerFindAllResponse = zod.array(disciplin
 /**
  * @summary Criar oferta de disciplina no período letivo ativo (Coordenador)
  */
+export const disciplinasOfertadasControllerCreateComPeriodoAtivoBodyQuantidadeTurmasMax = 10;
+
+
 export const disciplinasOfertadasControllerCreateComPeriodoAtivoBody = zod.object({
   "idDisciplina": zod.string().describe('ID da disciplina a ser ofertada'),
-  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina')
+  "quantidadeTurmas": zod.number().min(1).max(disciplinasOfertadasControllerCreateComPeriodoAtivoBodyQuantidadeTurmasMax).describe('Quantidade de turmas para esta disciplina')
 })
 
 /**
@@ -70,10 +79,13 @@ export const disciplinasOfertadasControllerFindOneParams = zod.object({
   "id": zod.string().describe('ID da oferta da disciplina (UUID)')
 })
 
+export const disciplinasOfertadasControllerFindOneResponseQuantidadeTurmasMax = 10;
+
+
 export const disciplinasOfertadasControllerFindOneResponse = zod.object({
   "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
   "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
-  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "quantidadeTurmas": zod.number().min(1).max(disciplinasOfertadasControllerFindOneResponseQuantidadeTurmasMax).describe('Quantidade de turmas para esta disciplina ofertada'),
   "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
   "disciplina": zod.object({
   "id": zod.string().describe('ID único da disciplina'),
@@ -104,16 +116,22 @@ export const disciplinasOfertadasControllerUpdateParams = zod.object({
   "id": zod.string().describe('ID da oferta da disciplina (UUID)')
 })
 
+export const disciplinasOfertadasControllerUpdateBodyQuantidadeTurmasMax = 10;
+
+
 export const disciplinasOfertadasControllerUpdateBody = zod.object({
   "idDisciplina": zod.string().optional().describe('ID da disciplina que será ofertada (UUID)'),
   "idPeriodoLetivo": zod.string().optional().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
-  "quantidadeTurmas": zod.number().min(1).optional().describe('Quantidade de turmas para esta disciplina ofertada')
+  "quantidadeTurmas": zod.number().min(1).max(disciplinasOfertadasControllerUpdateBodyQuantidadeTurmasMax).optional().describe('Quantidade de turmas para esta disciplina ofertada')
 })
+
+export const disciplinasOfertadasControllerUpdateResponseQuantidadeTurmasMax = 10;
+
 
 export const disciplinasOfertadasControllerUpdateResponse = zod.object({
   "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
   "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
-  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "quantidadeTurmas": zod.number().min(1).max(disciplinasOfertadasControllerUpdateResponseQuantidadeTurmasMax).describe('Quantidade de turmas para esta disciplina ofertada'),
   "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
   "disciplina": zod.object({
   "id": zod.string().describe('ID único da disciplina'),
@@ -147,10 +165,13 @@ export const disciplinasOfertadasControllerRemoveParams = zod.object({
 /**
  * @summary Listar disciplinas ofertadas dos cursos do coordenador (Coordenador)
  */
+export const disciplinasOfertadasControllerFindOfertasDoCoordenadorResponseQuantidadeTurmasMax = 10;
+
+
 export const disciplinasOfertadasControllerFindOfertasDoCoordenadorResponseItem = zod.object({
   "idDisciplina": zod.string().describe('ID da disciplina que será ofertada (UUID)'),
   "idPeriodoLetivo": zod.string().describe('ID do período letivo em que a disciplina será ofertada (UUID)'),
-  "quantidadeTurmas": zod.number().min(1).describe('Quantidade de turmas para esta disciplina ofertada'),
+  "quantidadeTurmas": zod.number().min(1).max(disciplinasOfertadasControllerFindOfertasDoCoordenadorResponseQuantidadeTurmasMax).describe('Quantidade de turmas para esta disciplina ofertada'),
   "id": zod.string().describe('ID da oferta da disciplina (UUID)'),
   "disciplina": zod.object({
   "id": zod.string().describe('ID único da disciplina'),

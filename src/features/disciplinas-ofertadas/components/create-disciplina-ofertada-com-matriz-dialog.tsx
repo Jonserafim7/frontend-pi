@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { HeaderIconContainer } from "@/components/icon-container"
-import { BookOpenCheck, Calendar, PenSquare } from "lucide-react"
+import { Calendar } from "lucide-react"
 import {
   Form,
   FormControl,
@@ -18,6 +18,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
@@ -28,15 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { useMatrizesCurricularesControllerFindMatrizesDoCoordenador } from "@/api-generated/client/matrizes-curriculares/matrizes-curriculares"
 import { usePeriodosLetivosControllerFindPeriodoAtivo } from "@/api-generated/client/períodos-letivos/períodos-letivos"
 import { useDisciplinasOfertadasControllerCreateComPeriodoAtivo } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
@@ -52,9 +45,12 @@ const createDisciplinaOfertadaSchema = z.object({
   idMatriz: z.string().min(1, "Selecione uma matriz curricular"),
   idDisciplina: z.string().min(1, "Selecione uma disciplina"),
   quantidadeTurmas: z
-    .number()
+    .number({
+      required_error: "Quantidade de turmas é obrigatória",
+      invalid_type_error: "Deve ser um número válido",
+    })
     .min(1, "Quantidade de turmas deve ser pelo menos 1")
-    .max(10, "Quantidade de turmas não pode exceder 10"),
+    .max(10, "Máximo de 10 turmas por disciplina ofertada"),
 })
 
 type CreateDisciplinaOfertadaFormValues = z.infer<
@@ -143,6 +139,12 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
 
   // Função para lidar com o envio do formulário
   const onSubmit = async (data: CreateDisciplinaOfertadaFormValues) => {
+    // Garantia extra: validar limite no envio
+    if (data.quantidadeTurmas > 10) {
+      toast.error("Máximo de 10 turmas por disciplina ofertada")
+      return
+    }
+
     criarDisciplinaOfertada(
       {
         data: {
@@ -169,7 +171,7 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
         },
         onError: (error: any) => {
           toast.error(
-            error.response?.data?.message || "Ocorreu um erro inesperado.",
+            error?.response?.data?.message || "Erro ao criar disciplina ofertada",
           )
         },
       },
@@ -190,8 +192,8 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
             <div>
               <DialogTitle>Nova Oferta de Disciplina</DialogTitle>
               <DialogDescription>
-                Selecione uma matriz curricular e depois escolha a disciplina para
-                ofertar no período letivo ativo.
+                Selecione uma matriz curricular e disciplina para ofertar no
+                período letivo ativo.
               </DialogDescription>
             </div>
           </div>
@@ -199,33 +201,26 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
 
         {/* Informações do Período Letivo Ativo */}
         {periodoAtivo && (
-          <Card className="border-green-200 bg-green-50">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-green-800">
-                <Calendar className="h-4 w-4" />
-                Período Letivo Ativo
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-green-700">
-                <strong>
-                  {periodoAtivo.ano}/{periodoAtivo.semestre}
-                </strong>
-                {periodoAtivo.dataFim && (
-                  <span className="ml-2 text-sm">
-                    (até{" "}
-                    {new Date(periodoAtivo.dataFim).toLocaleDateString("pt-BR")})
-                  </span>
-                )}
-              </p>
-            </CardContent>
-          </Card>
+          <div className="flex items-center gap-2 rounded-md border border-green-200 bg-green-50 p-3">
+            <Calendar className="h-4 w-4 text-green-600" />
+            <div>
+              <span className="text-sm font-medium text-green-800">
+                Período Ativo: {periodoAtivo.ano}/{periodoAtivo.semestre}º
+                Semestre
+              </span>
+              {periodoAtivo.dataFim && (
+                <p className="text-xs text-green-600">
+                  até {new Date(periodoAtivo.dataFim).toLocaleDateString("pt-BR")}
+                </p>
+              )}
+            </div>
+          </div>
         )}
 
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6"
+            className="space-y-4"
           >
             {/* Seleção de Matriz Curricular */}
             <FormField
@@ -268,24 +263,6 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
               )}
             />
 
-            {/* Informações da Matriz Selecionada */}
-            {matrizSelecionada && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpenCheck className="h-4 w-4" />
-                    {matrizSelecionada.nome}
-                  </CardTitle>
-                  <CardDescription>
-                    {matrizSelecionada.nomeCurso} •{" "}
-                    {disciplinasDisponiveis.length} disciplinas disponíveis
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            )}
-
-            <Separator />
-
             {/* Seleção de Disciplina */}
             <FormField
               control={form.control}
@@ -306,6 +283,8 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
                           placeholder={
                             !matrizSelecionada ?
                               "Selecione uma matriz curricular primeiro"
+                            : disciplinasDisponiveis.length === 0 ?
+                              "Nenhuma disciplina disponível"
                             : "Selecione uma disciplina"
                           }
                         />
@@ -334,23 +313,6 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
               )}
             />
 
-            {/* Informações da Disciplina Selecionada */}
-            {disciplinaSelecionada && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <PenSquare className="h-4 w-4" />
-                    {disciplinaSelecionada.nome}
-                  </CardTitle>
-                  <CardDescription>
-                    {disciplinaSelecionada.codigo &&
-                      `${disciplinaSelecionada.codigo} • `}
-                    {disciplinaSelecionada.cargaHoraria} horas
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            )}
-
             {/* Quantidade de Turmas */}
             <FormField
               control={form.control}
@@ -364,11 +326,17 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
                       min={1}
                       max={10}
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(parseInt(e.target.value) || 1)
-                      }
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 1
+                        // Limitar o valor entre 1 e 10
+                        const limitedValue = Math.min(Math.max(value, 1), 10)
+                        field.onChange(limitedValue)
+                      }}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Máximo de 10 turmas por disciplina ofertada
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -376,39 +344,27 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
 
             {/* Preview das Turmas */}
             {quantidadeTurmasWatch > 0 && disciplinaSelecionada && (
-              <Card className="border-blue-200 bg-blue-50">
-                <CardHeader>
-                  <CardTitle className="text-blue-800">
-                    Preview da Oferta
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-blue-700">
-                    Serão criadas <strong>{quantidadeTurmasWatch}</strong>{" "}
-                    turma(s) para a disciplina{" "}
-                    <strong>{disciplinaSelecionada.nome}</strong> no período{" "}
-                    <strong>
-                      {periodoAtivo?.ano}/{periodoAtivo?.semestre}
-                    </strong>
-                    .
-                  </p>
-                  <div className="mt-2 flex gap-1">
-                    {Array.from({ length: quantidadeTurmasWatch }, (_, i) => (
-                      <Badge
-                        key={i}
-                        variant="outline"
-                        className="border-blue-300 text-blue-700"
-                      >
-                        Turma {String.fromCharCode(65 + i)}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="rounded-md border p-3">
+                <h4 className="mb-2 text-sm font-medium">
+                  {quantidadeTurmasWatch} turma(s) para{" "}
+                  {disciplinaSelecionada.nome}
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {Array.from({ length: quantidadeTurmasWatch }, (_, i) => (
+                    <Badge
+                      key={i}
+                      variant="outline"
+                      className="text-xs"
+                    >
+                      T{i + 1}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Botões */}
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 pt-2">
               <Button
                 type="button"
                 variant="outline"

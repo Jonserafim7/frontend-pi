@@ -47,22 +47,22 @@ interface AuthContextType {
 }
 
 /**
- * Props for AuthProvider component
+ * Props para o componente AuthProvider
  */
 interface AuthProviderProps {
   children: ReactNode
 }
 
-// Storage keys for persisting auth state
+// Chaves de armazenamento para persistir estado de autenticação
 export const AUTH_TOKEN_KEY = "auth-token"
 export const AUTH_USER_KEY = "auth-user"
 
-// Create auth context
+// Criar contexto de autenticação
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 /**
- * Authentication provider component
- * Manages authentication state and provides login/logout functionality
+ * Componente provedor de autenticação
+ * Gerencia estado de autenticação e fornece funcionalidades de login/logout
  */
 export const AuthProvider = ({
   children,
@@ -74,7 +74,7 @@ export const AuthProvider = ({
   const signInMutation = useAuthControllerSignIn()
   const navigate = useNavigate()
 
-  // Check for existing authentication on component mount
+  // Verificar autenticação existente na montagem do componente
   useEffect(() => {
     const loadStoredAuth = (): void => {
       try {
@@ -86,8 +86,8 @@ export const AuthProvider = ({
           setUser(JSON.parse(storedUser))
         }
       } catch (error) {
-        console.error("Error loading authentication data:", error)
-        // Clear invalid storage data
+        console.error("Erro ao carregar dados de autenticação:", error)
+        // Limpar dados de armazenamento inválidos
         localStorage.removeItem(AUTH_TOKEN_KEY)
         localStorage.removeItem(AUTH_USER_KEY)
       } finally {
@@ -99,7 +99,7 @@ export const AuthProvider = ({
   }, [])
 
   /**
-   * Authenticates user with email and password
+   * Autentica usuário com email e senha
    */
   const login = useCallback(
     async (email: string, password: string): Promise<void> => {
@@ -112,7 +112,7 @@ export const AuthProvider = ({
 
         const { accessToken: token, usuario } = response
 
-        // Store auth data in localStorage
+        // Armazenar dados de autenticação no localStorage
         localStorage.setItem(AUTH_TOKEN_KEY, token)
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(usuario))
 
@@ -121,8 +121,11 @@ export const AuthProvider = ({
 
         navigate("/")
       } catch (error) {
-        console.error("Login error:", error)
-        setError("Invalid credentials. Please try again.")
+        console.error("Erro de login:", error)
+        const errorMessage =
+          (error as any)?.response?.data?.message ||
+          "Credenciais inválidas. Verifique suas informações e tente novamente."
+        setError(errorMessage)
       } finally {
         setIsLoading(false)
       }
@@ -131,21 +134,21 @@ export const AuthProvider = ({
   )
 
   /**
-   * Logs out the user by clearing auth state and storage
+   * Faz logout do usuário limpando estado de autenticação e armazenamento
    */
   const logout = useCallback((): void => {
-    // Clear storage
+    // Limpar armazenamento
     localStorage.removeItem(AUTH_TOKEN_KEY)
     localStorage.removeItem(AUTH_USER_KEY)
 
-    // Reset state
+    // Resetar estado
     setAccessToken(null)
     setUser(null)
 
-    //clear react query cache
+    // Limpar cache do react query
     queryClient.clear()
 
-    // Redirect to login page
+    // Redirecionar para página de login
     navigate("/login")
   }, [navigate])
 
@@ -225,13 +228,13 @@ export const AuthProvider = ({
 }
 
 /**
- * Custom hook to access the authentication context
- * Must be used within an AuthProvider
+ * Hook customizado para acessar o contexto de autenticação
+ * Deve ser usado dentro de um AuthProvider
  */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext)
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error("useAuth deve ser usado dentro de um AuthProvider")
   }
   return context
 }
