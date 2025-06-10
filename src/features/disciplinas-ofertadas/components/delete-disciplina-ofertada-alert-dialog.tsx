@@ -99,9 +99,10 @@ export function DeleteDisciplinaOfertadaAlertDialog({
             oferta de <strong>{disciplinaDisplay}</strong> do período{" "}
             <strong>{periodoDisplay}</strong> e remover seus dados do servidor.
             {disciplinaOfertada.quantidadeTurmas > 0 && (
-              <span className="text-destructive mt-2 block">
-                Atenção: Esta oferta possui {disciplinaOfertada.quantidadeTurmas}{" "}
-                turma(s) associada(s) que também serão excluídas.
+              <span className="mt-2 block text-amber-600">
+                ℹ️ Esta oferta está configurada para{" "}
+                {disciplinaOfertada.quantidadeTurmas} turma(s). Caso existam
+                turmas criadas manualmente, elas também serão excluídas.
               </span>
             )}
           </AlertDialogDescription>

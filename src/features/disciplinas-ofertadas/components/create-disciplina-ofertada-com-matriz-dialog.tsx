@@ -37,7 +37,7 @@ import type { MatrizCurricularResponseDto } from "@/api-generated/model/matriz-c
 import type { DisciplinaResponseDto } from "@/api-generated/model/disciplina-response-dto"
 import { useQueryClient } from "@tanstack/react-query"
 import { getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
-import { getTurmasControllerFindAllQueryKey } from "@/api-generated/client/turmas/turmas"
+
 import { toast } from "sonner"
 
 // Schema de validação
@@ -156,16 +156,11 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
         onSuccess: () => {
           toast.success("Disciplina ofertada criada")
 
-          // Invalida as queries para atualizar os dados
-          Promise.all([
-            queryClient.invalidateQueries({
-              queryKey:
-                getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey(),
-            }),
-            queryClient.invalidateQueries({
-              queryKey: getTurmasControllerFindAllQueryKey(),
-            }),
-          ])
+          // Invalida apenas as queries de disciplinas ofertadas
+          queryClient.invalidateQueries({
+            queryKey:
+              getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey(),
+          })
 
           onOpenChange(false)
         },
@@ -335,31 +330,27 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
                     />
                   </FormControl>
                   <FormDescription>
-                    Máximo de 10 turmas por disciplina ofertada
+                    Quantidade máxima de turmas que podem ser criadas para esta
+                    disciplina (as turmas devem ser criadas manualmente após
+                    salvar)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Preview das Turmas */}
+            {/* Informação sobre criação manual */}
             {quantidadeTurmasWatch > 0 && disciplinaSelecionada && (
-              <div className="rounded-md border p-3">
-                <h4 className="mb-2 text-sm font-medium">
-                  {quantidadeTurmasWatch} turma(s) para{" "}
-                  {disciplinaSelecionada.nome}
+              <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
+                <h4 className="mb-1 text-sm font-medium text-blue-800">
+                  📋 Próximo passo
                 </h4>
-                <div className="flex flex-wrap gap-1">
-                  {Array.from({ length: quantidadeTurmasWatch }, (_, i) => (
-                    <Badge
-                      key={i}
-                      variant="outline"
-                      className="text-xs"
-                    >
-                      T{i + 1}
-                    </Badge>
-                  ))}
-                </div>
+                <p className="text-sm text-blue-700">
+                  Após criar esta oferta, você poderá criar manualmente{" "}
+                  <strong>{quantidadeTurmasWatch} turma(s)</strong> para{" "}
+                  <strong>{disciplinaSelecionada.nome}</strong> na página de
+                  Turmas.
+                </p>
               </div>
             )}
 

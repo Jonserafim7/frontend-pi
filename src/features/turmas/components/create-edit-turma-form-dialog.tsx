@@ -14,6 +14,7 @@ import { GraduationCap, PenSquare, Loader2 } from "lucide-react"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -179,7 +180,8 @@ export function CreateEditTurmaFormDialog({
             <DialogDescription>
               {isEditing ?
                 "Edite os dados da turma existente."
-              : "Preencha os campos para criar uma nova turma."}
+              : "Crie uma turma para uma disciplina ofertada. Você tem controle total sobre o código da turma."
+              }
             </DialogDescription>
           </div>
         </DialogHeader>
@@ -210,25 +212,37 @@ export function CreateEditTurmaFormDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {disciplinasOfertadas?.map((disciplinaOfertada) => (
-                          <SelectItem
-                            key={disciplinaOfertada.id}
-                            value={disciplinaOfertada.id}
-                          >
-                            <div className="flex flex-col">
-                              <span className="font-medium">
-                                {disciplinaOfertada.disciplina.nome}
-                              </span>
-                              <span className="text-muted-foreground text-sm">
-                                {disciplinaOfertada.periodoLetivo.ano}/
-                                {disciplinaOfertada.periodoLetivo.semestre}º
-                                semestre
-                                {disciplinaOfertada.disciplina.codigo &&
-                                  ` • ${disciplinaOfertada.disciplina.codigo}`}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
+                        {(
+                          !disciplinasOfertadas ||
+                          disciplinasOfertadas.length === 0
+                        ) ?
+                          <div className="text-muted-foreground p-4 text-center text-sm">
+                            Nenhuma disciplina ofertada encontrada.
+                            <br />
+                            <span className="text-xs">
+                              Crie disciplinas ofertadas primeiro.
+                            </span>
+                          </div>
+                        : disciplinasOfertadas.map((disciplinaOfertada) => (
+                            <SelectItem
+                              key={disciplinaOfertada.id}
+                              value={disciplinaOfertada.id}
+                            >
+                              <div className="flex flex-col">
+                                <span className="font-medium">
+                                  {disciplinaOfertada.disciplina.nome}
+                                </span>
+                                <span className="text-muted-foreground text-sm">
+                                  {disciplinaOfertada.periodoLetivo.ano}/
+                                  {disciplinaOfertada.periodoLetivo.semestre}º
+                                  semestre
+                                  {disciplinaOfertada.disciplina.codigo &&
+                                    ` • ${disciplinaOfertada.disciplina.codigo}`}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))
+                        }
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -244,10 +258,13 @@ export function CreateEditTurmaFormDialog({
                     <FormLabel>Código da Turma</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Ex: T1, T2, A, B"
+                        placeholder="Ex: T1, T2, A, B, Manhã, Noite"
                         {...field}
                       />
                     </FormControl>
+                    <FormDescription>
+                      Código único para identificar a turma
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -264,7 +281,11 @@ export function CreateEditTurmaFormDialog({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={form.formState.isSubmitting}
+                  disabled={
+                    form.formState.isSubmitting ||
+                    !disciplinasOfertadas ||
+                    disciplinasOfertadas.length === 0
+                  }
                 >
                   {form.formState.isSubmitting ?
                     <>
@@ -273,7 +294,7 @@ export function CreateEditTurmaFormDialog({
                     </>
                   : isEditing ?
                     "Salvar"
-                  : "Criar"}
+                  : "Criar Turma"}
                 </Button>
               </div>
             </form>

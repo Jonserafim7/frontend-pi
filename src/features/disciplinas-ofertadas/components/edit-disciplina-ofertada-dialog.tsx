@@ -29,8 +29,7 @@ import type { DisciplinaOfertadaResponseDto } from "@/api-generated/model/discip
 import { useQueryClient } from "@tanstack/react-query"
 import { HeaderIconContainer } from "@/components/icon-container"
 import { Loader2, PenLine } from "lucide-react"
-import type { AxiosError } from "axios"
-import { getTurmasControllerFindAllQueryKey } from "@/api-generated/client/turmas/turmas"
+
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 
@@ -100,15 +99,10 @@ export function EditDisciplinaOfertadaDialog({
       {
         onSuccess: () => {
           toast.success("Disciplina ofertada atualizada")
-          Promise.all([
-            queryClient.invalidateQueries({
-              queryKey:
-                getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey(),
-            }),
-            queryClient.invalidateQueries({
-              queryKey: getTurmasControllerFindAllQueryKey(),
-            }),
-          ])
+          queryClient.invalidateQueries({
+            queryKey:
+              getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey(),
+          })
           onOpenChange(false)
         },
         onError: (error: any) => {
@@ -190,28 +184,25 @@ export function EditDisciplinaOfertadaDialog({
                     />
                   </FormControl>
                   <FormDescription>
-                    Máximo de 10 turmas por disciplina ofertada
+                    Quantidade máxima de turmas. As turmas devem ser criadas
+                    manualmente na página de Turmas.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Preview das turmas */}
+            {/* Informação sobre turmas */}
             {quantidadeTurmas > 0 && (
-              <div className="rounded-md border p-4">
-                <h4 className="mb-2 text-sm font-medium">Preview das turmas:</h4>
-                <div className="flex flex-wrap gap-1">
-                  {Array.from({ length: quantidadeTurmas }).map((_, index) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="text-xs"
-                    >
-                      T{index + 1}
-                    </Badge>
-                  ))}
-                </div>
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-4">
+                <h4 className="mb-1 text-sm font-medium text-amber-800">
+                  ⚠️ Importante
+                </h4>
+                <p className="text-sm text-amber-700">
+                  Esta alteração apenas atualiza o limite máximo para{" "}
+                  <strong>{quantidadeTurmas} turma(s)</strong>. Para criar turmas,
+                  acesse a página de Turmas e crie-as manualmente.
+                </p>
               </div>
             )}
 

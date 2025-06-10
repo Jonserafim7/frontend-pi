@@ -61,7 +61,7 @@ export function DisciplinaOfertadaActionRowDropdownMenu({
       if (filtro) {
         navigate(`/coordenador/turmas?filtro=${encodeURIComponent(filtro)}`)
 
-        toast.info(`Visualizando turmas da disciplina ${disciplinaNome}`)
+        toast.info(`Redirecionando para turmas de ${disciplinaNome}`)
       } else {
         // Fallback caso não tenha nome da disciplina
         navigate("/coordenador/turmas")
