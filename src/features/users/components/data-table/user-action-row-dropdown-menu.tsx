@@ -3,13 +3,16 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontalIcon, PenSquare, Trash } from "lucide-react"
+import { MoreHorizontalIcon, PenSquare, Trash, Clock, Eye } from "lucide-react"
 import { useState } from "react"
+import { useNavigate } from "react-router"
 import { DeleteUserAlertDialog } from "../delete-user-alert-dialog"
 import { CreateEditUserFormDialog } from "../create-edit-user-form-dialog"
+import { useAuth } from "@/features/auth/contexts/auth-context"
 import type { UsuarioResponseDto } from "@/api-generated/model"
 
 interface UserActionRowDropdownMenuProps {
@@ -19,8 +22,28 @@ interface UserActionRowDropdownMenuProps {
 export function UserActionRowDropdownMenu({
   user,
 }: UserActionRowDropdownMenuProps) {
+  const navigate = useNavigate()
+  const { isCoordenador, isAdmin, isDiretor } = useAuth()
   const [isEditMenuOpen, setIsEditMenuOpen] = useState(false)
   const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false)
+
+  /**
+   * Navega para a página de detalhes do professor
+   */
+  const handleViewDetails = () => {
+    navigate(`/usuarios/${user.id}`)
+  }
+
+  /**
+   * Navega para as disponibilidades do professor
+   */
+  const handleViewDisponibilidades = () => {
+    navigate(`/usuarios/${user.id}/disponibilidades`)
+  }
+
+  // Verifica se o usuário pode ver disponibilidades (coordenador, admin ou diretor vendo professor)
+  const canViewDisponibilidades =
+    user.papel === "PROFESSOR" && (isCoordenador() || isAdmin() || isDiretor())
 
   return (
     <>
@@ -36,6 +59,23 @@ export function UserActionRowDropdownMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
+
+          {/* Opção para ver detalhes */}
+          <DropdownMenuItem onClick={handleViewDetails}>
+            <Eye className="mr-2 h-4 w-4" />
+            Ver Detalhes
+          </DropdownMenuItem>
+
+          {/* Opção para ver disponibilidades (apenas para professores) */}
+          {canViewDisponibilidades && (
+            <DropdownMenuItem onClick={handleViewDisponibilidades}>
+              <Clock className="mr-2 h-4 w-4" />
+              Ver Disponibilidades
+            </DropdownMenuItem>
+          )}
+
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem onClick={() => setIsEditMenuOpen(true)}>
             <PenSquare className="mr-2 h-4 w-4" />
             Editar

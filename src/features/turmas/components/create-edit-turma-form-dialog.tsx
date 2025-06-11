@@ -225,7 +225,7 @@ export function CreateEditTurmaFormDialog({
                       disabled={isEditing} // Não permitir alterar disciplina ao editar
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Selecione uma disciplina ofertada" />
                         </SelectTrigger>
                       </FormControl>

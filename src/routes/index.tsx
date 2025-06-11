@@ -3,7 +3,7 @@ import { LoginPage } from "../features/auth/pages/login-page"
 import { UnauthorizedPage } from "../features/auth/pages/unauthorized-page"
 import { RequireAuth } from "../features/auth/guards/require-auth"
 import { UsuarioResponseDtoPapel } from "../api-generated/model/usuario-response-dto-papel"
-import { UserListPage } from "../features/users/pages"
+import { UserListPage, UserDetailsPage } from "../features/users/pages"
 import AppLayout from "../components/layout/app-layout"
 import ProtectedRoutes from "./protected-routes"
 import PublicRoutes from "./public-routes"
@@ -20,14 +20,16 @@ import { MatrizCurricularDetailsPage } from "@/features/matrizes-curriculares/pa
 import { DisciplinasListPage } from "@/features/disciplinas/pages/disciplinas-list-page"
 import { DisciplinasOfertadasListPage } from "@/features/disciplinas-ofertadas/pages/disciplinas-ofertadas-list-page"
 import { PeriodosLetivosListPage } from "@/features/periodos-letivos/pages/periodos-letivos-list-page"
-import { ProfessorDisponibilidadePage } from "@/features/disponibilidade-professores/pages"
+import {
+  ProfessorDisponibilidadePage,
+  ProfessorDisponibilidadeCoordenadorPage,
+} from "@/features/disponibilidade-professores/pages"
 import { MinhasAlocacoesPage } from "@/features/professor/pages/minhas-alocacoes-page"
 import { ProfessorDashboard } from "@/features/professor/pages/professor-dashboard"
 import { CoordenadorDashboard } from "@/features/coordenador/pages"
 import { TurmasListPage } from "@/features/turmas/pages/turmas-list-page"
 import {
   PropostasListPage,
-  CreatePropostaPage,
   PropostaDetailsPage,
   DiretorPropostasListPage,
   DiretorPropostaDetailsPage,
@@ -219,16 +221,7 @@ export function AppRoutes() {
                   </RequireAuth>
                 }
               />
-              <Route
-                path="nova"
-                element={
-                  <RequireAuth
-                    allowedRoles={[UsuarioResponseDtoPapel.COORDENADOR]}
-                  >
-                    <CreatePropostaPage />
-                  </RequireAuth>
-                }
-              />
+
               <Route
                 path=":id"
                 element={
@@ -283,20 +276,50 @@ export function AppRoutes() {
             </Route>
           </Route>
 
-          <Route
-            path="usuarios"
-            element={
-              <RequireAuth
-                allowedRoles={[
-                  UsuarioResponseDtoPapel.ADMIN,
-                  UsuarioResponseDtoPapel.DIRETOR,
-                  UsuarioResponseDtoPapel.COORDENADOR,
-                ]}
-              >
-                <UserListPage />
-              </RequireAuth>
-            }
-          />
+          <Route path="usuarios">
+            <Route
+              index
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    UsuarioResponseDtoPapel.ADMIN,
+                    UsuarioResponseDtoPapel.DIRETOR,
+                    UsuarioResponseDtoPapel.COORDENADOR,
+                  ]}
+                >
+                  <UserListPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path=":id"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    UsuarioResponseDtoPapel.ADMIN,
+                    UsuarioResponseDtoPapel.DIRETOR,
+                    UsuarioResponseDtoPapel.COORDENADOR,
+                  ]}
+                >
+                  <UserDetailsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path=":professorId/disponibilidades"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    UsuarioResponseDtoPapel.ADMIN,
+                    UsuarioResponseDtoPapel.DIRETOR,
+                    UsuarioResponseDtoPapel.COORDENADOR,
+                  ]}
+                >
+                  <ProfessorDisponibilidadeCoordenadorPage />
+                </RequireAuth>
+              }
+            />
+          </Route>
         </Route>
       </Route>
 

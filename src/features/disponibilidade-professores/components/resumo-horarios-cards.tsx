@@ -1,6 +1,6 @@
 import React from "react"
 import { Card } from "@/components/ui/card"
-import { CheckCircle, XCircle, BarChart3, TrendingUp } from "lucide-react"
+import { CheckCircle, XCircle, BarChart3 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -124,10 +124,6 @@ export const ResumoHorariosCards: React.FC<ResumoHorariosCardsProps> = ({
   indisponiveisCount,
   totalCount,
 }) => {
-  // Calcular porcentagem de disponibilidade
-  const disponibilidadePercentual =
-    totalCount > 0 ? Math.round((disponiveisCount / totalCount) * 100) : 0
-
   const cardsData: CardData[] = [
     {
       icon: CheckCircle,
@@ -150,21 +146,10 @@ export const ResumoHorariosCards: React.FC<ResumoHorariosCardsProps> = ({
       description: "Horários cadastrados",
       variant: "info",
     },
-    {
-      icon: TrendingUp,
-      label: "Disponibilidade",
-      value: disponibilidadePercentual,
-      description: "Percentual de disponibilidade",
-      variant:
-        disponibilidadePercentual >= 70 ? "success"
-        : disponibilidadePercentual >= 40 ? "warning"
-        : "destructive",
-      suffix: "%",
-    },
   ]
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {cardsData.map((cardData) => (
         <SummaryCard
           key={cardData.label}

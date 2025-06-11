@@ -17,7 +17,6 @@ import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Loader2, Mail } from "lucide-react"
-import { authControllerSignInBody } from "@/api-generated/zod-schemas/auth/auth"
 
 /**
  * Schema personalizado para login com mensagens em PT-BR

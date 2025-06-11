@@ -130,7 +130,6 @@ export { PropostaPermissionsIndicator } from "./components/proposta-permissions-
 // Pages
 // -----------------------------------------------------------------------------
 export { PropostasListPage } from "./pages/propostas-list-page"
-export { CreatePropostaPage } from "./pages/create-proposta-page"
 export { PropostaDetailsPage } from "./pages/proposta-details-page"
 export { DiretorPropostasListPage } from "./pages/diretor-propostas-list-page"
 export { DiretorPropostaDetailsPage } from "./pages/diretor-proposta-details-page"
