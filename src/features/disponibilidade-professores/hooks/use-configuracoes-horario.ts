@@ -1,4 +1,5 @@
 import { useConfiguracoesHorarioControllerGet } from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
+import type { TurnoType } from "@/features/configuracoes-horario/lib/constants"
 
 /**
  * Hook para buscar configurações de horário
@@ -31,10 +32,8 @@ export type ConfiguracaoHorario = NonNullable<
   ReturnType<typeof useConfiguracaoHorario>["data"]
 >
 
-/**
- * Tipo para os turnos disponíveis
- */
-export type TurnoType = "manha" | "tarde" | "noite"
+// TurnoType agora é importado de @/features/configuracoes-horario/lib/constants
+// Mantido para compatibilidade, mas deve usar o tipo centralizado
 
 /**
  * Tipo para os dados de um turno específico

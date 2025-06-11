@@ -28,10 +28,6 @@ import {
   getUsuariosControllerFindAllQueryKey,
 } from "@/api-generated/client/usuarios/usuarios"
 import {
-  usuariosControllerCreateBody,
-  usuariosControllerUpdateBody,
-} from "@/api-generated/zod-schemas/usuarios/usuarios"
-import {
   Dialog,
   DialogContent,
   DialogTitle,
@@ -43,7 +39,6 @@ import { Loader2, UserPen, UserPlus } from "lucide-react"
 import { PasswordInput } from "@/components/ui/password-input"
 import { useQueryClient } from "@tanstack/react-query"
 import type { UsuarioResponseDto } from "@/api-generated/model/usuario-response-dto"
-import type { AxiosError } from "axios"
 import { toast } from "sonner"
 
 // Schemas personalizados com mensagens em PT-BR
@@ -348,7 +343,7 @@ export function CreateEditUserFormDialog({
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecione um papel" />
                       </SelectTrigger>
                     </FormControl>

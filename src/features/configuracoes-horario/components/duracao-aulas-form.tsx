@@ -17,25 +17,47 @@ import {
   useConfiguracoesHorarioControllerUpsert,
   getConfiguracoesHorarioControllerGetQueryKey,
 } from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
-import { AxiosError } from "axios"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Pencil, Save, X } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
+import {
+  DURACAO_MAXIMA_PERIODO_MINUTOS,
+  DURACAO_MAXIMA_AULA_MINUTOS,
+  validarDuracaoTotalPeriodo,
+  formatarDuracao,
+  calcularDuracaoTotal,
+} from "../lib/constants"
 
-const formSchema = z.object({
-  duracaoAulaMinutos: z.coerce
-    .number({
-      invalid_type_error: "Digite um número válido",
-      required_error: "Digite a duração da aula",
-    })
-    .int({ message: "A duração deve ser um número inteiro" })
-    .min(1, { message: "A duração deve ser de pelo menos 1 minuto" })
-    .max(480, { message: "A duração não pode ser maior que 8 horas (480 min)" }),
-})
+const createFormSchema = (numeroAulasPorTurno?: number) =>
+  z.object({
+    duracaoAulaMinutos: z.coerce
+      .number({
+        invalid_type_error: "Digite um número válido",
+        required_error: "Digite a duração da aula",
+      })
+      .int({ message: "A duração deve ser um número inteiro" })
+      .min(1, { message: "A duração deve ser de pelo menos 1 minuto" })
+      .max(DURACAO_MAXIMA_AULA_MINUTOS, {
+        message: `A duração não pode ser maior que ${formatarDuracao(DURACAO_MAXIMA_AULA_MINUTOS)}`,
+      })
+      .refine(
+        (duracao) => {
+          if (!numeroAulasPorTurno) return true
+          return validarDuracaoTotalPeriodo(duracao, numeroAulasPorTurno)
+        },
+        {
+          message: `A duração total das aulas (duração × número de aulas) não pode exceder ${formatarDuracao(DURACAO_MAXIMA_PERIODO_MINUTOS)} por período`,
+        },
+      ),
+  })
 
 export function DuracaoAulasForm() {
+  const { data: configuracoesHorario } = useConfiguracoesHorarioControllerGet({})
+
+  const formSchema = createFormSchema(configuracoesHorario?.numeroAulasPorTurno)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,7 +66,6 @@ export function DuracaoAulasForm() {
   })
   const [isEditing, setIsEditing] = useState(false)
   const queryClient = useQueryClient()
-  const { data: configuracoesHorario } = useConfiguracoesHorarioControllerGet({})
   const { mutate: upsertConfiguracoesHorario } =
     useConfiguracoesHorarioControllerUpsert()
 
@@ -55,6 +76,14 @@ export function DuracaoAulasForm() {
       })
     }
   }, [configuracoesHorario, form, isEditing])
+
+  // Recalcular validação quando o número de aulas mudar
+  useEffect(() => {
+    if (configuracoesHorario?.numeroAulasPorTurno) {
+      // Força revalidação do campo com o novo schema
+      form.trigger("duracaoAulaMinutos")
+    }
+  }, [configuracoesHorario?.numeroAulasPorTurno, form])
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     upsertConfiguracoesHorario(
@@ -79,26 +108,36 @@ export function DuracaoAulasForm() {
       },
     )
   }
+
+  // Calcular duração total atual para exibir informações auxiliares
+  const duracaoAtual = form.watch("duracaoAulaMinutos")
+  const numeroAulas = configuracoesHorario?.numeroAulasPorTurno || 0
+  const duracaoTotalMinutos = calcularDuracaoTotal(duracaoAtual, numeroAulas)
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex items-center justify-center gap-2"
+        className="flex w-full items-center justify-center gap-2"
       >
         <FormField
           control={form.control}
           name="duracaoAulaMinutos"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel>Duração das Aulas</FormLabel>
               <FormControl>
                 <Input
+                  className="w-full"
                   disabled={!isEditing}
                   type="number"
                   {...field}
                 />
               </FormControl>
-              <FormDescription>A duração das aulas em minutos.</FormDescription>
+              <FormDescription>
+                A duração das aulas em minutos (máx. {DURACAO_MAXIMA_AULA_MINUTOS}{" "}
+                min).
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -63,7 +63,7 @@ export function ConfiguracoesHorarioPage() {
                   <GraduationCap className="text-primary h-4 w-4" />
                   Duração e Quantidade de Aulas
                 </h3>
-                <div className="space-y-4">
+                <div className="w-full space-y-4">
                   <DuracaoAulasForm />
                   <Separator />
                   <QuantidadeAulasForm />

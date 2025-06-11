@@ -17,25 +17,47 @@ import {
   useConfiguracoesHorarioControllerUpsert,
   getConfiguracoesHorarioControllerGetQueryKey,
 } from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
-import { AxiosError } from "axios"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Pencil, Save, X } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
+import {
+  DURACAO_MAXIMA_PERIODO_MINUTOS,
+  NUMERO_MAXIMO_AULAS_POR_TURNO,
+  validarDuracaoTotalPeriodo,
+  formatarDuracao,
+  calcularDuracaoTotal,
+} from "../lib/constants"
 
-const formSchema = z.object({
-  quantidade_aulas: z.coerce
-    .number({
-      invalid_type_error: "Digite um número válido",
-      required_error: "Digite a quantidade de aulas",
-    })
-    .int({ message: "A quantidade deve ser um número inteiro" })
-    .min(1, { message: "A quantidade deve ser de pelo menos 1 aula" })
-    .max(20, { message: "A quantidade não pode ser maior que 20 aulas" }),
-})
+const createFormSchema = (duracaoAulaMinutos?: number) =>
+  z.object({
+    quantidade_aulas: z.coerce
+      .number({
+        invalid_type_error: "Digite um número válido",
+        required_error: "Digite a quantidade de aulas",
+      })
+      .int({ message: "A quantidade deve ser um número inteiro" })
+      .min(1, { message: "A quantidade deve ser de pelo menos 1 aula" })
+      .max(NUMERO_MAXIMO_AULAS_POR_TURNO, {
+        message: `A quantidade não pode ser maior que ${NUMERO_MAXIMO_AULAS_POR_TURNO} aulas`,
+      })
+      .refine(
+        (quantidade) => {
+          if (!duracaoAulaMinutos) return true
+          return validarDuracaoTotalPeriodo(duracaoAulaMinutos, quantidade)
+        },
+        {
+          message: `A duração total das aulas (número de aulas × duração) não pode exceder ${formatarDuracao(DURACAO_MAXIMA_PERIODO_MINUTOS)} por período`,
+        },
+      ),
+  })
 
 export function QuantidadeAulasForm() {
+  const { data: configuracoesHorario } = useConfiguracoesHorarioControllerGet({})
+
+  const formSchema = createFormSchema(configuracoesHorario?.duracaoAulaMinutos)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,7 +66,6 @@ export function QuantidadeAulasForm() {
   })
   const [isEditing, setIsEditing] = useState(false)
   const queryClient = useQueryClient()
-  const { data: configuracoesHorario } = useConfiguracoesHorarioControllerGet({})
   const { mutate: upsertConfiguracoesHorario } =
     useConfiguracoesHorarioControllerUpsert()
 
@@ -55,6 +76,14 @@ export function QuantidadeAulasForm() {
       })
     }
   }, [configuracoesHorario, form, isEditing])
+
+  // Recalcular validação quando a duração das aulas mudar
+  useEffect(() => {
+    if (configuracoesHorario?.duracaoAulaMinutos) {
+      // Força revalidação do campo com o novo schema
+      form.trigger("quantidade_aulas")
+    }
+  }, [configuracoesHorario?.duracaoAulaMinutos, form])
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     upsertConfiguracoesHorario(
@@ -79,6 +108,12 @@ export function QuantidadeAulasForm() {
       },
     )
   }
+
+  // Calcular duração total atual para exibir informações auxiliares
+  const quantidadeAtual = form.watch("quantidade_aulas")
+  const duracaoAula = configuracoesHorario?.duracaoAulaMinutos || 0
+  const duracaoTotalMinutos = calcularDuracaoTotal(duracaoAula, quantidadeAtual)
+
   return (
     <Form {...form}>
       <form
@@ -89,7 +124,7 @@ export function QuantidadeAulasForm() {
           control={form.control}
           name="quantidade_aulas"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel>Quantidade de Aulas</FormLabel>
               <FormControl>
                 <Input
@@ -98,7 +133,10 @@ export function QuantidadeAulasForm() {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>A quantidade de aulas por turno.</FormDescription>
+              <FormDescription>
+                A quantidade de aulas por turno (máx.{" "}
+                {NUMERO_MAXIMO_AULAS_POR_TURNO} aulas).
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

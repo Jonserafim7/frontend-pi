@@ -17,38 +17,53 @@ import {
   useConfiguracoesHorarioControllerUpsert,
   getConfiguracoesHorarioControllerGetQueryKey,
 } from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
-import { AxiosError } from "axios"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Pencil, Save, X } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
+import {
+  HORARIOS_LIMITE_TURNOS,
+  validarHorarioTurno,
+  getMensagemErroHorarioTurno,
+} from "../lib/constants"
+import type { TurnoType } from "../lib/constants"
 
 /**
  * Schema para validação do formulário de horário de início de turno
  */
-const formSchema = z.object({
-  horarioInicio: z
-    .string()
-    .min(1, "Digite o horário de início")
-    .regex(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, {
-      message: "Digite um horário válido no formato HH:MM (ex: 08:00)",
-    }),
-})
-
-type FormType = z.infer<typeof formSchema>
+const createFormSchema = (turno: TurnoType) =>
+  z.object({
+    horarioInicio: z
+      .string()
+      .min(1, "Digite o horário de início")
+      .regex(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, {
+        message: "Digite um horário válido no formato HH:MM (ex: 08:00)",
+      })
+      .refine((horario) => validarHorarioTurno(horario, turno), {
+        message: getMensagemErroHorarioTurno(turno),
+      }),
+  })
 
 /**
  * Props para o componente HorarioInicioTurnoForm
  */
 type HorarioInicioTurnoFormProps = {
-  turno: "manha" | "tarde" | "noite"
+  turno: TurnoType
 }
 
 /**
  * Componente para editar o horário de início de um turno específico (manhã, tarde ou noite)
+ *
+ * O componente valida automaticamente se o horário está dentro dos limites permitidos:
+ * - Manhã: 06:00 às 12:00
+ * - Tarde: 12:00 às 18:00
+ * - Noite: 18:00 às 23:59
  */
 export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
+  const formSchema = createFormSchema(turno)
+  type FormType = z.infer<typeof formSchema>
+
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -71,12 +86,8 @@ export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
   // Nome do campo no backend com base no turno selecionado
   const campoHorario = campoHorarioMap[turno]
 
-  // Título do campo com base no turno
-  const tituloTurno = {
-    manha: "Manhã",
-    tarde: "Tarde",
-    noite: "Noite",
-  }[turno]
+  // Informações do turno
+  const infoTurno = HORARIOS_LIMITE_TURNOS[turno]
 
   useEffect(() => {
     if (configuracoesHorario && !isEditing) {
@@ -104,7 +115,7 @@ export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
       {
         onSuccess: () => {
           toast.success(
-            `O horário de início do turno da ${tituloTurno.toLowerCase()} foi atualizado para ${values.horarioInicio}.`,
+            `O horário de início do turno da ${infoTurno.nome.toLowerCase()} foi atualizado para ${values.horarioInicio}.`,
           )
           queryClient.invalidateQueries({
             queryKey: getConfiguracoesHorarioControllerGetQueryKey(),
@@ -130,17 +141,18 @@ export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
           name="horarioInicio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Início do Turno da {tituloTurno}</FormLabel>
+              <FormLabel>Início do Turno da {infoTurno.nome}</FormLabel>
               <FormControl>
                 <TimeInput
                   isDisabled={!isEditing || form.formState.isSubmitting}
                   value={field.value}
                   onChange={field.onChange}
-                  aria-label={`Horário de início do turno da ${tituloTurno.toLowerCase()}`}
+                  aria-label={`Horário de início do turno da ${infoTurno.nome.toLowerCase()}`}
                 />
               </FormControl>
               <FormDescription>
-                O horário de início do turno da {tituloTurno.toLowerCase()}.
+                O horário de início do turno da {infoTurno.nome.toLowerCase()}
+                (permitido: {infoTurno.inicio} às {infoTurno.fim}).
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -161,7 +173,7 @@ export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Salvar horário</p>
+                  <p>Salvar configurações</p>
                 </TooltipContent>
               </Tooltip>
               <Tooltip>
@@ -173,11 +185,9 @@ export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
                     onClick={() => {
                       setIsEditing(false)
                       // Reset form to original values from server
-                      if (configuracoesHorario) {
-                        form.reset({
-                          horarioInicio: configuracoesHorario[campoHorario] || "",
-                        })
-                      }
+                      form.reset({
+                        horarioInicio: configuracoesHorario?.[campoHorario] || "",
+                      })
                     }}
                   >
                     <X className="h-4 w-4" />
@@ -204,7 +214,7 @@ export function HorarioInicioTurnoForm({ turno }: HorarioInicioTurnoFormProps) {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Editar horário</p>
+                <p>Editar configurações</p>
               </TooltipContent>
             </Tooltip>
           }

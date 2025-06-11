@@ -1,9 +1,34 @@
 import { z } from "zod"
 import { parse, isAfter, isEqual, addMinutes } from "date-fns"
+import {
+  DURACAO_MAXIMA_AULA_MINUTOS,
+  NUMERO_MAXIMO_AULAS_POR_TURNO,
+  DURACAO_MAXIMA_PERIODO_MINUTOS,
+  validarDuracaoTotalPeriodo,
+  validarHorarioTurno,
+  getMensagemErroHorarioTurno,
+  formatarDuracao,
+} from "../lib/constants"
 
 const timeSchema = z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
   message: "Horário deve estar no formato HH:mm",
 })
+
+// Schemas específicos para cada turno com validação de limites
+const turnoManhaSchema = timeSchema.refine(
+  (horario) => validarHorarioTurno(horario, "manha"),
+  { message: getMensagemErroHorarioTurno("manha") },
+)
+
+const turnoTardeSchema = timeSchema.refine(
+  (horario) => validarHorarioTurno(horario, "tarde"),
+  { message: getMensagemErroHorarioTurno("tarde") },
+)
+
+const turnoNoiteSchema = timeSchema.refine(
+  (horario) => validarHorarioTurno(horario, "noite"),
+  { message: getMensagemErroHorarioTurno("noite") },
+)
 
 export const configuracaoHorarioSchema = z
   .object({
@@ -14,7 +39,10 @@ export const configuracaoHorarioSchema = z
       })
       .int({ message: "Duração da aula deve ser um número inteiro." })
       .positive({ message: "Duração da aula deve ser positiva." })
-      .min(1, { message: "Duração da aula deve ser de no mínimo 1 minuto." }),
+      .min(1, { message: "Duração da aula deve ser de no mínimo 1 minuto." })
+      .max(DURACAO_MAXIMA_AULA_MINUTOS, {
+        message: `Duração da aula não pode ser maior que ${formatarDuracao(DURACAO_MAXIMA_AULA_MINUTOS)}.`,
+      }),
     numeroAulasPorTurno: z
       .number({
         required_error: "Número de aulas por turno é obrigatório.",
@@ -24,13 +52,35 @@ export const configuracaoHorarioSchema = z
         message: "Número de aulas por turno deve ser um número inteiro.",
       })
       .positive({ message: "Número de aulas por turno deve ser positivo." })
-      .min(1, { message: "Número de aulas por turno deve ser no mínimo 1." }),
-    inicioTurnoManha: timeSchema,
-    inicioTurnoTarde: timeSchema,
-    inicioTurnoNoite: timeSchema,
+      .min(1, { message: "Número de aulas por turno deve ser no mínimo 1." })
+      .max(NUMERO_MAXIMO_AULAS_POR_TURNO, {
+        message: `Número de aulas por turno não pode ser maior que ${NUMERO_MAXIMO_AULAS_POR_TURNO}.`,
+      }),
+    inicioTurnoManha: turnoManhaSchema,
+    inicioTurnoTarde: turnoTardeSchema,
+    inicioTurnoNoite: turnoNoiteSchema,
   })
   .superRefine((data, ctx) => {
     const referenceDate = new Date() // Usada para parsear HH:mm para objetos Date
+
+    // Validação da duração total das aulas não exceder o período
+    if (
+      !validarDuracaoTotalPeriodo(
+        data.duracaoAulaMinutos,
+        data.numeroAulasPorTurno,
+      )
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `A duração total das aulas não pode exceder ${formatarDuracao(DURACAO_MAXIMA_PERIODO_MINUTOS)} por período.`,
+        path: ["duracaoAulaMinutos"],
+      })
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `A duração total das aulas não pode exceder ${formatarDuracao(DURACAO_MAXIMA_PERIODO_MINUTOS)} por período.`,
+        path: ["numeroAulasPorTurno"],
+      })
+    }
 
     // Parse dos horários de início
     const inicioManha = parse(data.inicioTurnoManha, "HH:mm", referenceDate)

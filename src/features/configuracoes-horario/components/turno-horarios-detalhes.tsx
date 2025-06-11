@@ -3,12 +3,13 @@ import { Clock, ClockIcon, TimerIcon } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useConfiguracoesHorarioControllerGet } from "@/api-generated/client/configurações-de-horário/configurações-de-horário"
+import type { TurnoType } from "../lib/constants"
 
 /**
  * Props para o componente TurnoHorariosDetalhes
  */
 interface TurnoHorariosDetalhesProps {
-  turno: "manha" | "tarde" | "noite"
+  turno: TurnoType
 }
 
 /**
