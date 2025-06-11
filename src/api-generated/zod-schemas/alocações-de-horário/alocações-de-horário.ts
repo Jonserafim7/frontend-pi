@@ -203,8 +203,8 @@ export const alocacoesHorariosControllerDeleteParams = zod.object({
 })
 
 /**
- * Busca todas as alocações do professor atualmente logado
- * @summary Buscar alocações do professor logado
+ * Busca todas as alocações do professor atualmente logado que fazem parte de propostas aprovadas
+ * @summary Buscar alocações aprovadas do professor logado
  */
 export const alocacoesHorariosControllerFindMinhasAlocacoesResponseItem = zod.object({
   "id": zod.string().describe('ID único da alocação'),

@@ -36,8 +36,12 @@ import {
   getTurmasControllerFindOneQueryKey,
   getTurmasControllerFindAllQueryKey,
 } from "@/api-generated/client/turmas/turmas"
-import { useDisciplinasOfertadasControllerFindAll } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
-import type { CreateTurmaDto, UpdateTurmaDto } from "@/api-generated/model"
+import { useDisciplinasOfertadasControllerFindOfertasDoCoordenador } from "@/api-generated/client/disciplinas-ofertadas/disciplinas-ofertadas"
+import type {
+  CreateTurmaDto,
+  UpdateTurmaDto,
+  DisciplinaOfertadaResponseDto,
+} from "@/api-generated/model"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
@@ -80,8 +84,8 @@ export function CreateEditTurmaFormDialog({
   })
 
   // Hooks para buscar dados
-  const { data: disciplinasOfertadas, isPending: isLoadingDisciplinas } =
-    useDisciplinasOfertadasControllerFindAll()
+  const { data: disciplinasOfertadas, isLoading: isLoadingDisciplinas } =
+    useDisciplinasOfertadasControllerFindOfertasDoCoordenador()
 
   const { data: turmaData, isPending: isLoadingTurma } =
     useTurmasControllerFindOne(turmaId!, {
@@ -223,25 +227,29 @@ export function CreateEditTurmaFormDialog({
                               Crie disciplinas ofertadas primeiro.
                             </span>
                           </div>
-                        : disciplinasOfertadas.map((disciplinaOfertada) => (
-                            <SelectItem
-                              key={disciplinaOfertada.id}
-                              value={disciplinaOfertada.id}
-                            >
-                              <div className="flex flex-col">
-                                <span className="font-medium">
-                                  {disciplinaOfertada.disciplina.nome}
-                                </span>
-                                <span className="text-muted-foreground text-sm">
-                                  {disciplinaOfertada.periodoLetivo.ano}/
-                                  {disciplinaOfertada.periodoLetivo.semestre}º
-                                  semestre
-                                  {disciplinaOfertada.disciplina.codigo &&
-                                    ` • ${disciplinaOfertada.disciplina.codigo}`}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))
+                        : disciplinasOfertadas.map(
+                            (
+                              disciplinaOfertada: DisciplinaOfertadaResponseDto,
+                            ) => (
+                              <SelectItem
+                                key={disciplinaOfertada.id}
+                                value={disciplinaOfertada.id}
+                              >
+                                <div className="flex flex-col">
+                                  <span className="font-medium">
+                                    {disciplinaOfertada.disciplina.nome}
+                                  </span>
+                                  <span className="text-muted-foreground text-sm">
+                                    {disciplinaOfertada.periodoLetivo.ano}/
+                                    {disciplinaOfertada.periodoLetivo.semestre}º
+                                    semestre
+                                    {disciplinaOfertada.disciplina.codigo &&
+                                      ` • ${disciplinaOfertada.disciplina.codigo}`}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ),
+                          )
                         }
                       </SelectContent>
                     </Select>

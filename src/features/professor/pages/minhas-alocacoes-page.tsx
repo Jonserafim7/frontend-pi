@@ -14,11 +14,9 @@ import { HeaderIconContainer } from "@/components/icon-container"
 import {
   useMinhasAlocacoes,
   useAlocacoesStats,
-} from "../hooks/use-minhas-alocacoes"
-import { AlocacaoCard } from "../components/alocacao-card"
-import { AlocacoesStatsComponent } from "../components/alocacoes-stats"
-import { AlocacoesPorDia } from "../components/alocacoes-por-dia"
-import type { AlocacaoHorarioResponseDto } from "@/api-generated/model"
+} from "@/features/propostas-horario/hooks/use-minhas-alocacoes"
+import { AlocacoesStatsComponent } from "@/features/propostas-horario/components/alocacoes-stats"
+import { AlocacoesPorDia } from "@/features/propostas-horario/components/alocacoes-por-dia"
 
 /**
  * Mapeamento dos dias da semana para filtragem
@@ -34,7 +32,8 @@ const diasSemanaOptions = [
 ] as const
 
 /**
- * Página para professor visualizar suas alocações de horário
+ * Página para um professor visualizar suas alocações de horário aprovadas
+ * Exibe apenas alocações que fazem parte de propostas com status APROVADA
  */
 export function MinhasAlocacoesPage() {
   const { data: alocacoes = [], isLoading, error, refetch } = useMinhasAlocacoes()
@@ -97,7 +96,7 @@ export function MinhasAlocacoesPage() {
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-bold">Minhas Alocações</h1>
           <p className="text-muted-foreground">
-            Visualize todas as suas aulas e horários alocados
+            Visualize suas aulas e horários de propostas aprovadas
           </p>
         </div>
       </div>
@@ -171,7 +170,7 @@ export function MinhasAlocacoesPage() {
             <div className="py-12 text-center">
               <div className="text-muted-foreground mb-2 text-lg">
                 {alocacoes.length === 0 ?
-                  "Você ainda não possui aulas alocadas"
+                  "Você ainda não possui aulas de propostas aprovadas"
                 : "Nenhuma alocação encontrada com os filtros aplicados"}
               </div>
               {filtroTexto || filtroDia !== "todos" ?

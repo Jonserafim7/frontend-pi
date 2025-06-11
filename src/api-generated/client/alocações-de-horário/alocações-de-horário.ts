@@ -1019,8 +1019,8 @@ export const useAlocacoesHorariosControllerDelete = <
   return useMutation(mutationOptions, queryClient)
 }
 /**
- * Busca todas as alocações do professor atualmente logado
- * @summary Buscar alocações do professor logado
+ * Busca todas as alocações do professor atualmente logado que fazem parte de propostas aprovadas
+ * @summary Buscar alocações aprovadas do professor logado
  */
 export const alocacoesHorariosControllerFindMinhasAlocacoes = (
   options?: SecondParameter<typeof orvalCustomInstance>,
@@ -1163,7 +1163,7 @@ export function useAlocacoesHorariosControllerFindMinhasAlocacoes<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Buscar alocações do professor logado
+ * @summary Buscar alocações aprovadas do professor logado
  */
 
 export function useAlocacoesHorariosControllerFindMinhasAlocacoes<

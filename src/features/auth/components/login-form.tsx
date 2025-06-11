@@ -123,14 +123,7 @@ export function LoginForm(): React.ReactElement {
               )}
             />
           </div>
-          <Button
-            type="button"
-            variant="link"
-            className="text-muted-foreground hover:text-primary h-auto p-0 text-xs"
-            disabled={isLoading}
-          >
-            Esqueceu sua senha?
-          </Button>
+
           <Button
             type="submit"
             className="w-full"

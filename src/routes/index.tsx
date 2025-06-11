@@ -21,7 +21,7 @@ import { DisciplinasListPage } from "@/features/disciplinas/pages/disciplinas-li
 import { DisciplinasOfertadasListPage } from "@/features/disciplinas-ofertadas/pages/disciplinas-ofertadas-list-page"
 import { PeriodosLetivosListPage } from "@/features/periodos-letivos/pages/periodos-letivos-list-page"
 import { ProfessorDisponibilidadePage } from "@/features/disponibilidade-professores/pages"
-import { MinhasAlocacoesPage } from "@/features/propostas-horario/pages/minhas-alocacoes-page"
+import { MinhasAlocacoesPage } from "@/features/professor/pages/minhas-alocacoes-page"
 import { ProfessorDashboard } from "@/features/professor/pages/professor-dashboard"
 import { CoordenadorDashboard } from "@/features/coordenador/pages"
 import { TurmasListPage } from "@/features/turmas/pages/turmas-list-page"

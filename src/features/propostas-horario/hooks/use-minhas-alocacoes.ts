@@ -2,7 +2,8 @@ import { useAlocacoesHorariosControllerFindMinhasAlocacoes } from "@/api-generat
 import type { AlocacaoHorarioResponseDto } from "@/api-generated/model"
 
 /**
- * Hook para buscar as alocações de horário do professor logado
+ * Hook para buscar as alocações de horário aprovadas do professor logado
+ * Retorna apenas alocações que fazem parte de propostas com status APROVADA
  */
 export function useMinhasAlocacoes() {
   return useAlocacoesHorariosControllerFindMinhasAlocacoes({
