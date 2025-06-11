@@ -31,15 +31,21 @@ import { Badge } from "@/components/ui/badge"
 
 // Schemas de validação
 const approvePropostaSchema = z.object({
-  observacoesDiretor: z.string().optional(),
+  observacoesDiretor: z
+    .string()
+    .max(1000, "As observações devem ter no máximo 1000 caracteres")
+    .optional(),
 })
 
 const rejectPropostaSchema = z.object({
   justificativaRejeicao: z
     .string()
-    .min(10, "A justificativa deve ter pelo menos 10 caracteres")
-    .max(500, "A justificativa não pode exceder 500 caracteres"),
-  observacoesDiretor: z.string().optional(),
+    .min(10, "Digite pelo menos 10 caracteres para a justificativa")
+    .max(500, "A justificativa deve ter no máximo 500 caracteres"),
+  observacoesDiretor: z
+    .string()
+    .max(1000, "As observações devem ter no máximo 1000 caracteres")
+    .optional(),
 })
 
 type ApprovePropostaFormData = z.infer<typeof approvePropostaSchema>

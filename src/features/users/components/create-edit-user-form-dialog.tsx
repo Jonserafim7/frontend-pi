@@ -46,16 +46,55 @@ import type { UsuarioResponseDto } from "@/api-generated/model/usuario-response-
 import type { AxiosError } from "axios"
 import { toast } from "sonner"
 
-// Tipos inferidos dos schemas
-type CreateUserFormValues = z.infer<typeof usuariosControllerCreateBody>
-type UpdateUserFormValues = z.infer<typeof usuariosControllerUpdateBody>
+// Schemas personalizados com mensagens em PT-BR
+const createUserSchema = z.object({
+  nome: z
+    .string()
+    .min(1, "Digite o nome completo")
+    .min(2, "O nome deve ter pelo menos 2 caracteres")
+    .max(100, "O nome deve ter no máximo 100 caracteres"),
+  email: z.string().min(1, "Digite o e-mail").email("Digite um e-mail válido"),
+  senha: z
+    .string()
+    .min(1, "Digite a senha")
+    .min(8, "A senha deve ter pelo menos 8 caracteres")
+    .max(50, "A senha deve ter no máximo 50 caracteres"),
+  papel: z.enum(["ADMIN", "DIRETOR", "COORDENADOR", "PROFESSOR"], {
+    required_error: "Selecione um papel",
+  }),
+})
+
+const updateUserSchema = z.object({
+  nome: z
+    .string()
+    .min(1, "Digite o nome completo")
+    .min(2, "O nome deve ter pelo menos 2 caracteres")
+    .max(100, "O nome deve ter no máximo 100 caracteres")
+    .optional(),
+  email: z
+    .string()
+    .min(1, "Digite o e-mail")
+    .email("Digite um e-mail válido")
+    .optional(),
+  senha: z
+    .string()
+    .min(8, "A senha deve ter pelo menos 8 caracteres")
+    .max(50, "A senha deve ter no máximo 50 caracteres")
+    .optional()
+    .or(z.literal("")), // Permite string vazia para não alterar senha
+  papel: z
+    .enum(["ADMIN", "DIRETOR", "COORDENADOR", "PROFESSOR"], {
+      required_error: "Selecione um papel",
+    })
+    .optional(),
+})
+
+// Tipos inferidos dos schemas personalizados
+type CreateUserFormValues = z.infer<typeof createUserSchema>
+type UpdateUserFormValues = z.infer<typeof updateUserSchema>
 
 // Tipo união para o formulário
 type UserFormValues = CreateUserFormValues | UpdateUserFormValues
-
-// Schemas de validação
-const createUserSchema = usuariosControllerCreateBody
-const updateUserSchema = usuariosControllerUpdateBody
 
 interface CreateEditUserFormDialogProps {
   isOpen: boolean
@@ -167,12 +206,11 @@ export function CreateEditUserFormDialog({
         },
         {
           onSuccess: () => {
-            toast.success("Usuário atualizado")
-            form.reset()
-            onOpenChange(false)
+            toast.success("Usuário atualizado com sucesso")
             queryClient.invalidateQueries({
               queryKey: getUsuariosControllerFindAllQueryKey(),
             })
+            handleOpenChange(false)
           },
           onError: (error: any) => {
             const errorMessage =
@@ -190,12 +228,11 @@ export function CreateEditUserFormDialog({
         {
           onSuccess: () => {
             navigate("/usuarios")
-            toast.success("Usuário criado")
-            form.reset()
-            onOpenChange(false)
+            toast.success("Usuário criado com sucesso")
             queryClient.invalidateQueries({
               queryKey: getUsuariosControllerFindAllQueryKey(),
             })
+            handleOpenChange(false)
           },
           onError: (error: any) => {
             const errorMessage =
@@ -207,10 +244,21 @@ export function CreateEditUserFormDialog({
     }
   }
 
+  /**
+   * Handler para fechar modal com reset do formulário
+   */
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset()
+      form.clearErrors()
+    }
+    onOpenChange(open)
+  }
+
   return (
     <Dialog
       open={isOpen}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
     >
       <DialogContent className="gap-8">
         <DialogHeader className="flex-row items-center gap-3">

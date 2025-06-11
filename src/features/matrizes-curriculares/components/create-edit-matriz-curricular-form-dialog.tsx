@@ -48,11 +48,16 @@ import { toast } from "sonner"
 
 /**
  * Schema de validação para o formulário de matriz curricular
- * Remove o campo idCurso pois será identificado automaticamente pelo backend
+ * Schema personalizado com mensagens em PT-BR
  */
-const formSchema = matrizesCurricularesControllerCreateBody.pick({
-  nome: true,
-  disciplinasIds: true,
+const formSchema = z.object({
+  nome: z
+    .string()
+    .min(1, "Digite o nome da matriz curricular")
+    .max(100, "O nome deve ter no máximo 100 caracteres"),
+  disciplinasIds: z
+    .array(z.string())
+    .min(1, "Selecione pelo menos uma disciplina"),
 })
 
 /**
@@ -134,14 +139,15 @@ export function CreateEditMatrizCurricularFormDialog({
         {
           onSuccess: () => {
             console.log("Matriz curricular atualizada com sucesso")
-            toast.success(`A matriz curricular "${data.nome}" foi atualizada.`)
+            toast.success(
+              `A matriz curricular "${data.nome}" foi atualizada com sucesso.`,
+            )
             // Invalidar cache das matrizes do coordenador
             queryClient.invalidateQueries({
               queryKey:
                 getMatrizesCurricularesControllerFindMatrizesDoCoordenadorQueryKey(),
             })
-            onOpenChange(false)
-            form.reset()
+            handleOpenChange(false)
           },
           onError: (error: any) => {
             toast.error(
@@ -162,15 +168,14 @@ export function CreateEditMatrizCurricularFormDialog({
         {
           onSuccess: () => {
             toast.success(
-              `A matriz curricular "${data.nome}" foi criada para o seu curso.`,
+              `A matriz curricular "${data.nome}" foi criada com sucesso.`,
             )
             // Invalidar cache das matrizes do coordenador
             queryClient.invalidateQueries({
               queryKey:
                 getMatrizesCurricularesControllerFindMatrizesDoCoordenadorQueryKey(),
             })
-            onOpenChange(false)
-            form.reset()
+            handleOpenChange(false)
           },
           onError: (error: any) => {
             toast.error(
@@ -223,10 +228,22 @@ export function CreateEditMatrizCurricularFormDialog({
     )
   }
 
+  /**
+   * Handler para fechar modal com reset do formulário
+   */
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset()
+      form.clearErrors()
+      setSelectedDisciplinas([])
+    }
+    onOpenChange(open)
+  }
+
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
     >
       <DialogContent className="gap-8 sm:max-w-[500px]">
         <DialogHeader className="flex-row items-center gap-3">
@@ -339,7 +356,7 @@ export function CreateEditMatrizCurricularFormDialog({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => onOpenChange(false)}
+                onClick={() => handleOpenChange(false)}
                 disabled={form.formState.isSubmitting}
               >
                 Cancelar

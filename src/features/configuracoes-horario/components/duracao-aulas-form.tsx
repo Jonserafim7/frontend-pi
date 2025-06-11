@@ -27,11 +27,12 @@ import { toast } from "sonner"
 const formSchema = z.object({
   duracaoAulaMinutos: z.coerce
     .number({
-      invalid_type_error: "A duração da aula deve ser um número.",
-      required_error: "A duração da aula é obrigatória.",
+      invalid_type_error: "Digite um número válido",
+      required_error: "Digite a duração da aula",
     })
-    .int({ message: "A duração deve ser um número inteiro de minutos." })
-    .min(1, { message: "A duração mínima da aula é de 1 minuto." }),
+    .int({ message: "A duração deve ser um número inteiro" })
+    .min(1, { message: "A duração deve ser de pelo menos 1 minuto" })
+    .max(480, { message: "A duração não pode ser maior que 8 horas (480 min)" }),
 })
 
 export function DuracaoAulasForm() {

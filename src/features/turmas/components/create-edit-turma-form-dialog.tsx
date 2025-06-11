@@ -49,8 +49,11 @@ import { toast } from "sonner"
  * Schema de validação para o formulário de turma
  */
 const turmaFormSchema = z.object({
-  idDisciplinaOfertada: z.string().min(1, "Disciplina ofertada é obrigatória"),
-  codigoDaTurma: z.string().min(1, "Código da turma é obrigatório"),
+  idDisciplinaOfertada: z.string().min(1, "Selecione uma disciplina ofertada"),
+  codigoDaTurma: z
+    .string()
+    .min(1, "Digite o código da turma")
+    .max(50, "O código deve ter no máximo 50 caracteres"),
 })
 
 type TurmaFormData = z.infer<typeof turmaFormSchema>
@@ -133,7 +136,7 @@ export function CreateEditTurmaFormDialog({
             queryClient.invalidateQueries({
               queryKey: getTurmasControllerFindAllQueryKey(),
             })
-            onOpenChange(false)
+            handleOpenChange(false)
           },
           onError: (error: any) => {
             toast.error(
@@ -157,7 +160,7 @@ export function CreateEditTurmaFormDialog({
             queryClient.invalidateQueries({
               queryKey: getTurmasControllerFindAllQueryKey(),
             })
-            onOpenChange(false)
+            handleOpenChange(false)
           },
           onError: (error: any) => {
             toast.error(error?.response?.data?.message || "Erro ao criar turma")
@@ -169,10 +172,21 @@ export function CreateEditTurmaFormDialog({
 
   const isLoading = isLoadingDisciplinas || (isEditing && isLoadingTurma)
 
+  /**
+   * Handler para fechar modal com reset do formulário
+   */
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset()
+      form.clearErrors()
+    }
+    onOpenChange(open)
+  }
+
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
     >
       <DialogContent className="gap-8 sm:max-w-[500px]">
         <DialogHeader className="flex-row items-center gap-3">
@@ -282,7 +296,7 @@ export function CreateEditTurmaFormDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => onOpenChange(false)}
+                  onClick={() => handleOpenChange(false)}
                   disabled={form.formState.isSubmitting}
                 >
                   Cancelar

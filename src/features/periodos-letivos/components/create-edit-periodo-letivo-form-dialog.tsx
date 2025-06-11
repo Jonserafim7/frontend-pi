@@ -47,21 +47,35 @@ import { useQueryClient } from "@tanstack/react-query"
 import type { AxiosError } from "axios"
 import { toast } from "sonner"
 
-// Definindo schema para o formulário interno
+// Schema de validação personalizado com mensagens em PT-BR
 const formSchema = z
   .object({
-    ano: z.number().min(2000).max(2100),
-    semestre: z.number().min(1).max(2),
+    ano: z
+      .number({
+        required_error: "Digite o ano",
+        invalid_type_error: "O ano deve ser um número",
+      })
+      .min(2000, "O ano deve ser maior que 2000")
+      .max(2100, "O ano deve ser menor que 2100"),
+    semestre: z
+      .number({
+        required_error: "Selecione o semestre",
+        invalid_type_error: "O semestre deve ser um número",
+      })
+      .min(1, "O semestre deve ser 1 ou 2")
+      .max(2, "O semestre deve ser 1 ou 2"),
     status: z.enum(["ATIVO", "INATIVO"]).optional(),
     dataInicio: z.date({
-      required_error: "Data de início é obrigatória",
+      required_error: "Selecione a data de início",
+      invalid_type_error: "Data de início inválida",
     }),
     dataFim: z.date({
-      required_error: "Data de fim é obrigatória",
+      required_error: "Selecione a data de fim",
+      invalid_type_error: "Data de fim inválida",
     }),
   })
   .refine((data) => data.dataFim > data.dataInicio, {
-    message: "Data de fim deve ser posterior à data de início",
+    message: "A data de fim deve ser posterior à data de início",
     path: ["dataFim"],
   })
 
@@ -157,7 +171,7 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
               queryKey: getPeriodosLetivosControllerFindAllQueryKey(),
             })
             onSuccess()
-            onOpenChange(false)
+            handleOpenChange(false)
           },
           onError: (error: any) => {
             const errorMessage =
@@ -180,7 +194,7 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
               queryKey: getPeriodosLetivosControllerFindAllQueryKey(),
             })
             onSuccess()
-            onOpenChange(false)
+            handleOpenChange(false)
           },
           onError: (error: any) => {
             const errorMessage =
@@ -203,10 +217,21 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
       "Preencha os dados para criar um novo período letivo."
     : "Modifique os dados do período letivo existente."
 
+  /**
+   * Handler para fechar modal com reset do formulário
+   */
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset()
+      form.clearErrors()
+    }
+    onOpenChange(open)
+  }
+
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
     >
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
@@ -375,7 +400,7 @@ export const CreateEditPeriodoLetivoFormDialog: React.FC<
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => onOpenChange(false)}
+                onClick={() => handleOpenChange(false)}
                 disabled={isPending}
               >
                 Cancelar

@@ -41,7 +41,7 @@ import { toast } from "sonner"
  * Schema de validação para atribuição de professor
  */
 const atribuirProfessorSchema = z.object({
-  idUsuarioProfessor: z.string().min(1, "Professor é obrigatório"),
+  idUsuarioProfessor: z.string().min(1, "Selecione um professor"),
 })
 
 type AtribuirProfessorFormData = z.infer<typeof atribuirProfessorSchema>

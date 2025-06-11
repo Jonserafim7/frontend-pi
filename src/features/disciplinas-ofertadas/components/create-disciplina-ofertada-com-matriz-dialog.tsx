@@ -46,11 +46,11 @@ const createDisciplinaOfertadaSchema = z.object({
   idDisciplina: z.string().min(1, "Selecione uma disciplina"),
   quantidadeTurmas: z
     .number({
-      required_error: "Quantidade de turmas é obrigatória",
-      invalid_type_error: "Deve ser um número válido",
+      required_error: "Digite a quantidade de turmas",
+      invalid_type_error: "A quantidade deve ser um número",
     })
-    .min(1, "Quantidade de turmas deve ser pelo menos 1")
-    .max(10, "Máximo de 10 turmas por disciplina ofertada"),
+    .min(1, "A quantidade deve ser pelo menos 1")
+    .max(10, "A quantidade máxima é de 10 turmas"),
 })
 
 type CreateDisciplinaOfertadaFormValues = z.infer<
@@ -123,10 +123,11 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
     }
   }, [idMatrizWatch, matrizesCurriculares, form])
 
-  // Reset do formulário quando o diálogo abre/fecha
+  // Reset do formulário quando o diálogo abre (limpar quando abrir)
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
       form.reset()
+      form.clearErrors()
       setMatrizSelecionada(null)
       setDisciplinasDisponiveis([])
     }
@@ -154,7 +155,7 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
       },
       {
         onSuccess: () => {
-          toast.success("Disciplina ofertada criada")
+          toast.success("Disciplina ofertada criada com sucesso")
 
           // Invalida apenas as queries de disciplinas ofertadas
           queryClient.invalidateQueries({
@@ -162,7 +163,7 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
               getDisciplinasOfertadasControllerFindOfertasDoCoordenadorQueryKey(),
           })
 
-          onOpenChange(false)
+          handleOpenChange(false)
         },
         onError: (error: any) => {
           toast.error(
@@ -175,10 +176,23 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
 
   const isLoading = isLoadingMatrizes || isLoadingPeriodo
 
+  /**
+   * Handler para fechar modal com reset do formulário
+   */
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset()
+      form.clearErrors()
+      setMatrizSelecionada(null)
+      setDisciplinasDisponiveis([])
+    }
+    onOpenChange(open)
+  }
+
   return (
     <Dialog
       open={isOpen}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
     >
       <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
@@ -359,7 +373,7 @@ export function CreateDisciplinaOfertadaComMatrizDialog({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => onOpenChange(false)}
+                onClick={() => handleOpenChange(false)}
                 disabled={isCreating}
               >
                 Cancelar

@@ -28,8 +28,8 @@ import { toast } from "sonner"
 const sendBackPropostaSchema = z.object({
   motivoDevolucao: z
     .string()
-    .min(10, "O motivo deve ter pelo menos 10 caracteres")
-    .max(500, "O motivo não pode exceder 500 caracteres"),
+    .min(10, "Digite pelo menos 10 caracteres para o motivo")
+    .max(500, "O motivo deve ter no máximo 500 caracteres"),
 })
 
 type SendBackPropostaFormData = z.infer<typeof sendBackPropostaSchema>

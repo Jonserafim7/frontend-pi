@@ -20,9 +20,20 @@ import { AlertCircle, Loader2, Mail } from "lucide-react"
 import { authControllerSignInBody } from "@/api-generated/zod-schemas/auth/auth"
 
 /**
+ * Schema personalizado para login com mensagens em PT-BR
+ */
+const loginFormSchema = z.object({
+  email: z.string().min(1, "Digite seu e-mail").email("Digite um e-mail válido"),
+  senha: z
+    .string()
+    .min(1, "Digite sua senha")
+    .min(8, "A senha deve ter pelo menos 8 caracteres"),
+})
+
+/**
  * Type definition for the login form values
  */
-type LoginFormValues = z.infer<typeof authControllerSignInBody>
+type LoginFormValues = z.infer<typeof loginFormSchema>
 
 const DEFAULT_FORM_VALUES: Partial<LoginFormValues> = {
   email: "",
@@ -37,7 +48,7 @@ export function LoginForm(): React.ReactElement {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm<LoginFormValues>({
-    resolver: zodResolver(authControllerSignInBody),
+    resolver: zodResolver(loginFormSchema),
     defaultValues: DEFAULT_FORM_VALUES,
     mode: "onChange",
   })

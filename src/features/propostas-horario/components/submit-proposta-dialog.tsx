@@ -26,7 +26,10 @@ import { useSubmitProposta } from "../hooks/use-propostas-horario"
 import { toast } from "sonner"
 
 const submitPropostaSchema = z.object({
-  observacoesCoordenador: z.string().optional(),
+  observacoesCoordenador: z
+    .string()
+    .max(1000, "As observações devem ter no máximo 1000 caracteres")
+    .optional(),
 })
 
 type SubmitPropostaFormData = z.infer<typeof submitPropostaSchema>

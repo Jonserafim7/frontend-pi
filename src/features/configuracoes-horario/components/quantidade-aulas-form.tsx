@@ -27,11 +27,12 @@ import { toast } from "sonner"
 const formSchema = z.object({
   quantidade_aulas: z.coerce
     .number({
-      invalid_type_error: "A quantidade de da aulas deve ser um número.",
-      required_error: "A quantidade de aulas é obrigatória.",
+      invalid_type_error: "Digite um número válido",
+      required_error: "Digite a quantidade de aulas",
     })
-    .int({ message: "A quantidade deve ser um número inteiro." })
-    .min(1, { message: "A quantidade de aulas deve ser pelo menos 1." }),
+    .int({ message: "A quantidade deve ser um número inteiro" })
+    .min(1, { message: "A quantidade deve ser de pelo menos 1 aula" })
+    .max(20, { message: "A quantidade não pode ser maior que 20 aulas" }),
 })
 
 export function QuantidadeAulasForm() {

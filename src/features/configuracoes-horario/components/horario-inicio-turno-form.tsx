@@ -28,9 +28,12 @@ import { toast } from "sonner"
  * Schema para validação do formulário de horário de início de turno
  */
 const formSchema = z.object({
-  horarioInicio: z.string().regex(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, {
-    message: "O horário deve estar no formato HH:mm",
-  }),
+  horarioInicio: z
+    .string()
+    .min(1, "Digite o horário de início")
+    .regex(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, {
+      message: "Digite um horário válido no formato HH:MM (ex: 08:00)",
+    }),
 })
 
 type FormType = z.infer<typeof formSchema>
