@@ -39,7 +39,7 @@ export const disciplinaOfertadaColumns: ColumnDef<DisciplinaOfertadaResponseDto>
     },
     {
       accessorKey: "quantidadeTurmas",
-      header: "Turmas",
+      header: "Limite de Turmas",
       cell: ({ row }) => {
         const qtdTurmas = row.original.quantidadeTurmas
         return (
@@ -54,14 +54,13 @@ export const disciplinaOfertadaColumns: ColumnDef<DisciplinaOfertadaResponseDto>
     },
     {
       id: "actions",
+      header: "Ações",
       cell: ({ row }) => {
         const disciplinaOfertada = row.original
         return (
-          <div className="flex justify-end">
-            <DisciplinaOfertadaActionRowDropdownMenu
-              disciplinaOfertada={disciplinaOfertada}
-            />
-          </div>
+          <DisciplinaOfertadaActionRowDropdownMenu
+            disciplinaOfertada={disciplinaOfertada}
+          />
         )
       },
     },

@@ -1,6 +1,5 @@
-import { MoreHorizontal, Pencil, Trash2, Book } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { useState } from "react"
-import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -13,11 +12,9 @@ import {
 import type { DisciplinaOfertadaResponseDto } from "@/api-generated/model/disciplina-ofertada-response-dto"
 import { DeleteDisciplinaOfertadaAlertDialog } from "../delete-disciplina-ofertada-alert-dialog"
 import { EditDisciplinaOfertadaDialog } from "../edit-disciplina-ofertada-dialog"
-import { toast } from "sonner"
 
 interface DisciplinaOfertadaActionRowDropdownMenuProps {
   disciplinaOfertada: DisciplinaOfertadaResponseDto
-  onViewTurmas?: () => void
 }
 
 /**
@@ -28,9 +25,7 @@ interface DisciplinaOfertadaActionRowDropdownMenuProps {
  */
 export function DisciplinaOfertadaActionRowDropdownMenu({
   disciplinaOfertada,
-  onViewTurmas,
 }: DisciplinaOfertadaActionRowDropdownMenuProps) {
-  const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -43,32 +38,6 @@ export function DisciplinaOfertadaActionRowDropdownMenu({
 
   const handleDelete = () => {
     setIsDeleteDialogOpen(true)
-    setIsOpen(false)
-  }
-
-  const handleViewTurmas = () => {
-    // Se houver uma função personalizada para visualizar turmas, usá-la
-    if (onViewTurmas) {
-      onViewTurmas()
-    } else {
-      // Navegar para a página de turmas com filtro aplicado
-      const disciplinaNome = disciplinaOfertada.disciplina?.nome || ""
-      const disciplinaCodigo = disciplinaOfertada.disciplina?.codigo || ""
-
-      // Usar o nome da disciplina como filtro (mais específico)
-      const filtro = disciplinaNome || disciplinaCodigo
-
-      if (filtro) {
-        navigate(`/coordenador/turmas?filtro=${encodeURIComponent(filtro)}`)
-
-        toast.info(`Redirecionando para turmas de ${disciplinaNome}`)
-      } else {
-        // Fallback caso não tenha nome da disciplina
-        navigate("/coordenador/turmas")
-
-        toast.info("Redirecionando para a página de turmas")
-      }
-    }
     setIsOpen(false)
   }
 
@@ -94,10 +63,7 @@ export function DisciplinaOfertadaActionRowDropdownMenu({
             <Pencil className="mr-2 h-4 w-4" />
             Editar
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleViewTurmas}>
-            <Book className="mr-2 h-4 w-4" />
-            Ver turmas
-          </DropdownMenuItem>
+
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-destructive focus:text-destructive"

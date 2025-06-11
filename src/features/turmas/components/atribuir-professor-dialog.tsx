@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, UserPlus, BookOpen, Clock } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Loader2, UserPlus, BookOpen, Clock, Lightbulb } from "lucide-react"
 import {
   useTurmasControllerAtribuirProfessor,
   getTurmasControllerFindAllQueryKey,
@@ -132,7 +133,7 @@ export function AtribuirProfessorDialog({
       open={open}
       onOpenChange={handleClose}
     >
-      <DialogContent className="gap-8 sm:max-w-[600px]">
+      <DialogContent className="gap-6 sm:max-w-[600px]">
         <DialogHeader className="flex-row items-center gap-3">
           <HeaderIconContainer Icon={UserPlus} />
           <div className="flex flex-col gap-1">
@@ -151,25 +152,36 @@ export function AtribuirProfessorDialog({
         </DialogHeader>
 
         {/* Informações da Turma */}
-        {turma?.disciplinaOfertada && (
-          <div className="bg-muted/30 rounded-lg border p-4">
+        {turma && (
+          <div className="bg-muted/20 dark:bg-muted/10 rounded-lg border p-4">
             <div className="flex items-start justify-between">
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <BookOpen className="text-muted-foreground h-4 w-4" />
                   <span className="font-medium">
-                    {turma.disciplinaOfertada.disciplina?.nome}
+                    {turma.disciplinaOfertada?.disciplina?.nome ||
+                      "Disciplina não informada"}
                   </span>
                 </div>
-                <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                  <Clock className="h-3 w-3" />
-                  {turma.disciplinaOfertada.periodoLetivo?.ano}/
-                  {turma.disciplinaOfertada.periodoLetivo?.semestre}º Semestre
-                </div>
+                {turma.disciplinaOfertada?.periodoLetivo && (
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                    <Clock className="h-3 w-3" />
+                    <span>
+                      {turma.disciplinaOfertada.periodoLetivo.ano}/
+                      {turma.disciplinaOfertada.periodoLetivo.semestre}º Semestre
+                    </span>
+                  </div>
+                )}
+                {turma.disciplinaOfertada?.disciplina?.cargaHoraria && (
+                  <div className="text-muted-foreground text-sm">
+                    Carga Horária:{" "}
+                    {turma.disciplinaOfertada.disciplina.cargaHoraria}h
+                  </div>
+                )}
               </div>
               <div className="flex flex-col gap-1">
                 <Badge variant="outline">{turma.codigoDaTurma}</Badge>
-                {turma.disciplinaOfertada.disciplina?.codigo && (
+                {turma.disciplinaOfertada?.disciplina?.codigo && (
                   <Badge
                     variant="secondary"
                     className="text-xs"
@@ -179,11 +191,6 @@ export function AtribuirProfessorDialog({
                 )}
               </div>
             </div>
-            {turma.disciplinaOfertada.disciplina?.cargaHoraria && (
-              <div className="text-muted-foreground mt-2 text-sm">
-                Carga Horária: {turma.disciplinaOfertada.disciplina.cargaHoraria}h
-              </div>
-            )}
           </div>
         )}
 
@@ -204,7 +211,7 @@ export function AtribuirProfessorDialog({
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecione um professor" />
                       </SelectTrigger>
                     </FormControl>
@@ -218,14 +225,7 @@ export function AtribuirProfessorDialog({
                             key={professor.id}
                             value={professor.id}
                           >
-                            <div className="flex flex-col">
-                              <span className="font-medium">
-                                {professor.nome}
-                              </span>
-                              <span className="text-muted-foreground text-xs">
-                                {professor.email}
-                              </span>
-                            </div>
+                            {professor.nome}
                           </SelectItem>
                         ))
                       }
@@ -236,14 +236,14 @@ export function AtribuirProfessorDialog({
               )}
             />
 
-            {/* Informações adicionais */}
-            <div className="rounded-md bg-blue-50 p-3 text-sm">
-              <div className="mb-1 font-medium text-blue-900">💡 Dica</div>
-              <div className="text-blue-700">
+            {/* Dica seguindo o design system */}
+            <Alert>
+              <Lightbulb className="h-4 w-4" />
+              <AlertDescription>
                 Certifique-se de que o professor tem disponibilidade para este
                 período antes de fazer a atribuição.
-              </div>
-            </div>
+              </AlertDescription>
+            </Alert>
 
             <div className="flex justify-end gap-2 pt-2">
               <Button
